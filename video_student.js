@@ -497,7 +497,7 @@ document.getElementById('studentStatusInput')?.addEventListener('change', functi
     }
 });
 
-// ======================== WORLD-CLASS ID CARD GENERATION ========================
+// ======================== ID CARD GENERATION ========================
 
 const schoolInfo = {
     name: "Ibadurrahman College",
@@ -510,12 +510,24 @@ const schoolInfo = {
 let currentIDCardData = null;
 
 function viewStudentIDCard(id, name, studentId, picture) {
-    currentIDCardData = { type: 'student', id, name, entityId: studentId, picture };
+    currentIDCardData = {
+        type: 'student',
+        id: id,
+        name: name,
+        entityId: studentId,
+        picture: picture
+    };
     generateAndShowIDCard(currentIDCardData);
 }
 
 function viewStaffIDCard(id, name, staffId, picture) {
-    currentIDCardData = { type: 'staff', id, name, entityId: staffId, picture };
+    currentIDCardData = {
+        type: 'staff',
+        id: id,
+        name: name,
+        entityId: staffId,
+        picture: picture
+    };
     generateAndShowIDCard(currentIDCardData);
 }
 
@@ -525,74 +537,66 @@ function generateAndShowIDCard(data) {
 
     const today = new Date().toLocaleDateString('en-GB');
     const pictureSrc = data.picture ? '/' + data.picture : '/Uploads/default.jpg';
-    
-    // Dynamic color based on role
-    const themeColor = data.type === 'student' ? '#065f46' : '#1e3a8a'; // Green for student, Navy for staff
 
+    // Standard Portrait ID: 204px x 324px
     preview.innerHTML = `
-        <div id="idCardCanvas" style="width: 250px; margin: 0 auto; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; display: flex; flex-direction: column; gap: 20px;">
+        <div id="idCardCanvas" style="width: 204px; margin: 0 auto; font-family: 'Arial', sans-serif; display: flex; flex-direction: column; gap: 15px; color: #333;">
             
-            <div style="width: 250px; height: 380px; background: #ffffff; border-radius: 15px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid #e5e7eb;">
+            <div style="width: 204px; height: 324px; background: white; border-radius: 10px; border: 1px solid #065f46; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
                 
-                <div style="background: ${themeColor}; width: 100%; height: 90px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
-                    <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-                    <img src="${schoolInfo.logoSrc}" alt="Logo" style="width: 55px; height: 55px; border-radius: 50%; border: 3px solid white; background: white; z-index: 2; margin-bottom: 5px; object-fit: contain;" onerror="this.src='/Uploads/default.jpg'">
+                <div style="background: #065f46; width: 100%; padding: 10px 0 5px; text-align: center; color: white;">
+                    <img src="${schoolInfo.logoSrc}" alt="Logo" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid white; background: white; margin: 0 auto 5px; display: block;" onerror="this.src='/Uploads/default.jpg'">
+                    <h3 style="margin: 0; font-size: 10px; font-weight: bold; text-transform: uppercase;">${schoolInfo.name}</h3>
+                    <p style="margin: 0; font-size: 8px; font-style: italic; opacity: 0.9;">${schoolInfo.subName}</p>
                 </div>
 
-                <div style="text-align: center; margin-top: 10px; padding: 0 10px;">
-                    <h3 style="margin: 0; font-size: 13px; font-weight: 800; color: ${themeColor}; letter-spacing: 0.5px; text-transform: uppercase;">${schoolInfo.name}</h3>
-                    <p style="margin: 0; font-size: 10px; font-weight: 600; color: #6b7280;">${schoolInfo.subName}</p>
+                <div style="padding: 5px 10px; text-align: center; background: #f0fdf4; width: 100%; border-bottom: 1px solid #eee;">
+                    <p style="margin: 0; font-size: 6.5px; line-height: 1.2; color: #065f46;">${schoolInfo.address}</p>
+                    <p style="margin: 2px 0 0; font-size: 7px; font-weight: bold; color: #065f46;">Tel: ${schoolInfo.phone}</p>
                 </div>
 
-                <div style="margin-top: 15px; position: relative;">
-                    <div style="width: 100px; height: 100px; border-radius: 50%; padding: 3px; background: linear-gradient(to bottom, ${themeColor}, #e5e7eb); display: flex; align-items: center; justify-content: center;">
-                        <img src="${pictureSrc}" alt="Photo" style="width: 94px; height: 94px; border-radius: 50%; object-fit: cover; background: white;" onerror="this.src='/Uploads/default.jpg'">
-                    </div>
+                <div style="margin-top: 10px; text-align: center;">
+                    <img src="${pictureSrc}" alt="Photo" style="width: 80px; height: 80px; border: 2px solid #065f46; object-fit: cover; border-radius: 5px;" onerror="this.src='/Uploads/default.jpg'">
                 </div>
 
-                <div style="text-align: center; margin-top: 12px; width: 100%; padding: 0 15px;">
-                    <h4 style="margin: 0; font-size: 15px; color: #111827; font-weight: 700; border-bottom: 2px solid #f3f4f6; display: inline-block; padding-bottom: 2px;">${data.name.toUpperCase()}</h4>
-                    <p style="margin: 5px 0; font-size: 11px; font-weight: 700; color: ${themeColor}; letter-spacing: 2px;">${data.type.toUpperCase()}</p>
+                <div style="text-align: center; width: 100%; margin-top: 5px; padding: 0 5px;">
+                    <h4 style="margin: 0; font-size: 12px; color: #111; font-weight: bold;">${data.name.toUpperCase()}</h4>
+                    <p style="margin: 0; font-size: 9px; color: #d97706; font-weight: bold;">${data.type === 'student' ? 'STUDENT' : 'STAFF'}</p>
                     
-                    <div style="margin-top: 10px; background: #f9fafb; border: 1px solid #e5e7eb; padding: 8px; border-radius: 8px;">
-                        <span style="font-size: 9px; color: #9ca3af; display: block; font-weight: 600;">ID NUMBER</span>
-                        <strong style="font-size: 13px; color: #111827;">${data.entityId}</strong>
+                    <div style="margin-top: 8px; border: 1px dashed #065f46; padding: 4px; border-radius: 4px; display: inline-block; min-width: 120px;">
+                        <span style="font-size: 7px; display: block; color: #666;">IDENTIFICATION NO.</span>
+                        <strong style="font-size: 11px; color: #065f46;">${data.entityId}</strong>
                     </div>
                 </div>
 
-                <div style="position: absolute; bottom: 0; width: 100%; height: 8px; background: ${themeColor};"></div>
+                <div style="position: absolute; bottom: 0; width: 100%; background: #065f46; height: 10px;"></div>
             </div>
 
-            <div style="width: 250px; height: 380px; background: #fefefe; border-radius: 15px; border: 1px solid #e5e7eb; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.15); overflow: hidden;">
-                <div style="background: #374151; padding: 12px; color: white; text-align: center;">
-                    <span style="font-size: 10px; font-weight: 700; letter-spacing: 1.5px;">INFORMATION & POLICY</span>
+            <div style="width: 204px; height: 324px; background: #fff; border-radius: 10px; border: 1px solid #ccc; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.15); overflow: hidden;">
+                <div style="background: #065f46; padding: 10px; color: white; text-align: center;">
+                    <span style="font-size: 9px; font-weight: bold; letter-spacing: 1px;">OFFICIAL INSTRUCTIONS</span>
                 </div>
                 
-                <div style="padding: 20px 15px; flex-grow: 1; display: flex; flex-direction: column; text-align: center; background-image: radial-gradient(#e5e7eb 0.5px, transparent 0.5px); background-size: 10px 10px;">
+                <div style="padding: 15px 10px; flex-grow: 1; display: flex; flex-direction: column; text-align: center;">
+                    <p style="font-size: 8px; line-height: 1.5; color: #333; margin-bottom: 10px;">
+                        This card is the property of <strong>${schoolInfo.name}</strong>. It is for identification purposes only and must be carried at all times while on school premises.
+                    </p>
                     
-                    <div style="font-size: 9px; color: #4b5563; line-height: 1.6; text-align: justify; margin-bottom: 15px;">
-                        This card is an official document of <strong>${schoolInfo.name}</strong>. The holder is entitled to all privileges associated with their role. Loss of this card must be reported immediately.
-                    </div>
+                    <p style="font-size: 8.5px; font-weight: bold; color: #b91c1c; padding: 5px; border: 1px solid #fecaca; background: #fef2f2; border-radius: 4px;">
+                        NOTICE: This ID card must be returned to the school administration upon graduation or termination of service.
+                    </p>
 
-                    <div style="background: #fff1f2; border-left: 4px solid #e11d48; padding: 8px; margin-bottom: 15px;">
-                        <p style="font-size: 9px; font-weight: 700; color: #9f1239; margin: 0;">RETURN POLICY:</p>
-                        <p style="font-size: 8.5px; color: #be123c; margin: 2px 0 0;">Must be returned to administration upon graduation or termination of service.</p>
-                    </div>
-
-                    <div style="margin-top: auto;">
-                        <p style="font-size: 9px; color: #374151; font-weight: 600;">${schoolInfo.address}</p>
-                        <p style="font-size: 9px; color: ${themeColor}; font-weight: 700; margin: 4px 0;">${schoolInfo.phone}</p>
+                    <div style="margin-top: auto; padding-bottom: 10px;">
+                        <p style="font-size: 7.5px; color: #555; margin-bottom: 20px;">If found, please return to the school address or call: <br>${schoolInfo.phone}</p>
                         
-                        <div style="margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
-                            <div style="width: 120px; border-top: 1px solid #111827; margin-bottom: 4px;"></div>
-                            <p style="font-size: 9px; font-weight: 700; color: #111827;">Authorized Signature</p>
-                            <p style="font-size: 8px; color: #6b7280;">Issued: ${today}</p>
-                        </div>
+                        <div style="width: 100px; border-bottom: 1px solid #333; margin: 0 auto 2px;"></div>
+                        <p style="font-size: 8px; font-weight: bold;">Authorized Signature</p>
+                        <p style="font-size: 7px; color: #888;">Issued: ${today}</p>
                     </div>
                 </div>
-
-                <div style="background: #f3f4f6; padding: 6px; text-align: center; border-top: 1px solid #e5e7eb;">
-                    <small style="font-size: 8px; color: #9ca3af; font-weight: 600;">www.ibadurrahman.edu.ng</small>
+                
+                <div style="background: #f0fdf4; padding: 5px; text-align: center; border-top: 1px solid #eee;">
+                    <small style="font-size: 7px; color: #065f46;">Education is Light</small>
                 </div>
             </div>
         </div>
@@ -607,15 +611,13 @@ function downloadIDCard() {
     const cardElement = document.getElementById('idCardCanvas');
     if (!cardElement) return;
 
-    // Use higher scale for "World-Class" print quality
     window.html2canvas(cardElement, { 
-        scale: 5, 
+        scale: 4, 
         useCORS: true, 
-        backgroundColor: null,
-        logging: false 
+        backgroundColor: null 
     }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `Premium_ID_${currentIDCardData.entityId}.png`;
+        link.download = `ID_Card_${currentIDCardData.entityId}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
     });
