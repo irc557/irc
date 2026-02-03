@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Passport Photo Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        }
+        .btn-primary {
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex items-center justify-center min-h-screen">
+
+    <form action="/submit" method="POST">
+ <label>Name:</label>
+ <input type="text" name="name" required><br><br>
+ <label>Email:</label>
+ <input type="email" name="email" required><br><br>
+
+        <!-- Generation Button -->
+        <button id="generateBtn" onclick="generatePhoto()" class="btn-primary w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-50" disabled>
+            Generate Professional Passport Photo
+        </button>
+
+        <!-- Status & Error Messages -->
+        <div id="statusMessage" class="mt-4 text-sm text-center font-medium min-h-[1.25rem]"></div>
+        <div id="errorBox" class="mt-4 hidden p-3 text-sm bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert"></div>
+
+
+        <!-- Output Section -->
+        <div id="outputSection" class="mt-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 border-t pt-6">Generated Passport Photo</h2>
+            <div class="flex flex-col items-center">
+                <img id="generatedImage" class="rounded-xl border border-gray-200 shadow-md w-full max-w-xs" src="" alt="Generated Passport Photo">
+                <a id="downloadLink" class="mt-4 inline-block px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition" href="#" download="passport_photo.png">Download Image</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const errorBox = document.getElementById('errorBox');
+        const outputSection = document.getElementById('outputSection');
+        const generatedImage = document.getElementById('generatedImage');
+        const downloadLink = document.getElementById('downloadLink');
+
+        // --- Firebase/Canvas Config (Required for API Calls) ---
+        const apiKey = ""; 
+
+        // Enable button when a file is selected
+        fileInput.addEventListener('change', () => {
+            generateBtn.disabled = !fileInput.files.length;
+        });
+
+        function showStatus(message, isError = false) {
+            statusMessage.innerHTML = isError ? `<span class="text-red-600">${message}</span>` : `<span class="text-indigo-600">${message}</span>`;
+            errorBox.classList.add('hidden');
+        }
+
+        function showError(message) {
+            errorBox.textContent = `Error: ${message}`;
+            errorBox.classList.remove('hidden');
+            statusMessage.textContent = '';
+        }
+
+        // Converts a File object to a Base64 string
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Exponential backoff utility for reliable API calls
+        async function fetchWithBackoff(url, options, maxRetries = 5) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.status === 429 && i < maxRetries - 1) {
+                        const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    }
+                    if (!response.ok) {
+                        const errorBody = await response.json();
+                        throw new Error(`API failed with status ${response.status}: ${errorBody.error?.message || 'Unknown error'}`);
+                    }
+                    return response;
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error;
+                    // Log to console but don't show user unless it's the final error
+                    console.warn(`Request failed, retrying in ${Math.pow(2, i)}s...`, error);
+                }
+            }
+        }
+
+
+        async function generatePhoto() {
+            const file = fileInput.files[0];
+            if (!file) {
+                showError("Please upload an image file first.");
+                return;
+            }
+
+            // Reset UI
+            generateBtn.disabled = true;
+            outputSection.classList.add('hidden');
+            errorBox.classList.add('hidden');
+            showStatus("Uploading and transforming image... Please wait, this takes a few moments.");
+
+            try {
+                const base64ImageData = await fileToBase64(file);
+                
+                // Construct the highly specific prompt for image editing/generation
+                const userPrompt = `Transform this uploaded image into a high-quality, professional **passport-style photo** suitable for a lecturer. The background **must be solid, pure white (#FFFFFF)**, with no shadows. **Remove any glasses** from the face. Ensure the person is wearing a **professional jacket and a necktie**. The facial expression must be neutral, and the head must be uncovered (no cap or hat, adhering to passport standards).`;
+                
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{
+                        role: "user",
+                        parts: [
+                            { text: userPrompt },
+                            {
+                                inlineData: {
+                                    mimeType: file.type,
+                                    data: base64ImageData
+                                }
+                            }
+                        ]
+                    }],
+                    generationConfig: {
+                        responseModalities: ['TEXT', 'IMAGE']
+                    },
+                };
+
+                const response = await fetchWithBackoff(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                
+                const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+                if (!base64Data) {
+                    showError("Transformation failed. The model could not generate the image based on the input.");
+                    return;
+                }
+
+                const imageUrl = `data:image/png;base64,${base64Data}`;
+                
+                generatedImage.src = imageUrl;
+                downloadLink.href = imageUrl;
+                outputSection.classList.remove('hidden');
+                showStatus("Photo generated successfully!");
+
+            } catch (e) {
+                showError(`Failed to generate photo: ${e.message}`);
+                console.error(e);
+            } finally {
+                generateBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

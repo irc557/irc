@@ -1,0 +1,196 @@
+Complete System Specification for the Tahfiz + Multi-Department School
+1️⃣ Departments
+
+The school has 4 main departments:
+
+Quranic Studies
+
+Subjects:
+
+Tahfiz (Qur’an memorization) → special syllabus with ayah ranges per term
+
+Tajweed
+
+Qiraat
+
+Tafseer
+
+Special grading system (explained in section 3).
+
+Special attendance system (Sat & Sun only).
+
+Islamic Studies
+
+Subjects:
+
+At-Tauheed
+
+Al-Fiqh
+
+Al-Hadith
+
+As-Sirah
+
+At-Tarikh
+
+At-Tahzeeb
+
+Arabic Studies
+
+Subjects:
+
+An-Nahwu
+
+Al-Mudalaat
+
+Al-Imlai
+
+Al-Inshai
+
+Al-Adab
+
+Al-Balaga
+
+Western Education
+
+Subjects: All standard school subjects (from Pre-Nursery to Senior Secondary, e.g., English, Math, Basic Science, Government, Biology, Physics, etc., based on Kano curriculum).
+
+Attendance is Monday–Friday.
+
+2️⃣ Class Structure (Quranic Studies Only)
+
+Each year has defined classes:
+
+Year 1 → Abu Ubaidah bin Jarrah
+
+Year 2 → Said bin Zaid
+
+Year 3 → Saad bin Abi Waqqas
+
+Year 4 → Abdurrahman bin Auf
+
+Year 5 → Az-Zubair bin Awwam & Talha bin Ubaidullah
+
+Year 6 → Ali bin Abi Talib, Uthman bin Affan, Umar bin Khattab
+
+Advanced Class → Abu Bakr As-Siddiq
+
+📌 Tahfiz syllabus is structured in PDF pages per year:
+
+Year 1 → Pages 1–3
+
+Year 2 → Pages 4–6
+
+Year 3 → Pages 7–9
+
+Year 4 → Pages 10–12
+
+Year 5 → Pages 13–15
+
+Year 6 → Page 16
+
+Advanced → Separate
+
+3️⃣ Grading System
+(A) Quranic Studies (Special Grading)
+
+Weekly grades (Saturday & Sunday) = Continuous Assessment (CA).
+
+Final Exam = separate grade.
+
+Grades are given as letters (A–F) with points:
+
+A = 5
+
+B = 4
+
+C = 3
+
+D = 2
+
+E = 1
+
+F = 0
+
+Formula:
+
+\text{Final Score (100%)} = \big(\text{Average of CA Points}\big) + \text{Final Exam (converted to 100)}
+
+Report includes weekly ayah ranges + grades.
+
+(B) Islamic Studies & Arabic Studies
+
+Standard grading 0–100%.
+
+Normal CA + Final Exam.
+
+(C) Western Education
+
+Standard school grading 0–100%.
+
+Normal CA + Final Exam.
+
+4️⃣ Attendance
+(A) Tahfiz Attendance
+
+Every Saturday & Sunday only.
+
+Auto-generated dates based on session start & end.
+
+Teachers mark Present/Absent.
+
+Tied to weekly grading.
+
+(B) Western Education Attendance
+
+Monday → Friday.
+
+Auto-generated dates per session.
+
+Teachers tick Present/Absent.
+
+(C) Islamic & Arabic Studies Attendance
+
+Same as Western (Mon–Fri).
+
+Can be tracked per subject or per class (depending on setup).
+
+5️⃣ Report Generation
+
+Quranic Studies Report (Standalone)
+
+Shows:
+
+Weekly ayah ranges
+
+Weekly grades (Sat & Sun)
+
+Attendance (Sat & Sun)
+
+Final Exam grade
+
+Total (converted to 100%)
+
+Final Letter Grade
+
+Islamic Studies & Arabic Studies Report
+
+Shows subjects (normal % scores).
+
+Attendance summary (Mon–Fri).
+
+Western Education Report
+
+Shows subjects (normal % scores).
+
+Attendance summary (Mon–Fri).
+
+Merged Report (Quranic + Islamic + Arabic)
+
+Combines all 3.
+
+Quranic converted score (from points → %)
+
+Islamic & Arabic raw %
+
+Overall grade = average (with weights if needed).

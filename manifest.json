@@ -1,0 +1,21 @@
+{
+  "name": "Ibadurrahman College App",
+  "short_name": "IRC App",
+  "description": "Holistic Islamic and formal education portal for students, staff, and admins",
+  "start_url": "/student",
+  "display": "standalone",
+  "background_color": "#004d40",
+  "theme_color": "#004d40",
+  "icons": [
+    {
+      "src": "/assets/images/logo.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/assets/images/logo.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

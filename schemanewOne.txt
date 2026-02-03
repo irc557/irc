@@ -1,0 +1,1045 @@
+-- =========================
+-- Admins Table
+-- =========================
+CREATE TABLE admins (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   username VARCHAR(50) UNIQUE NOT NULL,
+   password VARCHAR(255) NOT NULL,
+   name VARCHAR(100) NOT NULL,
+   phone VARCHAR(15) NOT NULL,
+   security_question VARCHAR(255) NOT NULL,
+   security_answer VARCHAR(100) NOT NULL,
+   role ENUM('SuperAdmin', 'Assistant', 'Deputy') NOT NULL,
+   first_login BOOLEAN DEFAULT TRUE
+) ENGINE=InnoDB;
+
+INSERT INTO admins (username, password, name, phone, security_question, security_answer, role, first_login) 
+VALUES ('Admin', 'admin', 'Default Admin', '1234567890', 'What is your pet''s name?', 'DOG', 'SuperAdmin', TRUE);
+
+-- =========================
+-- Bookings Table
+-- =========================
+CREATE TABLE IF NOT EXISTS bookings (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   name VARCHAR(255) NOT NULL,
+   email VARCHAR(255) DEFAULT NULL,
+   gender VARCHAR(10) NOT NULL,
+   date_of_birth DATE NOT NULL,
+   phone VARCHAR(20) NOT NULL,
+   address TEXT NOT NULL,
+   message TEXT,
+   time_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================
+-- Sections Table
+-- =========================
+CREATE TABLE Sections (
+    section_id INT AUTO_INCREMENT PRIMARY KEY,
+    section_name VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO Sections (section_name) VALUES
+('Islamic'),
+('Western');
+
+-- =========================
+-- Departments Table
+-- =========================
+-- Departments table with section_id
+CREATE TABLE Departments (
+    dept_id INT AUTO_INCREMENT PRIMARY KEY,
+    dept_name VARCHAR(50) NOT NULL UNIQUE,
+    section_id INT NOT NULL,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id)
+);
+
+-- Insert Islamic departments
+INSERT INTO Departments (dept_name, section_id) VALUES
+('Quranic Studies', 1),   -- Islamic
+('Islamic Studies', 1),   -- Islamic
+('Arabic Studies', 1),    -- Islamic
+
+-- Insert Western department
+('Western Education', 2); -- Western
+
+-- =========================
+-- Subjects Table
+-- =========================
+CREATE TABLE Subjects (
+    subject_id INT AUTO_INCREMENT PRIMARY KEY,
+    subject_name VARCHAR(50) NOT NULL,
+    dept_id INT NOT NULL,
+    is_tahfiz BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (dept_id) REFERENCES Departments(dept_id)
+);
+
+INSERT INTO Subjects (subject_name, dept_id, is_tahfiz) VALUES
+('Tahfiz', 1, TRUE),
+('Tajweed', 1, FALSE),
+('Qiraat', 1, FALSE),
+('Tafseer', 1, FALSE),
+('At-Tauheed', 2, FALSE),
+('Al-Fiqh', 2, FALSE),
+('Al-Hadith', 2, FALSE),
+('As-Sirah', 2, FALSE),
+('At-Tarikh', 2, FALSE),
+('At-Tahzeeb', 2, FALSE),
+('An-Nahwu', 3, FALSE),
+('Al-Mudalaat', 3, FALSE),
+('Al-Imlai', 3, FALSE),
+('Al-Inshai', 3, FALSE),
+('Al-Adab', 3, FALSE),
+('Al-Balaga', 3, FALSE),
+('English', 4, FALSE),
+('Math', 4, FALSE),
+('Basic Science', 4, FALSE),
+('Government', 4, FALSE),
+('Biology', 4, FALSE),
+('Physics', 4, FALSE);
+
+-- =========================
+-- Classes (Islamic)
+-- =========================
+CREATE TABLE Classes (
+    class_id INT AUTO_INCREMENT PRIMARY KEY,
+    class_name VARCHAR(100) NOT NULL UNIQUE,
+    level INT NOT NULL,
+    section_id INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id)
+);
+
+INSERT INTO Classes (class_id, class_name, level, section_id) VALUES
+(1, 'Abu Ubaidah bin Jarrah', 1, 1),
+(2, 'Khadija Bint Khuwailid', 1, 1),
+(3, 'Saudah Bint Zam''ah', 1, 1),
+(4, 'Aishah Bint Abubakar', 1, 1),
+(5, 'Hafsah Bint Umar', 1, 1),
+(6, 'Zainab Bint Khuzaimah', 1, 1),
+(7, 'Said bin Zaid', 2, 1),
+(8, 'Saad bin Abi Waqqas', 3, 1),
+(9, 'Abdurrahman bin Auf', 4, 1),
+(10, 'Az-Zubair bin Awwam', 5, 1),
+(11, 'Talha bin Ubaidullah', 5, 1),
+(12, 'Ali bin Abi Talib', 6, 1),
+(13, 'Uthman bin Affan', 6, 1),
+(14, 'Umar bin Khattab', 6, 1),
+(15, 'Abu Bakr As-Siddiq', 7, 1);
+
+-- =========================
+-- Western Classes
+-- =========================
+CREATE TABLE Western_Classes (
+    western_class_id INT AUTO_INCREMENT PRIMARY KEY,
+    class_name VARCHAR(100) NOT NULL UNIQUE,
+    level INT NOT NULL,
+    section_id INT NOT NULL DEFAULT 2,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id)
+);
+
+INSERT INTO Western_Classes (class_name, level, section_id) VALUES
+('Nursery 1', 1, 2),
+('Nursery 2', 2, 2),
+('Pre-Nursery', 0, 2),
+('Primary 1', 1, 2),
+('Primary 2', 2, 2),
+('Primary 3', 3, 2),
+('Primary 4', 4, 2),
+('Primary 5', 5, 2),
+('Primary 6', 6, 2),
+('Secondary 1', 1, 2),
+('Secondary 2', 2, 2),
+('Secondary 3', 3, 2),
+('Secondary 4', 4, 2),
+('Secondary 5', 5, 2),
+('Secondary 6', 6, 2);
+
+-- =========================
+-- Fee Structures
+-- =========================
+CREATE TABLE Islamic_Fee_Structures (
+    structure_id INT AUTO_INCREMENT PRIMARY KEY,
+    class_id INT NOT NULL,
+    term INT NOT NULL CHECK (term >= 1),
+    session_year VARCHAR(20) NOT NULL,
+    total_fee DECIMAL(10,2) NOT NULL CHECK (total_fee >= 0),
+    description TEXT DEFAULT NULL,
+    created_date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (class_id) REFERENCES Classes(class_id),
+    FOREIGN KEY (session_year) REFERENCES Sessions(session_year),
+    UNIQUE KEY unique_fee_structure (class_id, term, session_year)
+);
+
+CREATE TABLE Western_Fee_Structures (
+    structure_id INT AUTO_INCREMENT PRIMARY KEY,
+    western_class_id INT NOT NULL,
+    term INT NOT NULL CHECK (term >= 1),
+    session_year VARCHAR(20) NOT NULL,
+    total_fee DECIMAL(10,2) NOT NULL CHECK (total_fee >= 0),
+    description TEXT DEFAULT NULL,
+    created_date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (western_class_id) REFERENCES Western_Classes(western_class_id),
+    FOREIGN KEY (session_year) REFERENCES Sessions(session_year),
+    UNIQUE KEY unique_fee_structure (western_class_id, term, session_year)
+);
+
+-- =========================
+-- Students
+-- =========================
+CREATE TABLE Students (
+    id INT AUTO_INCREMENT PRIMARY KEY,                  -- internal numeric PK
+    student_id VARCHAR(50) UNIQUE NOT NULL,             -- manual student ID (e.g., HIR/25/TAH/0001)
+    full_name VARCHAR(100) NOT NULL,                    -- ✅ changed from name -> full_name
+    date_of_birth DATE NOT NULL,
+    gender VARCHAR(10) NOT NULL CHECK (gender IN ('Male', 'Female', 'Other')),
+    guardian_phone VARCHAR(20) DEFAULT NULL,            -- ✅ changed from phone -> guardian_phone
+    address TEXT NOT NULL,
+    email VARCHAR(255) DEFAULT NULL,
+    profile_picture VARCHAR(255) DEFAULT '/uploads/students/default.jpg', -- consistent with your modal
+    created_date DATE DEFAULT CURRENT_DATE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE Student_Enrollments (
+    enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,   -- references Students.id (numeric PK)
+    section_id INT NOT NULL,
+    class_ref INT NOT NULL,
+    level INT NOT NULL,
+    term INT NOT NULL CHECK (term >= 1),
+    enrollment_date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (student_ref) REFERENCES Students(id) ON DELETE CASCADE,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+    UNIQUE KEY unique_enrollment (student_ref, section_id, class_ref, term)
+);
+
+
+-- =========================
+-- Student Fees
+-- =========================
+CREATE TABLE Student_Fees (
+    student_fee_id INT AUTO_INCREMENT PRIMARY KEY,
+    enrollment_id INT NOT NULL,
+    structure_id INT NOT NULL,
+    section_id INT NOT NULL,
+    session_year VARCHAR(20) NOT NULL,
+    total_fee DECIMAL(10,2) NOT NULL CHECK (total_fee >= 0),
+    amount_paid DECIMAL(10,2) DEFAULT 0.00 CHECK (amount_paid >= 0),
+    status ENUM('Pending', 'Completed') DEFAULT 'Pending',
+    remaining_amount DECIMAL(10,2) GENERATED ALWAYS AS (total_fee - amount_paid) STORED,
+    created_date DATE DEFAULT CURRENT_DATE,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (enrollment_id) REFERENCES Student_Enrollments(enrollment_id),
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+    FOREIGN KEY (session_year) REFERENCES Sessions(session_year),
+    UNIQUE KEY unique_student_fee (enrollment_id, structure_id, session_year)
+);
+
+-- =========================
+-- Student Fee Payments
+-- =========================
+CREATE TABLE Student_Fee_Payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_fee_id INT NOT NULL,
+    session_year VARCHAR(20) NOT NULL,
+    class_ref INT NOT NULL,
+    section_id INT NOT NULL DEFAULT 1,
+    payment_amount DECIMAL(10,2) NOT NULL CHECK (payment_amount > 0),
+    payment_date DATE DEFAULT CURRENT_DATE,
+    term INT NOT NULL DEFAULT 1,
+    payment_method VARCHAR(50) DEFAULT NULL,
+    receipt_number VARCHAR(100) DEFAULT NULL,
+    notes TEXT DEFAULT NULL,
+    FOREIGN KEY (student_fee_id) REFERENCES Student_Fees(student_fee_id),
+    FOREIGN KEY (session_year) REFERENCES Sessions(session_year)
+);
+
+
+-- =========================
+-- Staff Table
+-- =========================
+
+CREATE TABLE staff (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id VARCHAR(20) UNIQUE NOT NULL,        -- e.g., IRC001, IRC002
+    password VARCHAR(255) NOT NULL,              -- hashed password
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) NOT NULL,
+    email VARCHAR(255) DEFAULT NULL,
+    role ENUM('Teacher', 'Administrator', 'Support', 'Form Teacher', 'Regular Teacher') NOT NULL,
+    status ENUM('Active', 'Inactive') DEFAULT 'Active',
+    security_question VARCHAR(255) DEFAULT NULL,
+    security_answer VARCHAR(100) DEFAULT NULL,
+    profile_picture VARCHAR(255) DEFAULT NULL,    -- Path to profile picture
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    first_login BOOLEAN DEFAULT TRUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- =========================
+-- Staff_Classes Table
+-- =========================
+DROP TABLE IF EXISTS staff_classes;
+
+CREATE TABLE staff_classes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id INT NOT NULL,
+    class_id INT DEFAULT NULL,           -- For Islamic classes
+    western_class_id INT DEFAULT NULL,   -- For Western classes
+    section_id INT NOT NULL,             -- Refers to Sections table
+    term INT DEFAULT NULL,               -- Now optional
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+    FOREIGN KEY (class_id) REFERENCES Classes(class_id),
+    FOREIGN KEY (western_class_id) REFERENCES Western_Classes(western_class_id),
+    CONSTRAINT chk_class_ref CHECK (
+        (section_id = 1 AND class_id IS NOT NULL AND western_class_id IS NULL) OR
+        (section_id = 2 AND western_class_id IS NOT NULL AND class_id IS NULL)
+    ),
+    UNIQUE KEY unique_staff_class (staff_id, section_id, class_id, western_class_id, term)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================
+-- Staff_Subjects Table
+-- =========================
+DROP TABLE IF EXISTS staff_subjects;
+
+CREATE TABLE staff_subjects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    section_id INT NOT NULL,   -- Islamic = 1, Western = 2
+    term INT NOT NULL,         -- e.g., 1st term, 2nd term
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Foreign keys
+    FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
+    FOREIGN KEY (subject_id) REFERENCES Subjects(subject_id),
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+    
+    -- Prevent duplicates for the same staff/subject/section/term
+    UNIQUE KEY unique_staff_subject (staff_id, subject_id, section_id, term)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================
+-- Staff_Form_Master Table
+-- =========================
+DROP TABLE IF EXISTS staff_form_master;
+
+CREATE TABLE staff_form_master (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id INT NOT NULL,
+    class_id INT DEFAULT NULL,
+    western_class_id INT DEFAULT NULL,
+    section_id INT NOT NULL,
+    term INT NOT NULL,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+    FOREIGN KEY (class_id) REFERENCES Classes(class_id),
+    FOREIGN KEY (western_class_id) REFERENCES Western_Classes(western_class_id),
+    UNIQUE KEY unique_form_master (staff_id, class_id, western_class_id, section_id, term)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =========================
+-- Trigger to Update Student Fee Status
+-- =========================
+DELIMITER //
+CREATE TRIGGER update_student_fee_status_after_payment
+AFTER INSERT ON Student_Fee_Payments
+FOR EACH ROW
+BEGIN
+    UPDATE Student_Fees sf
+    SET 
+        amount_paid = amount_paid + NEW.payment_amount,
+        status = CASE 
+            WHEN (amount_paid + NEW.payment_amount) >= total_fee THEN 'Completed'
+            ELSE 'Pending'
+        END
+    WHERE sf.student_fee_id = NEW.student_fee_id;
+END//
+DELIMITER ;
+
+-- =========================
+-- Daily Memorization
+-- =========================
+CREATE TABLE Daily_Memorization_Scheme (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    week INT NOT NULL,
+    day VARCHAR(20) NOT NULL,
+    date DATE DEFAULT CURRENT_DATE,
+    from_surah_ayah VARCHAR(50) NOT NULL,
+    to_surah_ayah VARCHAR(50) NOT NULL,
+    term INT NOT NULL,
+    class_id INT NOT NULL,
+    FOREIGN KEY (class_id) REFERENCES Classes(class_id)
+);
+
+-- =========================
+-- Student Memorization Assessments
+-- =========================
+CREATE TABLE Student_Memorization_Assessments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    enrollment_id INT NOT NULL,
+    scheme_id INT NOT NULL,
+    daily_grade CHAR(1) DEFAULT NULL CHECK (daily_grade IN ('A', 'B', 'C', 'D', 'E', 'F')),
+    exam_grade INT DEFAULT NULL CHECK (exam_grade >= 0 AND exam_grade <= 100),
+    comments TEXT DEFAULT NULL,
+    date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (enrollment_id) REFERENCES Student_Enrollments(enrollment_id),
+    FOREIGN KEY (scheme_id) REFERENCES Daily_Memorization_Scheme(id),
+    UNIQUE KEY unique_assessment (enrollment_id, scheme_id, date)
+);
+
+-- =========================
+-- Student Subject Assessments
+-- =========================
+CREATE TABLE Student_Subject_Assessments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    enrollment_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    term INT NOT NULL,
+    ca1_score INT DEFAULT NULL CHECK (ca1_score >= 0 AND ca1_score <= 100),
+    ca2_score INT DEFAULT NULL CHECK (ca2_score >= 0 AND ca2_score <= 100),
+    ca3_score INT DEFAULT NULL CHECK (ca3_score >= 0 AND ca3_score <= 100),
+    exam_score INT DEFAULT NULL CHECK (exam_score >= 0 AND exam_score <= 100),
+    comments TEXT DEFAULT NULL,
+    date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (enrollment_id) REFERENCES Student_Enrollments(enrollment_id),
+    FOREIGN KEY (subject_id) REFERENCES Subjects(subject_id),
+    UNIQUE KEY unique_subject_assessment (enrollment_id, subject_id, term, date)
+);
+
+-- Creating database
+CREATE DATABASE IF NOT EXISTS school_management;
+USE school_management;
+
+-- Sections table
+CREATE TABLE Sections (
+    section_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Sessions table
+CREATE TABLE Sessions (
+    session_year VARCHAR(20) PRIMARY KEY,
+    is_current BOOLEAN DEFAULT FALSE,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Classes table
+CREATE TABLE classes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    section_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Staff table
+CREATE TABLE staff (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    profile_picture VARCHAR(255)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Staff_Classes table (junction table for staff-class assignments)
+CREATE TABLE staff_classes (
+    staff_id INT NOT NULL,
+    section_id INT NOT NULL,
+    class_id INT NOT NULL,
+    PRIMARY KEY (staff_id, section_id, class_id),
+    FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
+    FOREIGN KEY (section_id, class_id) REFERENCES classes(section_id, id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Students table
+CREATE TABLE Students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    student_id VARCHAR(50) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Student_Enrollments table
+CREATE TABLE Student_Enrollments (
+    enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    section_id INT NOT NULL,
+    class_ref INT NOT NULL,
+    session_year VARCHAR(20) NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES Students(id) ON DELETE CASCADE,
+    FOREIGN KEY (section_id, class_ref) REFERENCES classes(section_id, id) ON DELETE CASCADE,
+    FOREIGN KEY (session_year) REFERENCES Sessions(session_year) ON DELETE CASCADE,
+    UNIQUE KEY unique_enrollment (student_id, section_id, class_ref, session_year)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE Student_Attendance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    enrollment_id VARCHAR(50) NOT NULL,
+    student_id VARCHAR(50) UNIQUE NOT NULL
+    section_id INT NOT NULL,
+    attendance_status ENUM('Present', 'Absent') NOT NULL,
+    week_number INT NOT NULL CHECK (week_number >= 1 AND week_number <= 14),
+    term INT NOT NULL CHECK (term >= 1 AND term <= 3),
+    session_year VARCHAR(20) NOT NULL,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (enrollment_id) REFERENCES Student_Enrollments(enrollment_id) ON DELETE CASCADE
+);
+CREATE TABLE Student_Subjects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    enrollment_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    term INT NOT NULL,
+    FOREIGN KEY (enrollment_id) REFERENCES Student_Enrollments(enrollment_id),
+    FOREIGN KEY (subject_id) REFERENCES Subjects(subject_id),
+    UNIQUE KEY unique_student_subject (enrollment_id, subject_id, term)
+);
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الناس، الآية: (1)', 'سورة الإخلاص، الآية: (4)', 1, 1),
+(1, 'الأحد', 'سورة المسد، الآية: (1)', 'سورة الكافرون، الآية: (6)', 1, 1),
+(2, 'السبت', 'سورة الكوثر، الآية: (1)', 'سورة قريش، الآية: (4)', 1, 1),
+(2, 'الأحد', 'سورة الماعون، الآية: (1)', 'سورة قريش، الآية: (4)', 1, 1),
+(3, 'السبت', 'سورة الفيل، الآية: (1)', 'سورة الهمزة، الآية: (9)', 1, 1),
+(3, 'الأحد', 'سورة العصر، الآية: (1)', 'سورة التكاثر، الآية: (8)', 1, 1),
+(4, 'السبت', 'سورة القارعة، الآية: (1)', 'سورة القارعة، الآية: (11)', 1, 1),
+(4, 'الأحد', 'سورة العاديات، الآية: (1)', 'سورة العاديات، الآية: (11)', 1, 1),
+(5, 'السبت', 'سورة الزلزلة، الآية: (1)', 'سورة الزلزلة، الآية: (8)', 1, 1),
+(5, 'الأحد', 'سورة البينة، الآية: (1)', 'سورة البينة، الآية: (8)', 1, 1),
+(6, 'السبت', 'سورة القدر، الآية: (1)', 'سورة القدر، الآية: (5)', 1, 1),
+(6, 'الأحد', 'سورة العلق، الآية: (1)', 'سورة العلق، الآية: (19)', 1, 1),
+(7, 'السبت', 'سورة التين، الآية: (1)', 'سورة الشرح، الآية: (8)', 1, 1),
+(7, 'الأحد', 'سورة الضحى، الآية: (1)', 'سورة الضحى، الآية: (11)', 1, 1),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الليل، الآية: (1)', 'سورة الليل، الآية: (21)', 1, 1),
+(8, 'الأحد', 'سورة الشمس، الآية: (1)', 'سورة الشمس، الآية: (15)', 1, 1),
+(9, 'السبت', 'سورة البلد، الآية: (1)', 'سورة البلد، الآية: (20)', 1, 1),
+(9, 'الأحد', 'سورة الفجر، الآية: (1)', 'سورة الفجر، الآية: (18)', 1, 1),
+(10, 'السبت', 'سورة الفجر، الآية: (19)', 'سورة الفجر، الآية: (30)', 1, 1),
+(10, 'الأحد', 'سورة الغاشية، الآية: (1)', 'سورة الغاشية، الآية: (16)', 1, 1),
+(11, 'السبت', 'سورة الغاشية، الآية: (17)', 'سورة الغاشية، الآية: (26)', 1, 1),
+(11, 'الأحد', 'سورة الأعلى، الآية: (1)', 'سورة الأعلى، الآية: (19)', 1, 1),
+(12, 'السبت', 'سورة الطارق، الآية: (1)', 'سورة الطارق، الآية: (17)', 1, 1),
+(12, 'الأحد', 'سورة البروج، الآية: (1)', 'سورة البروج، الآية: (10)', 1, 1),
+(13, 'السبت', 'سورة البروج، الآية: (11)', 'سورة البروج، الآية: (22)', 1, 1),
+(13, 'الأحد', 'سورة الإنشقاق، الآية: (1)', 'سورة الإنشقاق، الآية: (12)', 1, 1),
+(14, 'السبت', 'سورة الإنشقاق، الآية: (13)', 'سورة الإنشقاق، الآية: (25)', 1, 1),
+
+-- Term 2: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة المطففين، الآية: (1)', 'سورة المطففين، الآية: (13)', 2, 1),
+(1, 'الأحد', 'سورة المطففين، الآية: (14)', 'سورة المطففين، الآية: (28)', 2, 1),
+(2, 'السبت', 'سورة المطففين، الآية: (29)', 'سورة المطففين، الآية: (36)', 2, 1),
+(2, 'الأحد', 'سورة الانفطار، الآية: (1)', 'سورة الانفطار، الآية: (19)', 2, 1),
+(3, 'السبت', 'سورة التكوير، الآية: (1)', 'سورة التكوير، الآية: (14)', 2, 1),
+(3, 'الأحد', 'سورة التكوير، الآية: (15)', 'سورة التكوير، الآية: (29)', 2, 1),
+(4, 'السبت', 'سورة عبس، الآية: (1)', 'سورة عبس، الآية: (23)', 2, 1),
+(4, 'الأحد', 'سورة عبس، الآية: (24)', 'سورة عبس، الآية: (42)', 2, 1),
+(5, 'السبت', 'سورة النازعات، الآية: (1)', 'سورة النازعات، الآية: (15)', 2, 1),
+(5, 'الأحد', 'سورة النازعات، الآية: (16)', 'سورة النازعات، الآية: (33)', 2, 1),
+(6, 'السبت', 'سورة النازعات، الآية: (34)', 'سورة النازعات، الآية: (46)', 2, 1),
+(6, 'الأحد', 'سورة النبإ، الآية: (1)', 'سورة النبإ، الآية: (17)', 2, 1),
+(7, 'السبت', 'سورة النبإ، الآية: (18)', 'سورة النبإ، الآية: (30)', 2, 1),
+(7, 'الأحد', 'سورة النبإ، الآية: (31)', 'سورة النبإ، الآية: (40)', 2, 1),
+-- Term 2: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة المرسلات، الآية: (1)', 'سورة المرسلات، الآية: (19)', 2, 1),
+(8, 'الأحد', 'سورة المرسلات، الآية: (20)', 'سورة المرسلات، الآية: (34)', 2, 1),
+(9, 'السبت', 'سورة المرسلات، الآية: (35)', 'سورة المرسلات، الآية: (50)', 2, 1),
+(9, 'الأحد', 'سورة الإنسان، الآية: (1)', 'سورة الإنسان، الآية: (9)', 2, 1),
+(10, 'السبت', 'سورة الإنسان، الآية: (10)', 'سورة الإنسان، الآية: (22)', 2, 1),
+(10, 'الأحد', 'سورة الإنسان، الآية: (23)', 'سورة الإنسان، الآية: (31)', 2, 1),
+(11, 'السبت', 'سورة القيامة، الآية: (1)', 'سورة القيامة، الآية: (19)', 2, 1),
+(11, 'الأحد', 'سورة القيامة، الآية: (20)', 'سورة القيامة، الآية: (40)', 2, 1),
+(12, 'السبت', 'سورة المدثر، الآية: (1)', 'سورة المدثر، الآية: (25)', 2, 1),
+(12, 'الأحد', 'سورة المدثر، الآية: (26)', 'سورة المدثر، الآية: (37)', 2, 1),
+(13, 'السبت', 'سورة المدثر، الآية: (38)', 'سورة المدثر، الآية: (56)', 2, 1),
+(13, 'الأحد', 'سورة المزمل، الآية: (1)', 'سورة المزمل، الآية: (11)', 2, 1),
+(14, 'السبت', 'سورة المزمل، الآية: (12)', 'سورة المزمل، الآية: (19)', 2, 1),
+(14, 'الأحد', 'سورة المزمل، الآية: (20)', 'سورة المزمل، الآية: (20)', 2, 1),
+
+-- Term 3: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الجن، الآية: (1)', 'سورة الجن، الآية: (10)', 3, 1),
+(1, 'الأحد', 'سورة الجن، الآية: (11)', 'سورة الجن، الآية: (20)', 3, 1),
+(2, 'السبت', 'سورة الجن، الآية: (21)', 'سورة الجن، الآية: (28)', 3, 1),
+(2, 'الأحد', 'سورة نوح، الآية: (1)', 'سورة نوح، الآية: (14)', 3, 1),
+(3, 'السبت', 'سورة نوح، الآية: (15)', 'سورة نوح، الآية: (28)', 3, 1),
+(3, 'الأحد', 'سورة المعارج، الآية: (1)', 'سورة المعارج، الآية: (18)', 3, 1),
+(4, 'السبت', 'سورة المعارج، الآية: (19)', 'سورة المعارج، الآية: (35)', 3, 1),
+(4, 'الأحد', 'سورة المعارج، الآية: (36)', 'سورة المعارج، الآية: (44)', 3, 1),
+(5, 'السبت', 'سورة الحاقة، الآية: (1)', 'سورة الحاقة، الآية: (24)', 3, 1),
+(5, 'الأحد', 'سورة الحاقة، الآية: (25)', 'سورة الحاقة، الآية: (52)', 3, 1),
+(6, 'السبت', 'سورة القلم، الآية: (1)', 'سورة القلم، الآية: (25)', 3, 1),
+(6, 'الأحد', 'سورة القلم، الآية: (26)', 'سورة القلم، الآية: (42)', 3, 1),
+(7, 'السبت', 'سورة القلم، الآية: (43)', 'سورة القلم، الآية: (52)', 3, 1),
+(7, 'الأحد', 'سورة الملك، الآية: (1)', 'سورة الملك، الآية: (9)', 3, 1),
+-- Term 3: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الملك، الآية: (10)', 'سورة الإنسان، الآية: (21)', 3, 1),
+(8, 'الأحد', 'سورة الملك، الآية: (22)', 'سورة الملك، الآية: (30)', 3, 1),
+(9, 'السبت', 'سورة التحريم، الآية: (1)', 'سورة التحريم، الآية: (7)', 3, 1),
+(9, 'الأحد', 'سورة التحريم، الآية: (8)', 'سورة التحريم، الآية: (12)', 3, 1),
+(10, 'السبت', 'سورة الطلاق، الآية: (1)', 'سورة الطلاق، الآية: (3)', 3, 1),
+(10, 'الأحد', 'سورة الطلاق، الآية: (4)', 'سورة الطلاق، الآية: (7)', 3, 1),
+(11, 'السبت', 'سورة الطلاق، الآية: (8)', 'سورة الطلاق، الآية: (12)', 3, 1),
+(11, 'الأحد', 'سورة التغابن، الآية: (1)', 'سورة التغابن، الآية: (9)', 3, 1),
+(12, 'السبت', 'سورة التغابن، الآية: (10)', 'سورة التغابن، الآية: (18)', 3, 1),
+(12, 'الأحد', 'سورة المنافقون، الآية: (1)', 'سورة المنافقون، الآية: (6)', 3, 1),
+(13, 'السبت', 'سورة المنافقون، الآية: (7)', 'سورة المنافقون، الآية: (11)', 3, 1),
+(13, 'الأحد', 'سورة الجمعة، الآية: (1)', 'سورة الجمعة، الآية: (7)', 3, 1),
+(14, 'السبت', 'سورة الجمعة، الآية: (8)', 'سورة الجمعة، الآية: (11)', 3, 1);
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الصف، الآية: (1)', 'سورة الصف، الآية: (8)', 1, 2),
+(1, 'الأحد', 'سورة الصف، الآية: (9)', 'سورة الصف، الآية: (14)', 1, 2),
+(2, 'السبت', 'سورة الممتحنة، الآية: (1)', 'سورة الممتحنة، الآية: (5)', 1, 2),
+(2, 'الأحد', 'سورة الممتحنة، الآية: (6)', 'سورة الممتحنة، الآية: (13)', 1, 2),
+(3, 'السبت', 'سورة الحشر، الآية: (1)', 'سورة الحشر، الآية: (5)', 1, 2),
+(3, 'الأحد', 'سورة الحشر، الآية: (6)', 'سورة الحشر، الآية: (9)', 1, 2),
+(4, 'السبت', 'سورة الحشر، الآية: (10)', 'سورة الحشر، الآية: (16)', 1, 2),
+(4, 'الأحد', 'سورة الحشر، الآية: (17)', 'سورة الحشر، الآية: (24)', 1, 2),
+(5, 'السبت', 'سورة المجادلة، الآية: (1)', 'سورة المجادلة، الآية: (6)', 1, 2),
+(5, 'الأحد', 'سورة المجادلة، الآية: (7)', 'سورة المجادلة، الآية: (11)', 1, 2),
+(6, 'السبت', 'سورة المجادلة، الآية: (12)', 'سورة المجادلة، الآية: (21)', 1, 2),
+(6, 'الأحد', 'سورة المجادلة، الآية: (22)', 'سورة المجادلة، الآية: (22)', 1, 2),
+(7, 'السبت', 'سورة الحديد، الآية: (1)', 'سورة الحديد، الآية: (5)', 1, 2),
+(7, 'الأحد', 'سورة الحديد، الآية: (6)', 'سورة الحديد، الآية: (11)', 1, 2),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الحديد، الآية: (19)', 'سورة الحديد، الآية: (24)', 1, 2),
+(8, 'الأحد', 'سورة الحديد، الآية: (25)', 'سورة الحديد، الآية: (29)', 1, 2),
+(9, 'السبت', 'سورة الواقعة، الآية: (1)', 'سورة الواقعة، الآية: (26)', 1, 2),
+(9, 'الأحد', 'سورة الواقعة، الآية: (27)', 'سورة الواقعة، الآية: (50)', 1, 2),
+(10, 'السبت', 'سورة الواقعة، الآية: (51)', 'سورة الواقعة، الآية: (74)', 1, 2),
+(10, 'الأحد', 'سورة الواقعة، الآية: (75)', 'سورة الواقعة، الآية: (96)', 1, 2),
+(11, 'السبت', 'سورة الرحمن، الآية: (1)', 'سورة الرحمن، الآية: (25)', 1, 2),
+(11, 'الأحد', 'سورة الرحمن، الآية: (26)', 'سورة الرحمن، الآية: (40)', 1, 2),
+(12, 'السبت', 'سورة الرحمن، الآية: (41)', 'سورة الرحمن، الآية: (61)', 1, 2),
+(12, 'الأحد', 'سورة الرحمن، الآية: (62)', 'سورة الرحمن، الآية: (78)', 1, 2),
+(13, 'السبت', 'سورة القمر، الآية: (1)', 'سورة القمر، الآية: (8)', 1, 2),
+(13, 'الأحد', 'سورة القمر، الآية: (9)', 'سورة القمر، الآية: (27)', 1, 2),
+(14, 'السبت', 'سورة القمر، الآية: (28)', 'سورة القمر، الآية: (42)', 1, 2),
+(14, 'الأحد', 'سورة القمر، الآية: (43)', 'سورة القمر، الآية: (55)', 1, 2),
+-- Term 2: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة النجم، الآية: (1)', 'سورة النجم، الآية: (30)', 2, 2),
+(1, 'الأحد', 'سورة النجم، الآية: (31)', 'سورة النجم، الآية: (62)', 2, 2),
+(2, 'السبت', 'سورة القمر، الآية: (1)', 'سورة القمر، الآية: (8)', 2, 2),
+(2, 'الأحد', 'سورة الطور، الآية: (1)', 'سورة الطور، الآية: (16)', 2, 2),
+(3, 'السبت', 'سورة الطور، الآية: (17)', 'سورة الطور، الآية: (31)', 2, 2),
+(3, 'الأحد', 'سورة الطور، الآية: (32)', 'سورة الطور، الآية: (49)', 2, 2),
+(4, 'السبت', 'سورة الذاريات، الآية: (1)', 'سورة الذاريات، الآية: (23)', 2, 2),
+(4, 'الأحد', 'سورة الذاريات، الآية: (24)', 'سورة الذاريات، الآية: (42)', 2, 2),
+(5, 'السبت', 'سورة الذاريات، الآية: (43)', 'سورة الذاريات، الآية: (60)', 2, 2),
+(5, 'الأحد', 'سورة ق، الآية: (1)', 'سورة ق، الآية: (15)', 2, 2),
+(6, 'السبت', 'سورة ق، الآية: (16)', 'سورة ق، الآية: (35)', 2, 2),
+(6, 'الأحد', 'سورة ق، الآية: (36)', 'سورة ق، الآية: (45)', 2, 2),
+(7, 'السبت', 'سورة الحجرات، الآية: (1)', 'سورة الحجرات، الآية: (8)', 2, 2),
+(7, 'الأحد', 'سورة الحجرات، الآية: (9)', 'سورة الحجرات، الآية: (12)', 2, 2),
+-- Term 2: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الحجرات، الآية: (13)', 'سورة الحجرات، الآية: (18)', 2, 2),
+(8, 'الأحد', 'سورة الفتح، الآية: (1)', 'سورة الفتح، الآية: (9)', 2, 2),
+(9, 'السبت', 'سورة الفتح، الآية: (10)', 'سورة الفتح، الآية: (15)', 2, 2),
+(9, 'الأحد', 'سورة الفتح، الآية: (16)', 'سورة الفتح، الآية: (23)', 2, 2),
+(10, 'السبت', 'سورة الفتح، الآية: (24)', 'سورة الفتح، الآية: (28)', 2, 2),
+(10, 'الأحد', 'سورة الفتح، الآية: (29)', 'سورة الفتح، الآية: (29)', 2, 2),
+(11, 'السبت', 'سورة محمد، الآية: (1)', 'سورة محمد، الآية: (11)', 2, 2),
+(11, 'الأحد', 'سورة محمد، الآية: (12)', 'سورة محمد، الآية: (19)', 2, 2),
+(12, 'السبت', 'سورة محمد، الآية: (20)', 'سورة محمد، الآية: (29)', 2, 2),
+(12, 'الأحد', 'سورة محمد، الآية: (30)', 'سورة محمد، الآية: (38)', 2, 2),
+(13, 'السبت', 'سورة الأحقاف، الآية: (1)', 'سورة الأحقاف، الآية: (10)', 2, 2),
+(13, 'الأحد', 'سورة الأحقاف، الآية: (11)', 'سورة الأحقاف، الآية: (20)', 2, 2),
+(14, 'السبت', 'سورة الأحقاف، الآية: (21)', 'سورة الأحقاف، الآية: (28)', 2, 2),
+(14, 'الأحد', 'سورة الأحقاف، الآية: (29)', 'سورة الأحقاف، الآية: (35)', 2, 2),
+-- Term 3: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الزخرف، الآية: (24)', 'سورة الزخرف، الآية: (33)', 3, 2),
+(1, 'الأحد', 'سورة الزخرف، الآية: (34)', 'سورة الزخرف، الآية: (47)', 3, 2),
+(2, 'السبت', 'سورة الزخرف، الآية: (48)', 'سورة الزخرف، الآية: (60)', 3, 2),
+(2, 'الأحد', 'سورة الزخرف، الآية: (61)', 'سورة الزخرف، الآية: (73)', 3, 2),
+(3, 'السبت', 'سورة الزخرف، الآية: (74)', 'سورة الزخرف، الآية: (89)', 3, 2),
+(3, 'الأحد', 'سورة الدخان، الآية: (1)', 'سورة الدخان، الآية: (18)', 3, 2),
+(4, 'السبت', 'سورة الدخان، الآية: (19)', 'سورة الدخان، الآية: (39)', 3, 2),
+(4, 'الأحد', 'سورة الدخان، الآية: (40)', 'سورة الدخان، الآية: (59)', 3, 2),
+(5, 'السبت', 'سورة الجاثية، الآية: (1)', 'سورة الجاثية، الآية: (13)', 3, 2),
+(5, 'الأحد', 'سورة الجاثية، الآية: (14)', 'سورة الجاثية، الآية: (22)', 3, 2),
+(6, 'السبت', 'سورة الجاثية، الآية: (23)', 'سورة الجاثية، الآية: (37)', 3, 2),
+(6, 'الأحد', 'سورة فصلت، الآية: (47)', 'سورة فصلت، الآية: (54)', 3, 2),
+(7, 'السبت', 'سورة الشورى، الآية: (1)', 'سورة الشورى، الآية: (10)', 3, 2),
+(7, 'الأحد', 'سورة الشورى، الآية: (11)', 'سورة الشورى، الآية: (15)', 3, 2),
+-- Term 3: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الشورى، الآية: (16)', 'سورة الشورى، الآية: (22)', 3, 2),
+(8, 'الأحد', 'سورة الشورى، الآية: (23)', 'سورة الشورى، الآية: (31)', 3, 2),
+(9, 'السبت', 'سورة الشورى، الآية: (32)', 'سورة الشورى، الآية: (44)', 3, 2),
+(9, 'الأحد', 'سورة الشورى، الآية: (45)', 'سورة الشورى، الآية: (53)', 3, 2),
+(10, 'السبت', 'سورة الزخرف، الآية: (1)', 'سورة الزخرف، الآية: (11)', 3, 2),
+(10, 'الأحد', 'سورة الزخرف، الآية: (12)', 'سورة الزخرف، الآية: (23)', 3, 2),
+(11, 'السبت', 'سورة غافر، الآية: (41)', 'سورة غافر، الآية: (49)', 3, 2),
+(11, 'الأحد', 'سورة غافر، الآية: (50)', 'سورة غافر، الآية: (58)', 3, 2),
+(12, 'السبت', 'سورة غافر، الآية: (59)', 'سورة غافر، الآية: (66)', 3, 2),
+(12, 'الأحد', 'سورة غافر، الآية: (67)', 'سورة غافر، الآية: (77)', 3, 2),
+(13, 'السبت', 'سورة غافر، الآية: (78)', 'سورة غافر، الآية: (85)', 3, 2),
+(13, 'الأحد', 'سورة فصلت، الآية: (1)', 'سورة فصلت، الآية: (14)', 3, 2),
+(14, 'السبت', 'سورة فصلت، الآية: (15)', 'سورة فصلت، الآية: (29)', 3, 2),
+(14, 'الأحد', 'سورة فصلت، الآية: (30)', 'سورة فصلت، الآية: (46)', 3, 2);
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الزمر، الآية: (32)', 'سورة الزمر، الآية: (40)', 1, 3),
+(1, 'الأحد', 'سورة الزمر، الآية: (41)', 'سورة الزمر، الآية: (47)', 1, 3),
+(2, 'السبت', 'سورة الزمر، الآية: (48)', 'سورة الزمر، الآية: (56)', 1, 3),
+(2, 'الأحد', 'سورة الزمر، الآية: (57)', 'سورة الزمر، الآية: (67)', 1, 3),
+(3, 'السبت', 'سورة الزمر، الآية: (68)', 'سورة الزمر، الآية: (74)', 1, 3),
+(3, 'الأحد', 'سورة الزمر، الآية: (75)', 'سورة غافر، الآية: (7)', 1, 3),
+(4, 'السبت', 'سورة غافر، الآية: (8)', 'سورة غافر، الآية: (16)', 1, 3),
+(4, 'الأحد', 'سورة غافر، الآية: (17)', 'سورة غافر، الآية: (25)', 1, 3),
+(5, 'السبت', 'سورة غافر، الآية: (26)', 'سورة غافر، الآية: (33)', 1, 3),
+(5, 'الأحد', 'سورة غافر، الآية: (34)', 'سورة غافر، الآية: (40)', 1, 3),
+(6, 'السبت', 'سورة الصافات، الآية: (145)', 'سورة الصافات، الآية: (182)', 1, 3),
+(6, 'الأحد', 'سورة ص، الآية: (1)', 'سورة ص، الآية: (16)', 1, 3),
+(7, 'السبت', 'سورة ص، الآية: (17)', 'سورة ص، الآية: (26)', 1, 3),
+(7, 'الأحد', 'سورة ص، الآية: (27)', 'سورة ص، الآية: (42)', 1, 3),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة ص، الآية: (43)', 'سورة ص، الآية: (61)', 1, 3),
+(8, 'الأحد', 'سورة ص، الآية: (62)', 'سورة ص، الآية: (83)', 1, 3),
+(9, 'السبت', 'سورة ص، الآية: (84)', 'سورة الزمر، الآية: (5)', 1, 3),
+(9, 'الأحد', 'سورة الزمر، الآية: (6)', 'سورة الزمر، الآية: (10)', 1, 3),
+(10, 'السبت', 'سورة الزمر، الآية: (11)', 'سورة الزمر، الآية: (21)', 1, 3),
+(10, 'الأحد', 'سورة الزمر، الآية: (22)', 'سورة الزمر، الآية: (31)', 1, 3),
+(11, 'السبت', 'سورة يس، الآية: (28)', 'سورة يس، الآية: (47)', 1, 3),
+(11, 'الأحد', 'سورة يس، الآية: (48)', 'سورة يس، الآية: (70)', 1, 3),
+(12, 'السبت', 'سورة يس، الآية: (71)', 'سورة يس، الآية: (83)', 1, 3),
+(12, 'الأحد', 'سورة الصافات، الآية: (1)', 'سورة الصافات، الآية: (35)', 1, 3),
+(13, 'السبت', 'سورة الصافات، الآية: (36)', 'سورة الصافات، الآية: (76)', 1, 3),
+(13, 'الأحد', 'سورة الصافات، الآية: (77)', 'سورة الصافات، الآية: (102)', 1, 3),
+(14, 'السبت', 'سورة الصافات، الآية: (103)', 'سورة الصافات، الآية: (126)', 1, 3),
+(14, 'الأحد', 'سورة الصافات، الآية: (127)', 'سورة الصافات، الآية: (153)', 1, 3),
+-- Term 2: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة سبإ، الآية: (23)', 'سورة سبإ، الآية: (31)', 2, 3),
+(1, 'الأحد', 'سورة سبإ، الآية: (32)', 'سورة سبإ، الآية: (39)', 2, 3),
+(2, 'السبت', 'سورة سبإ، الآية: (40)', 'سورة سبإ، الآية: (48)', 2, 3),
+(2, 'الأحد', 'سورة سبإ، الآية: (49)', 'سورة فاطر، الآية: (3)', 2, 3),
+(3, 'السبت', 'سورة فاطر، الآية: (4)', 'سورة فاطر، الآية: (11)', 2, 3),
+(3, 'الأحد', 'سورة فاطر، الآية: (12)', 'سورة فاطر، الآية: (18)', 2, 3),
+(4, 'السبت', 'سورة فاطر، الآية: (19)', 'سورة فاطر، الآية: (30)', 2, 3),
+(4, 'الأحد', 'سورة فاطر، الآية: (31)', 'سورة فاطر، الآية: (38)', 2, 3),
+(5, 'السبت', 'سورة فاطر، الآية: (39)', 'سورة فاطر، الآية: (44)', 2, 3),
+(5, 'الأحد', 'سورة فاطر، الآية: (45)', 'سورة يس، الآية: (12)', 2, 3),
+(6, 'السبت', 'سورة يس، الآية: (13)', 'سورة يس، الآية: (27)', 2, 3),
+(6, 'الأحد', 'سورة الأحزاب، الآية: (31)', 'سورة الأحزاب، الآية: (37)', 2, 3),
+(7, 'السبت', 'سورة الأحزاب، الآية: (38)', 'سورة الأحزاب، الآية: (50)', 2, 3),
+(7, 'الأحد', 'سورة الأحزاب، الآية: (51)', 'سورة الأحزاب، الآية: (57)', 2, 3),
+-- Term 2: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الأحزاب، الآية: (58)', 'سورة الأحزاب، الآية: (73)', 2, 3),
+(8, 'الأحد', 'سورة سبإ، الآية: (1)', 'سورة سبإ، الآية: (7)', 2, 3),
+(9, 'السبت', 'سورة سبإ، الآية: (8)', 'سورة سبإ، الآية: (14)', 2, 3),
+(9, 'الأحد', 'سورة سبإ، الآية: (15)', 'سورة سبإ، الآية: (22)', 2, 3),
+(10, 'السبت', 'سورة لقمان، الآية: (20)', 'سورة لقمان، الآية: (28)', 2, 3),
+(10, 'الأحد', 'سورة لقمان، الآية: (29)', 'سورة لقمان، الآية: (34)', 2, 3),
+(11, 'السبت', 'سورة السجدة، الآية: (1)', 'سورة السجدة، الآية: (15)', 2, 3),
+(11, 'الأحد', 'سورة السجدة، الآية: (16)', 'سورة السجدة، الآية: (30)', 2, 3),
+(12, 'السبت', 'سورة الأحزاب، الآية: (1)', 'سورة الأحزاب، الآية: (11)', 2, 3),
+(12, 'الأحد', 'سورة الأحزاب، الآية: (12)', 'سورة الأحزاب، الآية: (22)', 2, 3),
+(13, 'السبت', 'سورة الأحزاب، الآية: (23)', 'سورة الأحزاب، الآية: (30)', 2, 3),
+(13, 'الأحد', NULL, NULL, 2, 3), -- Missing data in document
+(14, 'السبت', NULL, NULL, 2, 3), -- Missing data in document
+(14, 'الأحد', NULL, NULL, 2, 3), -- Missing data in document
+-- Term 3: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة العنكبوت، الآية: (46)', 'سورة العنكبوت، الآية: (59)', 3, 3),
+(1, 'الأحد', 'سورة العنكبوت، الآية: (60)', 'سورة الروم، الآية: (5)', 3, 3),
+(2, 'السبت', 'سورة الروم، الآية: (6)', 'سورة الروم، الآية: (20)', 3, 3),
+(2, 'الأحد', 'سورة الروم، الآية: (21)', 'سورة الروم، الآية: (32)', 3, 3),
+(3, 'السبت', 'سورة الروم، الآية: (33)', 'سورة الروم، الآية: (46)', 3, 3),
+(3, 'الأحد', 'سورة الروم، الآية: (47)', 'سورة الروم، الآية: (60)', 3, 3),
+(4, 'السبت', 'سورة لقمان، الآية: (1)', 'سورة لقمان، الآية: (19)', 3, 3),
+(4, 'الأحد', 'سورة القصص، الآية: (51)', 'سورة القصص، الآية: (64)', 3, 3),
+(5, 'السبت', 'سورة القصص، الآية: (65)', 'سورة القصص، الآية: (77)', 3, 3),
+(5, 'الأحد', 'سورة القصص، الآية: (78)', 'سورة القصص، الآية: (88)', 3, 3),
+(6, 'السبت', 'سورة العنكبوت، الآية: (1)', 'سورة العنكبوت، الآية: (14)', 3, 3),
+(6, 'الأحد', 'سورة العنكبوت، الآية: (15)', 'سورة العنكبوت، الآية: (25)', 3, 3),
+(7, 'السبت', 'سورة العنكبوت، الآية: (26)', 'سورة العنكبوت، الآية: (38)', 3, 3),
+(7, 'الأحد', 'سورة العنكبوت، الآية: (39)', 'سورة العنكبوت، الآية: (45)', 3, 3),
+-- Term 3: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة النمل، الآية: (56)', 'سورة القصص، الآية: (67)', 3, 3),
+(8, 'الأحد', 'سورة النمل، الآية: (68)', 'سورة النمل، الآية: (88)', 3, 3),
+(9, 'السبت', 'سورة النمل، الآية: (89)', 'سورة القصص، الآية: (9)', 3, 3),
+(9, 'الأحد', 'سورة القصص، الآية: (10)', 'سورة القصص، الآية: (21)', 3, 3),
+(10, 'السبت', 'سورة القصص، الآية: (22)', 'سورة القصص، الآية: (30)', 3, 3),
+(10, 'الأحد', 'سورة القصص، الآية: (31)', 'سورة القصص، الآية: (43)', 3, 3),
+(11, 'السبت', 'سورة القصص، الآية: (44)', 'سورة القصص، الآية: (50)', 3, 3),
+(11, 'الأحد', 'سورة الشعراء، الآية: (111)', 'سورة الشعراء، الآية: (149)', 3, 3),
+(12, 'السبت', 'سورة الشعراء، الآية: (150)', 'سورة الشعراء، الآية: (183)', 3, 3),
+(12, 'الأحد', 'سورة الشعراء، الآية: (184)', 'سورة الشعراء، الآية: (216)', 3, 3),
+(13, 'السبت', 'سورة الشعراء، الآية: (217)', 'سورة النمل، الآية: (13)', 3, 3),
+(13, 'الأحد', 'سورة النمل، الآية: (14)', 'سورة النمل، الآية: (28)', 3, 3),
+(14, 'السبت', 'سورة النمل، الآية: (29)', 'سورة النمل، الآية: (44)', 3, 3),
+(14, 'الأحد', 'سورة النمل، الآية: (45)', 'سورة النمل، الآية: (55)', 3, 3);
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الفرقان، الآية: (21)', 'سورة الفرقان، الآية: (39)', 1, 4),
+(1, 'الأحد', 'سورة الفرقان، الآية: (40)', 'سورة الفرقان، الآية: (55)', 1, 4),
+(2, 'السبت', 'سورة الفرقان، الآية: (56)', 'سورة الفرقان، الآية: (71)', 1, 4),
+(2, 'الأحد', 'سورة الفرقان، الآية: (72)', 'سورة الشعراء، الآية: (19)', 1, 4),
+(3, 'السبت', 'سورة الشعراء، الآية: (20)', 'سورة الشعراء، الآية: (51)', 1, 4),
+(3, 'الأحد', 'سورة الشعراء، الآية: (52)', 'سورة الشعراء، الآية: (83)', 1, 4),
+(4, 'السبت', 'سورة الشعراء، الآية: (84)', 'سورة الشعراء، الآية: (110)', 1, 4),
+(4, 'الأحد', 'سورة النور، الآية: (21)', 'سورة النور، الآية: (30)', 1, 4),
+(5, 'السبت', 'سورة النور، الآية: (31)', 'سورة النور، الآية: (36)', 1, 4),
+(5, 'الأحد', 'سورة النور، الآية: (37)', 'سورة النور، الآية: (47)', 1, 4),
+(6, 'السبت', 'سورة النور، الآية: (48)', 'سورة النور، الآية: (58)', 1, 4),
+(6, 'الأحد', 'سورة النور، الآية: (59)', 'سورة النور، الآية: (64)', 1, 4),
+(7, 'السبت', 'سورة الفرقان، الآية: (1)', 'سورة الفرقان، الآية: (11)', 1, 4),
+(7, 'الأحد', 'سورة الفرقان، الآية: (12)', 'سورة الفرقان، الآية: (20)', 1, 4),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة المؤمنون، الآية: (1)', 'سورة المؤمنون، الآية: (22)', 1, 4),
+(8, 'الأحد', 'سورة المؤمنون، الآية: (23)', 'سورة المؤمنون، الآية: (42)', 1, 4),
+(9, 'السبت', 'سورة المؤمنون، الآية: (43)', 'سورة المؤمنون، الآية: (67)', 1, 4),
+(9, 'الأحد', 'سورة المؤمنون، الآية: (68)', 'سورة المؤمنون، الآية: (89)', 1, 4),
+(10, 'السبت', 'سورة المؤمنون، الآية: (90)', 'سورة المؤمنون، الآية: (111)', 1, 4),
+(10, 'الأحد', 'سورة المؤمنون، الآية: (112)', 'سورة النور، الآية: (10)', 1, 4),
+(11, 'السبت', 'سورة النور، الآية: (11)', 'سورة النور، الآية: (20)', 1, 4),
+(11, 'الأحد', 'سورة الحج، الآية: (1)', 'سورة الحج، الآية: (10)', 1, 4),
+(12, 'السبت', 'سورة الحج، الآية: (11)', 'سورة الحج، الآية: (23)', 1, 4),
+(12, 'الأحد', 'سورة الحج، الآية: (24)', 'سورة الحج، الآية: (34)', 1, 4),
+(13, 'السبت', 'سورة الحج، الآية: (35)', 'سورة الحج، الآية: (46)', 1, 4),
+(13, 'الأحد', 'سورة الحج، الآية: (47)', 'سورة الحج، الآية: (59)', 1, 4),
+(14, 'السبت', 'سورة الحج، الآية: (60)', 'سورة الحج، الآية: (72)', 1, 4),
+(14, 'الأحد', 'سورة الحج، الآية: (73)', 'سورة الحج، الآية: (78)', 1, 4),
+-- Term 2: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الفرقان، الآية: (21)', 'سورة الفرقان، الآية: (39)', 2, 4),
+(1, 'الأحد', 'سورة الفرقان، الآية: (40)', 'سورة الفرقان، الآية: (55)', 2, 4),
+(2, 'السبت', 'سورة الفرقان، الآية: (56)', 'سورة الفرقان، الآية: (71)', 2, 4),
+(2, 'الأحد', 'سورة الفرقان، الآية: (72)', 'سورة الشعراء، الآية: (19)', 2, 4),
+(3, 'السبت', 'سورة الشعراء، الآية: (20)', 'سورة الشعراء، الآية: (51)', 2, 4),
+(3, 'الأحد', 'سورة الشعراء، الآية: (52)', 'سورة الشعراء، الآية: (83)', 2, 4),
+(4, 'السبت', 'سورة الشعراء، الآية: (84)', 'سورة الشعراء، الآية: (110)', 2, 4),
+(4, 'الأحد', 'سورة النور، الآية: (21)', 'سورة النور، الآية: (30)', 2, 4),
+(5, 'السبت', 'سورة النور، الآية: (31)', 'سورة النور، الآية: (36)', 2, 4),
+(5, 'الأحد', 'سورة النور، الآية: (37)', 'سورة النور، الآية: (47)', 2, 4),
+(6, 'السبت', 'سورة النور، الآية: (48)', 'سورة النور، الآية: (58)', 2, 4),
+(6, 'الأحد', 'سورة النور، الآية: (59)', 'سورة النور، الآية: (64)', 2, 4),
+(7, 'السبت', 'سورة الفرقان، الآية: (1)', 'سورة الفرقان، الآية: (11)', 2, 4),
+(7, 'الأحد', 'سورة الفرقان، الآية: (12)', 'سورة الفرقان، الآية: (20)', 2, 4),
+-- Term 2: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة المؤمنون، الآية: (1)', 'سورة المؤمنون، الآية: (22)', 2, 4),
+(8, 'الأحد', 'سورة المؤمنون، الآية: (23)', 'سورة المؤمنون، الآية: (42)', 2, 4),
+(9, 'السبت', 'سورة المؤمنون، الآية: (43)', 'سورة المؤمنون، الآية: (67)', 2, 4),
+(9, 'الأحد', 'سورة المؤمنون، الآية: (68)', 'سورة المؤمنون، الآية: (89)', 2, 4),
+(10, 'السبت', 'سورة المؤمنون، الآية: (90)', 'سورة المؤمنون، الآية: (111)', 2, 4),
+(10, 'الأحد', 'سورة المؤمنون، الآية: (112)', 'سورة النور، الآية: (10)', 2, 4),
+(11, 'السبت', 'سورة النور، الآية: (11)', 'سورة النور، الآية: (20)', 2, 4),
+(11, 'الأحد', 'سورة الحج، الآية: (1)', 'سورة الحج، الآية: (10)', 2, 4),
+(12, 'السبت', 'سورة الحج، الآية: (11)', 'سورة الحج، الآية: (23)', 2, 4),
+(12, 'الأحد', 'سورة الحج، الآية: (24)', 'سورة الحج، الآية: (34)', 2, 4),
+(13, 'السبت', 'سورة الحج، الآية: (35)', 'سورة الحج، الآية: (46)', 2, 4),
+(13, 'الأحد', 'سورة الحج، الآية: (47)', 'سورة الحج، الآية: (59)', 2, 4),
+(14, 'السبت', 'سورة الحج، الآية: (60)', 'سورة الحج، الآية: (72)', 2, 4),
+(14, 'الأحد', 'سورة الحج، الآية: (73)', 'سورة الحج، الآية: (78)', 2, 4),
+-- Term 3: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الإسراء، الآية: (1)', 'سورة الإسراء، الآية: (17)', 3, 4),
+(1, 'الأحد', 'سورة الإسراء، الآية: (18)', 'سورة الإسراء، الآية: (38)', 3, 4),
+(2, 'السبت', 'سورة الإسراء، الآية: (39)', 'سورة الإسراء، الآية: (58)', 3, 4),
+(2, 'الأحد', 'سورة الإسراء، الآية: (59)', 'سورة الإسراء، الآية: (75)', 3, 4),
+(3, 'السبت', 'سورة الإسراء، الآية: (76)', 'سورة الإسراء، الآية: (98)', 3, 4),
+(3, 'الأحد', 'سورة النحل، الآية: (43)', 'سورة النحل، الآية: (64)', 3, 4),
+(4, 'السبت', 'سورة النحل، الآية: (65)', 'سورة النحل، الآية: (79)', 3, 4),
+(4, 'الأحد', 'سورة النحل، الآية: (80)', 'سورة النحل، الآية: (93)', 3, 4),
+(5, 'السبت', 'سورة النحل، الآية: (94)', 'سورة النحل، الآية: (110)', 3, 4),
+(5, 'الأحد', 'سورة النحل، الآية: (111)', 'سورة النحل، الآية: (128)', 3, 4),
+(6, 'السبت', 'سورة الحجر، الآية: (1)', 'سورة الحجر، الآية: (31)', 3, 4),
+(6, 'الأحد', 'سورة الحجر، الآية: (32)', 'سورة الحجر، الآية: (70)', 3, 4),
+(7, 'السبت', 'سورة الحجر، الآية: (71)', 'سورة النحل، الآية: (6)', 3, 4),
+(7, 'الأحد', 'سورة النحل، الآية: (7)', 'سورة النحل، الآية: (26)', 3, 4),
+-- Term 3: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة النحل، الآية: (27)', 'سورة النحل، الآية: (42)', 3, 4),
+(8, 'الأحد', 'سورة الرعد، الآية: (19)', 'سورة الرعد، الآية: (34)', 3, 4),
+(9, 'السبت', 'سورة الرعد، الآية: (35)', 'سورة إبراهيم، الآية: (5)', 3, 4),
+(9, 'الأحد', 'سورة إبراهيم، الآية: (6)', 'سورة إبراهيم، الآية: (18)', 3, 4),
+(10, 'السبت', 'سورة إبراهيم، الآية: (19)', 'سورة إبراهيم، الآية: (33)', 3, 4),
+(10, 'الأحد', 'سورة إبراهيم، الآية: (34)', 'سورة إبراهيم، الآية: (52)', 3, 4),
+(11, 'السبت', 'سورة يوسف، الآية: (53)', 'سورة يوسف، الآية: (69)', 3, 4),
+(11, 'الأحد', 'سورة يوسف، الآية: (70)', 'سورة يوسف، الآية: (86)', 3, 4),
+(12, 'السبت', 'سورة يوسف، الآية: (87)', 'سورة يوسف، الآية: (103)', 3, 4),
+(12, 'الأحد', 'سورة يوسف، الآية: (104)', 'سورة الرعد، الآية: (5)', 3, 4),
+(13, 'السبت', 'سورة الرعد، الآية: (6)', 'سورة الرعد، الآية: (18)', 3, 4),
+(13, 'الأحد', NULL, NULL, 3, 4), -- Missing data in document
+(14, 'السبت', NULL, NULL, 3, 4), -- Missing data in document
+(14, 'الأحد', NULL, NULL, 3, 4); -- Missing data in document
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة هود، الآية: (84)', 'سورة هود، الآية: (97)', 1, 5),
+(1, 'الأحد', 'سورة هود، الآية: (98)', 'سورة هود، الآية: (117)', 1, 5),
+(2, 'السبت', 'سورة هود، الآية: (118)', 'سورة يوسف، الآية: (14)', 1, 5),
+(2, 'الأحد', 'سورة يوسف، الآية: (15)', 'سورة يوسف، الآية: (30)', 1, 5),
+(3, 'السبت', 'سورة يوسف، الآية: (31)', 'سورة يوسف، الآية: (43)', 1, 5),
+(3, 'الأحد', 'سورة هود، الآية: (6)', 'سورة هود، الآية: (19)', 1, 5),
+(4, 'السبت', 'سورة هود، الآية: (20)', 'سورة هود، الآية: (37)', 1, 5),
+(4, 'الأحد', 'سورة هود، الآية: (38)', 'سورة هود، الآية: (53)', 1, 5),
+(5, 'السبت', 'سورة هود، الآية: (54)', 'سورة هود، الآية: (71)', 1, 5),
+(5, 'الأحد', 'سورة هود، الآية: (72)', 'سورة هود، الآية: (83)', 1, 5),
+(6, 'السبت', 'سورة يونس، الآية: (26)', 'سورة يونس، الآية: (42)', 1, 5),
+(6, 'الأحد', 'سورة يونس، الآية: (43)', 'سورة يونس، الآية: (61)', 1, 5),
+(7, 'السبت', 'سورة يونس، الآية: (62)', 'سورة يونس، الآية: (78)', 1, 5),
+(7, 'الأحد', 'سورة يونس، الآية: (79)', 'سورة يونس، الآية: (97)', 1, 5),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة يونس، الآية: (98)', 'سورة هود، الآية: (5)', 1, 5),
+(8, 'الأحد', 'سورة التوبة، الآية: (93)', 'سورة التوبة، الآية: (106)', 1, 5),
+(9, 'السبت', 'سورة التوبة، الآية: (107)', 'سورة التوبة، الآية: (117)', 1, 5),
+(9, 'الأحد', 'سورة التوبة، الآية: (118)', 'سورة التوبة، الآية: (129)', 1, 5),
+(10, 'السبت', 'سورة يونس، الآية: (1)', 'سورة يونس، الآية: (14)', 1, 5),
+(10, 'الأحد', 'سورة يونس، الآية: (15)', 'سورة يونس، الآية: (25)', 1, 5),
+(11, 'السبت', 'سورة التوبة، الآية: (34)', 'سورة التوبة، الآية: (40)', 1, 5),
+(11, 'الأحد', 'سورة التوبة، الآية: (41)', 'سورة التوبة، الآية: (54)', 1, 5),
+(12, 'السبت', 'سورة التوبة، الآية: (55)', 'سورة التوبة، الآية: (68)', 1, 5),
+(12, 'الأحد', 'سورة التوبة، الآية: (69)', 'سورة التوبة، الآية: (79)', 1, 5),
+(13, 'السبت', 'سورة التوبة، الآية: (80)', 'سورة التوبة، الآية: (92)', 1, 5),
+(13, 'الأحد', NULL, NULL, 1, 5), -- Missing data in document
+(14, 'السبت', NULL, NULL, 1, 5), -- Missing data in document
+(14, 'الأحد', NULL, NULL, 1, 5), -- Missing data in document
+-- Term 2: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الأنفال، الآية: (41)', 'سورة الأنفال، الآية: (52)', 2, 5),
+(1, 'الأحد', 'سورة الأنفال، الآية: (53)', 'سورة الأنفال، الآية: (69)', 2, 5),
+(2, 'السبت', 'سورة الأنفال، الآية: (70)', 'سورة التوبة، الآية: (6)', 2, 5),
+(2, 'الأحد', 'سورة التوبة، الآية: (7)', 'سورة التوبة، الآية: (20)', 2, 5),
+(3, 'السبت', 'سورة التوبة، الآية: (21)', 'سورة التوبة، الآية: (33)', 2, 5),
+(3, 'الأحد', 'سورة الأعراف، الآية: (171)', 'سورة الأعراف، الآية: (187)', 2, 5),
+(4, 'السبت', 'سورة الأعراف، الآية: (188)', 'سورة الأعراف، الآية: (206)', 2, 5),
+(4, 'الأحد', 'سورة الأنفال، الآية: (1)', 'سورة الأنفال، الآية: (16)', 2, 5),
+(5, 'السبت', 'سورة الأنفال، الآية: (17)', 'سورة الأنفال، الآية: (33)', 2, 5),
+(5, 'الأحد', 'سورة الأنفال، الآية: (34)', 'سورة الأنفال، الآية: (40)', 2, 5),
+(6, 'السبت', 'سورة الأعراف، الآية: (88)', 'سورة الأعراف، الآية: (104)', 2, 5),
+(6, 'الأحد', 'سورة الأعراف، الآية: (105)', 'سورة الأعراف، الآية: (130)', 2, 5),
+(7, 'السبت', 'سورة الأعراف، الآية: (131)', 'سورة الأعراف، الآية: (143)', 2, 5),
+(7, 'الأحد', 'سورة الأعراف، الآية: (144)', 'سورة الأعراف، الآية: (155)', 2, 5),
+-- Term 2: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الأعراف، الآية: (156)', 'سورة الأعراف، الآية: (163)', 2, 5),
+(8, 'الأحد', 'سورة الأعراف، الآية: (164)', 'سورة الأعراف، الآية: (170)', 2, 5),
+(9, 'السبت', 'سورة الأعراف، الآية: (1)', 'سورة الأعراف، الآية: (22)', 2, 5),
+(9, 'الأحد', 'سورة الأعراف، الآية: (23)', 'سورة الأعراف، الآية: (37)', 2, 5),
+(10, 'السبت', 'سورة الأعراف، الآية: (38)', 'سورة الأعراف، الآية: (51)', 2, 5),
+(10, 'الأحد', 'سورة الأعراف، الآية: (52)', 'سورة الأعراف، الآية: (67)', 2, 5),
+(11, 'السبت', 'سورة الأعراف، الآية: (68)', 'سورة الأعراف، الآية: (81)', 2, 5),
+(11, 'الأحد', 'سورة الأعراف، الآية: (82)', 'سورة الأعراف، الآية: (87)', 2, 5),
+(12, 'السبت', 'سورة الأنعام، الآية: (111)', 'سورة الأنعام، الآية: (124)', 2, 5),
+(12, 'الأحد', 'سورة الأنعام، الآية: (125)', 'سورة الأنعام، الآية: (137)', 2, 5),
+(13, 'السبت', 'سورة الأنعام، الآية: (138)', 'سورة الأنعام، الآية: (146)', 2, 5),
+(13, 'الأحد', 'سورة الأنعام، الآية: (147)', 'سورة الأنعام، الآية: (157)', 2, 5),
+(14, 'السبت', 'سورة الأنعام، الآية: (158)', 'سورة الأنعام، الآية: (165)', 2, 5),
+(14, 'الأحد', NULL, NULL, 2, 5), -- Missing data in document
+-- Term 3: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الأنعام، الآية: (35)', 'سورة الأنعام، الآية: (58)', 3, 5),
+(1, 'الأحد', 'سورة الأنعام، الآية: (59)', 'سورة الأنعام، الآية: (83)', 3, 5),
+(2, 'السبت', 'سورة الأنعام، الآية: (84)', 'سورة الأنعام، الآية: (94)', 3, 5),
+(2, 'الأحد', 'سورة الأنعام، الآية: (95)', 'سورة الأنعام، الآية: (110)', 3, 5),
+(3, 'السبت', 'سورة المائدة، الآية: (81)', 'سورة المائدة، الآية: (96)', 3, 5),
+(3, 'الأحد', 'سورة المائدة، الآية: (97)', 'سورة الأنعام، الآية: (108)', 3, 5),
+(4, 'السبت', 'سورة المائدة، الآية: (109)', 'سورة الأنعام، الآية: (12)', 3, 5),
+(4, 'الأحد', 'سورة الأنعام، الآية: (13)', 'سورة الأنعام، الآية: (35)', 3, 5),
+(5, 'السبت', 'سورة المائدة، الآية: (27)', 'سورة المائدة، الآية: (40)', 3, 5),
+(5, 'الأحد', 'سورة المائدة، الآية: (41)', 'سورة المائدة، الآية: (50)', 3, 5),
+(6, 'السبت', 'سورة المائدة، الآية: (51)', 'سورة المائدة، الآية: (66)', 3, 5),
+(6, 'الأحد', 'سورة المائدة، الآية: (67)', 'سورة المائدة، الآية: (81)', 3, 5),
+(7, 'السبت', 'سورة النساء، الآية: (148)', 'سورة النساء، الآية: (162)', 3, 5),
+(7, 'الأحد', 'سورة النساء، الآية: (163)', 'سورة النساء، الآية: (176)', 3, 5),
+-- Term 3: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة المائدة، الآية: (1)', 'سورة المائدة، الآية: (11)', 3, 5),
+(8, 'الأحد', 'سورة المائدة، الآية: (12)', 'سورة المائدة، الآية: (26)', 3, 5),
+(9, 'السبت', 'سورة النساء، الآية: (88)', 'سورة النساء، الآية: (99)', 3, 5),
+(9, 'الأحد', 'سورة النساء، الآية: (100)', 'سورة النساء، الآية: (113)', 3, 5),
+(10, 'السبت', 'سورة النساء، الآية: (114)', 'سورة النساء، الآية: (134)', 3, 5),
+(10, 'الأحد', 'سورة النساء، الآية: (135)', 'سورة النساء، الآية: (147)', 3, 5),
+(11, 'السبت', 'سورة النساء، الآية: (24)', 'سورة النساء، الآية: (35)', 3, 5),
+(11, 'الأحد', 'سورة النساء، الآية: (36)', 'سورة النساء، الآية: (57)', 3, 5),
+(12, 'السبت', 'سورة النساء، الآية: (58)', 'سورة النساء، الآية: (73)', 3, 5),
+(12, 'الأحد', 'سورة النساء، الآية: (74)', 'سورة النساء، الآية: (87)', 3, 5),
+(13, 'السبت', 'سورة آل عمران، الآية: (171)', 'سورة آل عمران، الآية: (185)', 3, 5),
+(13, 'الأحد', 'سورة آل عمران، الآية: (186)', 'سورة آل عمران، الآية: (200)', 3, 5),
+(14, 'السبت', 'سورة النساء، الآية: (1)', 'سورة النساء، الآية: (11)', 3, 5),
+(14, 'الأحد', 'سورة النساء، الآية: (12)', 'سورة النساء، الآية: (23)', 3, 5);
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة آل عمران، الآية: (93)', 'سورة آل عمران، الآية: (112)', 1, 6),
+(1, 'الأحد', 'سورة آل عمران، الآية: (113)', 'سورة آل عمران، الآية: (132)', 1, 6),
+(2, 'السبت', 'سورة آل عمران، الآية: (133)', 'سورة آل عمران، الآية: (152)', 1, 6),
+(2, 'الأحد', 'سورة آل عمران، الآية: (153)', 'سورة آل عمران، الآية: (170)', 1, 6),
+(3, 'السبت', 'سورة آل عمران، الآية: (15)', 'سورة آل عمران، الآية: (32)', 1, 6),
+(3, 'الأحد', 'سورة آل عمران، الآية: (33)', 'سورة آل عمران، الآية: (51)', 1, 6),
+(4, 'السبت', 'سورة آل عمران، الآية: (52)', 'سورة آل عمران، الآية: (74)', 1, 6),
+(4, 'الأحد', 'سورة آل عمران، الآية: (75)', 'سورة آل عمران، الآية: (92)', 1, 6),
+(5, 'السبت', 'سورة البقرة، الآية: (203)', 'سورة البقرة، الآية: (262)', 1, 6),
+(5, 'الأحد', 'سورة البقرة، الآية: (263)', 'سورة البقرة، الآية: (271)', 1, 6),
+(6, 'السبت', 'سورة البقرة، الآية: (272)', 'سورة البقرة، الآية: (282)', 1, 6),
+(6, 'الأحد', 'سورة البقرة، الآية: (283)', 'سورة آل عمران، الآية: (14)', 1, 6),
+(7, 'السبت', 'سورة البقرة، الآية: (203)', 'سورة البقرة، الآية: (218)', 1, 6), -- Potential error: verse 203 is after 218
+(7, 'الأحد', 'سورة البقرة، الآية: (219)', 'سورة البقرة، الآية: (232)', 1, 6),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة البقرة، الآية: (233)', 'سورة البقرة، الآية: (242)', 1, 6),
+(8, 'الأحد', 'سورة البقرة، الآية: (243)', 'سورة البقرة، الآية: (252)', 1, 6),
+(9, 'السبت', 'سورة البقرة، الآية: (142)', 'سورة البقرة، الآية: (157)', 1, 6),
+(9, 'الأحد', 'سورة البقرة، الآية: (158)', 'سورة البقرة، الآية: (176)', 1, 6),
+(10, 'السبت', 'سورة البقرة، الآية: (177)', 'سورة البقرة، الآية: (188)', 1, 6),
+(10, 'الأحد', 'سورة البقرة، الآية: (189)', 'سورة البقرة، الآية: (202)', 1, 6),
+(11, 'السبت', 'سورة البقرة، الآية: (75)', 'سورة البقرة، الآية: (91)', 1, 6),
+(11, 'الأحد', 'سورة البقرة، الآية: (92)', 'سورة البقرة، الآية: (105)', 1, 6),
+(12, 'السبت', 'سورة البقرة، الآية: (106)', 'سورة البقرة، الآية: (123)', 1, 6),
+(12, 'الأحد', 'سورة البقرة، الآية: (124)', 'سورة البقرة، الآية: (141)', 1, 6),
+(13, 'السبت', 'سورة البقرة، الآية: (1)', 'سورة البقرة، الآية: (25)', 1, 6),
+(13, 'الأحد', 'سورة البقرة، الآية: (26)', 'سورة البقرة، الآية: (43)', 1, 6),
+(14, 'السبت', 'سورة البقرة، الآية: (44)', 'سورة البقرة، الآية: (59)', 1, 6),
+(14, 'الأحد', 'سورة البقرة، الآية: (60)', 'سورة البقرة، الآية: (74)', 1, 6);
+
+
+-- Schema changes to add academic_year
+ALTER TABLE Student_Enrollments ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE Daily_Memorization_Scheme ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE Student_Memorization_Assessments ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE Student_Memorization_Assessments ADD COLUMN term INT NOT NULL DEFAULT 1;
+ALTER TABLE Student_Subject_Assessments ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE Student_Attendance ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE staff_classes ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE staff_subjects ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE staff_form_master ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+
+-- Add session support to database
+
+-- =========================
+-- Sessions Table (already provided, included for reference)
+-- =========================
+CREATE TABLE IF NOT EXISTS Sessions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    session_year VARCHAR(20) UNIQUE NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    is_current BOOLEAN DEFAULT FALSE,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Insert sample sessions (already provided, included for reference)
+INSERT INTO Sessions (session_year, start_date, end_date, is_current) VALUES
+('2023/2024', '2023-09-01', '2024-08-31', FALSE),
+('2024/2025', '2024-09-01', '2025-08-31', TRUE),
+('2025/2026', '2025-09-01', '2026-08-31', FALSE);
+
+-- Add session column to Daily_Memorization_Scheme
+ALTER TABLE Daily_Memorization_Scheme 
+ADD COLUMN session_year VARCHAR(20) DEFAULT '2024/2025' AFTER term,
+ADD FOREIGN KEY (session_year) REFERENCES Sessions(session_year);
+
+-- Add session column to Student_Memorization_Assessments
+ALTER TABLE Student_Memorization_Assessments 
+ADD COLUMN session_year VARCHAR(20) DEFAULT '2024/2025' AFTER date,
+ADD FOREIGN KEY (session_year) REFERENCES Sessions(session_year);
+
+-- Add session column to Student_Subject_Assessments
+ALTER TABLE Student_Subject_Assessments 
+ADD COLUMN session_year VARCHAR(20) DEFAULT '2024/2025' AFTER date,
+ADD FOREIGN KEY (session_year) REFERENCES Sessions(session_year);
+
+-- Add session column to Student_Enrollments
+ALTER TABLE Student_Enrollments 
+ADD COLUMN session_year VARCHAR(20) DEFAULT '2024/2025' AFTER term,
+ADD FOREIGN KEY (session_year) REFERENCES Sessions(session_year);
+

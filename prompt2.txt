@@ -1,0 +1,2144 @@
+i have my server that is already working now i want add the functionality of staff_dashboard. i am using tailwind, js and node.js and express.js. you are to create the frontend and the backend snippet for me for the following functionalities. i already have login page which ok working :
+
+1. the staff_dashboard should have sidebar on the sidebar there should be the staff profile picture fetched from my sql table called staff. should fetch the staff username which is the field staff_id from the table. should fetched the staff role which is the role field on the staff table. the table schema of the staff is below:
+
+CREATE TABLE staff (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    staff_id VARCHAR(20) UNIQUE NOT NULL,        -- e.g., IRC001, IRC002
+
+    password VARCHAR(255) NOT NULL,              -- hashed password
+
+    name VARCHAR(100) NOT NULL,
+
+    phone VARCHAR(15) NOT NULL,
+
+    email VARCHAR(255) DEFAULT NULL,
+
+    role ENUM('Teacher', 'Administrator', 'Support', 'Form Teacher', 'Regular Teacher') NOT NULL,
+
+    status ENUM('Active', 'Inactive') DEFAULT 'Active',
+
+    security_question VARCHAR(255) DEFAULT NULL,
+
+    security_answer VARCHAR(100) DEFAULT NULL,
+
+    profile_picture VARCHAR(255) DEFAULT NULL,    -- Path to profile picture
+
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    first_login BOOLEAN DEFAULT TRUE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+2. there are subjects associated with each staff which is in the 
+
+CREATE TABLE staff_subjects (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    staff_id INT NOT NULL,
+
+    subject_id INT NOT NULL,
+
+    section_id INT NOT NULL,   -- Islamic = 1, Western = 2
+
+    term INT NOT NULL,         -- e.g., 1st term, 2nd term
+
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    
+
+    -- Foreign keys
+
+    FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
+
+    FOREIGN KEY (subject_id) REFERENCES Subjects(subject_id),
+
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+
+    
+
+    -- Prevent duplicates for the same staff/subject/section/term
+
+    UNIQUE KEY unique_staff_subject (staff_id, subject_id, section_id, term)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+so staff should be able to give assessments to the students that are offering that subjects. the staff will select the subjects and should see the list of the student offering that subjects for the selected class.CREATE TABLE staff_classes (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    staff_id INT NOT NULL,
+
+    class_id INT DEFAULT NULL,           -- For Islamic classes
+
+    western_class_id INT DEFAULT NULL,   -- For Western classes
+
+    section_id INT NOT NULL,             -- Refers to Sections table
+
+    term INT DEFAULT NULL,               -- Now optional
+
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
+
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+
+    FOREIGN KEY (class_id) REFERENCES Classes(class_id),
+
+    FOREIGN KEY (western_class_id) REFERENCES Western_Classes(western_class_id),
+
+    CONSTRAINT chk_class_ref CHECK (
+
+        (section_id = 1 AND class_id IS NOT NULL AND western_class_id IS NULL) OR
+
+        (section_id = 2 AND western_class_id IS NOT NULL AND class_id IS NULL)
+
+    ),
+
+    UNIQUE KEY unique_staff_class (staff_id, section_id, class_id, western_class_id, term)
+
+) ENGINE=InnoDB. while assessing term should be selected though is see that from the database the term is default first. so one should be able to select session also so that anytime the user or staff or admin may wish to view the result for specific term or session or view for the complete session once. the subjects assesment involve CAs and Exams. grade should also be given. i have one subject called Tahfiz which has Daily_Memorization_Scheme :
+
+CREATE TABLE Daily_Memorization_Scheme (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    week INT NOT NULL,
+
+    day VARCHAR(20) NOT NULL,
+
+    date DATE DEFAULT CURRENT_DATE,
+
+    from_surah_ayah VARCHAR(50) NOT NULL,
+
+    to_surah_ayah VARCHAR(50) NOT NULL,
+
+    term INT NOT NULL,
+
+    class_id INT NOT NULL,
+
+    FOREIGN KEY (class_id) REFERENCES Classes(class_id)
+
+);
+
+
+
+-- =======
+
+and data where inserted also again if you can see that it also has term and level i can select the class, term and session to assess for the student class i selected. when selected it should fetch exactly the scheme for the selected term and while saving it should save the graded term, session and so on for the student. while for other subjects the CA and exams are number but for the TAHFIZ is grade even the exams is grade. so when one wish to see term result the tahfiz result should be shown just the grade on the subject tahfiz fetch it and attached. also one can fetch only the Tahfiz which will so all the daily grades from day 1 to the last on the table that is graded. and if final exam grade is entered then also show the final exams graded and take the average grade as the overall grade for the term. there should be signout. 
+
+3. after the assessements there should be place for the download or view of the result depending on the term, session aif you are form master if you are regular teacher you can only view your subjects result for the classes you are attached to.  form master can download the results of all the students of the class he is form master at one or download for single student i mean the reportsheet. form master can take attendance of the students of his class. for the report sheet form master can add the psychormoto assessment (extracurriculum activities).
+
+
+
+
+
+look you should give a modern staff_dashboard for me. and remember my database should not be altered and i will give you fetch student and add, and update student code as well as staff to help you build the the staff_dashboard for me. it is the server i will give you with that and the complete database schema as i have also altered it already therefore everything is ok:
+
+ the schame:
+
+-- =========================
+-- Admins Table
+-- =========================
+CREATE TABLE admins (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   username VARCHAR(50) UNIQUE NOT NULL,
+   password VARCHAR(255) NOT NULL,
+   name VARCHAR(100) NOT NULL,
+   phone VARCHAR(15) NOT NULL,
+   security_question VARCHAR(255) NOT NULL,
+   security_answer VARCHAR(100) NOT NULL,
+   role ENUM('SuperAdmin', 'Assistant', 'Deputy') NOT NULL,
+   first_login BOOLEAN DEFAULT TRUE
+) ENGINE=InnoDB;
+
+INSERT INTO admins (username, password, name, phone, security_question, security_answer, role, first_login) 
+VALUES ('Admin', 'admin', 'Default Admin', '1234567890', 'What is your pet''s name?', 'DOG', 'SuperAdmin', TRUE);
+
+-- =========================
+-- Bookings Table
+-- =========================
+CREATE TABLE IF NOT EXISTS bookings (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   name VARCHAR(255) NOT NULL,
+   email VARCHAR(255) DEFAULT NULL,
+   gender VARCHAR(10) NOT NULL,
+   date_of_birth DATE NOT NULL,
+   phone VARCHAR(20) NOT NULL,
+   address TEXT NOT NULL,
+   message TEXT,
+   time_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================
+-- Sections Table
+-- =========================
+CREATE TABLE Sections (
+    section_id INT AUTO_INCREMENT PRIMARY KEY,
+    section_name VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO Sections (section_name) VALUES
+('Islamic'),
+('Western');
+
+-- =========================
+-- Departments Table
+-- =========================
+-- Departments table with section_id
+CREATE TABLE Departments (
+    dept_id INT AUTO_INCREMENT PRIMARY KEY,
+    dept_name VARCHAR(50) NOT NULL UNIQUE,
+    section_id INT NOT NULL,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id)
+);
+
+-- Insert Islamic departments
+INSERT INTO Departments (dept_name, section_id) VALUES
+('Quranic Studies', 1),   -- Islamic
+('Islamic Studies', 1),   -- Islamic
+('Arabic Studies', 1),    -- Islamic
+
+-- Insert Western department
+('Western Education', 2); -- Western
+
+-- =========================
+-- Subjects Table
+-- =========================
+CREATE TABLE Subjects (
+    subject_id INT AUTO_INCREMENT PRIMARY KEY,
+    subject_name VARCHAR(50) NOT NULL,
+    dept_id INT NOT NULL,
+    is_tahfiz BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (dept_id) REFERENCES Departments(dept_id)
+);
+
+INSERT INTO Subjects (subject_name, dept_id, is_tahfiz) VALUES
+('Tahfiz', 1, TRUE),
+('Tajweed', 1, FALSE),
+('Qiraat', 1, FALSE),
+('Tafseer', 1, FALSE),
+('At-Tauheed', 2, FALSE),
+('Al-Fiqh', 2, FALSE),
+('Al-Hadith', 2, FALSE),
+('As-Sirah', 2, FALSE),
+('At-Tarikh', 2, FALSE),
+('At-Tahzeeb', 2, FALSE),
+('An-Nahwu', 3, FALSE),
+('Al-Mudalaat', 3, FALSE),
+('Al-Imlai', 3, FALSE),
+('Al-Inshai', 3, FALSE),
+('Al-Adab', 3, FALSE),
+('Al-Balaga', 3, FALSE),
+('English', 4, FALSE),
+('Math', 4, FALSE),
+('Basic Science', 4, FALSE),
+('Government', 4, FALSE),
+('Biology', 4, FALSE),
+('Physics', 4, FALSE);
+
+-- =========================
+-- Classes (Islamic)
+-- =========================
+CREATE TABLE Classes (
+    class_id INT AUTO_INCREMENT PRIMARY KEY,
+    class_name VARCHAR(100) NOT NULL UNIQUE,
+    level INT NOT NULL,
+    section_id INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id)
+);
+
+INSERT INTO Classes (class_id, class_name, level, section_id) VALUES
+(1, 'Abu Ubaidah bin Jarrah', 1, 1),
+(2, 'Khadija Bint Khuwailid', 1, 1),
+(3, 'Saudah Bint Zam''ah', 1, 1),
+(4, 'Aishah Bint Abubakar', 1, 1),
+(5, 'Hafsah Bint Umar', 1, 1),
+(6, 'Zainab Bint Khuzaimah', 1, 1),
+(7, 'Said bin Zaid', 2, 1),
+(8, 'Saad bin Abi Waqqas', 3, 1),
+(9, 'Abdurrahman bin Auf', 4, 1),
+(10, 'Az-Zubair bin Awwam', 5, 1),
+(11, 'Talha bin Ubaidullah', 5, 1),
+(12, 'Ali bin Abi Talib', 6, 1),
+(13, 'Uthman bin Affan', 6, 1),
+(14, 'Umar bin Khattab', 6, 1),
+(15, 'Abu Bakr As-Siddiq', 7, 1);
+
+-- =========================
+-- Western Classes
+-- =========================
+CREATE TABLE Western_Classes (
+    western_class_id INT AUTO_INCREMENT PRIMARY KEY,
+    class_name VARCHAR(100) NOT NULL UNIQUE,
+    level INT NOT NULL,
+    section_id INT NOT NULL DEFAULT 2,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id)
+);
+
+INSERT INTO Western_Classes (class_name, level, section_id) VALUES
+('Nursery 1', 1, 2),
+('Nursery 2', 2, 2),
+('Pre-Nursery', 0, 2),
+('Primary 1', 1, 2),
+('Primary 2', 2, 2),
+('Primary 3', 3, 2),
+('Primary 4', 4, 2),
+('Primary 5', 5, 2),
+('Primary 6', 6, 2),
+('Secondary 1', 1, 2),
+('Secondary 2', 2, 2),
+('Secondary 3', 3, 2),
+('Secondary 4', 4, 2),
+('Secondary 5', 5, 2),
+('Secondary 6', 6, 2);
+
+-- =========================
+-- Fee Structures
+-- =========================
+CREATE TABLE Islamic_Fee_Structures (
+    structure_id INT AUTO_INCREMENT PRIMARY KEY,
+    class_id INT NOT NULL,
+    term INT NOT NULL CHECK (term >= 1),
+    total_fee DECIMAL(10,2) NOT NULL CHECK (total_fee >= 0),
+    description TEXT DEFAULT NULL,
+    created_date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (class_id) REFERENCES Classes(class_id),
+    UNIQUE KEY unique_fee_structure (class_id, term)
+);
+
+CREATE TABLE Western_Fee_Structures (
+    structure_id INT AUTO_INCREMENT PRIMARY KEY,
+    western_class_id INT NOT NULL,
+    term INT NOT NULL CHECK (term >= 1),
+    total_fee DECIMAL(10,2) NOT NULL CHECK (total_fee >= 0),
+    description TEXT DEFAULT NULL,
+    created_date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (western_class_id) REFERENCES Western_Classes(western_class_id),
+    UNIQUE KEY unique_fee_structure (western_class_id, term)
+);
+
+-- =========================
+-- Students
+-- =========================
+CREATE TABLE Students (
+    id INT AUTO_INCREMENT PRIMARY KEY,                  -- internal numeric PK
+    student_id VARCHAR(50) UNIQUE NOT NULL,             -- manual student ID (e.g., HIR/25/TAH/0001)
+    full_name VARCHAR(100) NOT NULL,                    -- ✅ changed from name -> full_name
+    date_of_birth DATE NOT NULL,
+    gender VARCHAR(10) NOT NULL CHECK (gender IN ('Male', 'Female', 'Other')),
+    guardian_phone VARCHAR(20) DEFAULT NULL,            -- ✅ changed from phone -> guardian_phone
+    address TEXT NOT NULL,
+    email VARCHAR(255) DEFAULT NULL,
+    profile_picture VARCHAR(255) DEFAULT '/uploads/students/default.jpg', -- consistent with your modal
+    created_date DATE DEFAULT CURRENT_DATE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE Student_Enrollments (
+    enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,   -- references Students.id (numeric PK)
+    section_id INT NOT NULL,
+    class_ref INT NOT NULL,
+    level INT NOT NULL,
+    term INT NOT NULL CHECK (term >= 1),
+    enrollment_date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (student_ref) REFERENCES Students(id) ON DELETE CASCADE,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+    UNIQUE KEY unique_enrollment (student_ref, section_id, class_ref, term)
+);
+
+
+-- =========================
+-- Student Fees
+-- =========================
+CREATE TABLE Student_Fees (
+    student_fee_id INT AUTO_INCREMENT PRIMARY KEY,
+    enrollment_id INT NOT NULL,
+    structure_id INT NOT NULL,
+    section_id INT NOT NULL,
+    total_fee DECIMAL(10,2) NOT NULL CHECK (total_fee >= 0),
+    amount_paid DECIMAL(10,2) DEFAULT 0.00 CHECK (amount_paid >= 0),
+    status ENUM('Pending', 'Completed') DEFAULT 'Pending',
+    remaining_amount DECIMAL(10,2) GENERATED ALWAYS AS (total_fee - amount_paid) STORED,
+    created_date DATE DEFAULT CURRENT_DATE,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (enrollment_id) REFERENCES Student_Enrollments(enrollment_id),
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+    UNIQUE KEY unique_student_fee (enrollment_id, structure_id)
+);
+-- =========================
+-- Staff Table
+-- =========================
+
+CREATE TABLE staff (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id VARCHAR(20) UNIQUE NOT NULL,        -- e.g., IRC001, IRC002
+    password VARCHAR(255) NOT NULL,              -- hashed password
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) NOT NULL,
+    email VARCHAR(255) DEFAULT NULL,
+    role ENUM('Teacher', 'Administrator', 'Support', 'Form Teacher', 'Regular Teacher') NOT NULL,
+    status ENUM('Active', 'Inactive') DEFAULT 'Active',
+    security_question VARCHAR(255) DEFAULT NULL,
+    security_answer VARCHAR(100) DEFAULT NULL,
+    profile_picture VARCHAR(255) DEFAULT NULL,    -- Path to profile picture
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    first_login BOOLEAN DEFAULT TRUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- =========================
+-- Staff_Classes Table
+-- =========================
+DROP TABLE IF EXISTS staff_classes;
+
+CREATE TABLE staff_classes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id INT NOT NULL,
+    class_id INT DEFAULT NULL,           -- For Islamic classes
+    western_class_id INT DEFAULT NULL,   -- For Western classes
+    section_id INT NOT NULL,             -- Refers to Sections table
+    term INT DEFAULT NULL,               -- Now optional
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+    FOREIGN KEY (class_id) REFERENCES Classes(class_id),
+    FOREIGN KEY (western_class_id) REFERENCES Western_Classes(western_class_id),
+    CONSTRAINT chk_class_ref CHECK (
+        (section_id = 1 AND class_id IS NOT NULL AND western_class_id IS NULL) OR
+        (section_id = 2 AND western_class_id IS NOT NULL AND class_id IS NULL)
+    ),
+    UNIQUE KEY unique_staff_class (staff_id, section_id, class_id, western_class_id, term)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================
+-- Staff_Subjects Table
+-- =========================
+DROP TABLE IF EXISTS staff_subjects;
+
+CREATE TABLE staff_subjects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    section_id INT NOT NULL,   -- Islamic = 1, Western = 2
+    term INT NOT NULL,         -- e.g., 1st term, 2nd term
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Foreign keys
+    FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
+    FOREIGN KEY (subject_id) REFERENCES Subjects(subject_id),
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+    
+    -- Prevent duplicates for the same staff/subject/section/term
+    UNIQUE KEY unique_staff_subject (staff_id, subject_id, section_id, term)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================
+-- Staff_Form_Master Table
+-- =========================
+DROP TABLE IF EXISTS staff_form_master;
+
+CREATE TABLE staff_form_master (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id INT NOT NULL,
+    class_id INT DEFAULT NULL,
+    western_class_id INT DEFAULT NULL,
+    section_id INT NOT NULL,
+    term INT NOT NULL,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+    FOREIGN KEY (class_id) REFERENCES Classes(class_id),
+    FOREIGN KEY (western_class_id) REFERENCES Western_Classes(western_class_id),
+    UNIQUE KEY unique_form_master (staff_id, class_id, western_class_id, section_id, term)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- =========================
+-- Student Fee Payments
+-- =========================
+CREATE TABLE Student_Fee_Payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_fee_id INT NOT NULL,
+    payment_amount DECIMAL(10,2) NOT NULL CHECK (payment_amount > 0),
+    payment_date DATE DEFAULT CURRENT_DATE,
+    payment_method VARCHAR(50) DEFAULT NULL,
+    receipt_number VARCHAR(100) DEFAULT NULL,
+    notes TEXT DEFAULT NULL,
+    FOREIGN KEY (student_fee_id) REFERENCES Student_Fees(student_fee_id)
+);
+
+DELIMITER //
+CREATE TRIGGER update_student_fee_status_after_payment
+AFTER INSERT ON Student_Fee_Payments
+FOR EACH ROW
+BEGIN
+    UPDATE Student_Fees sf
+    SET 
+        amount_paid = amount_paid + NEW.payment_amount,
+        status = CASE 
+            WHEN (amount_paid + NEW.payment_amount) >= total_fee THEN 'Completed'
+            ELSE 'Pending'
+        END
+    WHERE sf.student_fee_id = NEW.student_fee_id;
+END//
+DELIMITER ;
+
+-- =========================
+-- Daily Memorization
+-- =========================
+CREATE TABLE Daily_Memorization_Scheme (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    week INT NOT NULL,
+    day VARCHAR(20) NOT NULL,
+    date DATE DEFAULT CURRENT_DATE,
+    from_surah_ayah VARCHAR(50) NOT NULL,
+    to_surah_ayah VARCHAR(50) NOT NULL,
+    term INT NOT NULL,
+    class_id INT NOT NULL,
+    FOREIGN KEY (class_id) REFERENCES Classes(class_id)
+);
+
+-- =========================
+-- Student Memorization Assessments
+-- =========================
+CREATE TABLE Student_Memorization_Assessments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    enrollment_id INT NOT NULL,
+    scheme_id INT NOT NULL,
+    daily_grade CHAR(1) DEFAULT NULL CHECK (daily_grade IN ('A', 'B', 'C', 'D', 'E', 'F')),
+    exam_grade INT DEFAULT NULL CHECK (exam_grade >= 0 AND exam_grade <= 100),
+    comments TEXT DEFAULT NULL,
+    date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (enrollment_id) REFERENCES Student_Enrollments(enrollment_id),
+    FOREIGN KEY (scheme_id) REFERENCES Daily_Memorization_Scheme(id),
+    UNIQUE KEY unique_assessment (enrollment_id, scheme_id, date)
+);
+
+-- =========================
+-- Student Subject Assessments
+-- =========================
+CREATE TABLE Student_Subject_Assessments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    enrollment_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    term INT NOT NULL,
+    ca1_score INT DEFAULT NULL CHECK (ca1_score >= 0 AND ca1_score <= 100),
+    ca2_score INT DEFAULT NULL CHECK (ca2_score >= 0 AND ca2_score <= 100),
+    ca3_score INT DEFAULT NULL CHECK (ca3_score >= 0 AND ca3_score <= 100),
+    exam_score INT DEFAULT NULL CHECK (exam_score >= 0 AND exam_score <= 100),
+    comments TEXT DEFAULT NULL,
+    date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (enrollment_id) REFERENCES Student_Enrollments(enrollment_id),
+    FOREIGN KEY (subject_id) REFERENCES Subjects(subject_id),
+    UNIQUE KEY unique_subject_assessment (enrollment_id, subject_id, term, date)
+);
+
+-- =========================
+-- Student Attendance
+-- =========================
+CREATE TABLE Student_Attendance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    enrollment_id INT NOT NULL,
+    section_id INT NOT NULL,
+    attendance_day VARCHAR(20) NOT NULL,
+    attendance_status VARCHAR(10) NOT NULL CHECK (attendance_status IN ('Present', 'Absent')),
+    date DATE NOT NULL DEFAULT CURRENT_DATE,
+    FOREIGN KEY (enrollment_id) REFERENCES Student_Enrollments(enrollment_id),
+    FOREIGN KEY (section_id) REFERENCES Sections(section_id),
+    UNIQUE KEY unique_attendance (enrollment_id, date)
+);
+
+CREATE TABLE Student_Subjects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    enrollment_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    term INT NOT NULL,
+    FOREIGN KEY (enrollment_id) REFERENCES Student_Enrollments(enrollment_id),
+    FOREIGN KEY (subject_id) REFERENCES Subjects(subject_id),
+    UNIQUE KEY unique_student_subject (enrollment_id, subject_id, term)
+);
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الناس، الآية: (1)', 'سورة الإخلاص، الآية: (4)', 1, 1),
+(1, 'الأحد', 'سورة المسد، الآية: (1)', 'سورة الكافرون، الآية: (6)', 1, 1),
+(2, 'السبت', 'سورة الكوثر، الآية: (1)', 'سورة قريش، الآية: (4)', 1, 1),
+(2, 'الأحد', 'سورة الماعون، الآية: (1)', 'سورة قريش، الآية: (4)', 1, 1),
+(3, 'السبت', 'سورة الفيل، الآية: (1)', 'سورة الهمزة، الآية: (9)', 1, 1),
+(3, 'الأحد', 'سورة العصر، الآية: (1)', 'سورة التكاثر، الآية: (8)', 1, 1),
+(4, 'السبت', 'سورة القارعة، الآية: (1)', 'سورة القارعة، الآية: (11)', 1, 1),
+(4, 'الأحد', 'سورة العاديات، الآية: (1)', 'سورة العاديات، الآية: (11)', 1, 1),
+(5, 'السبت', 'سورة الزلزلة، الآية: (1)', 'سورة الزلزلة، الآية: (8)', 1, 1),
+(5, 'الأحد', 'سورة البينة، الآية: (1)', 'سورة البينة، الآية: (8)', 1, 1),
+(6, 'السبت', 'سورة القدر، الآية: (1)', 'سورة القدر، الآية: (5)', 1, 1),
+(6, 'الأحد', 'سورة العلق، الآية: (1)', 'سورة العلق، الآية: (19)', 1, 1),
+(7, 'السبت', 'سورة التين، الآية: (1)', 'سورة الشرح، الآية: (8)', 1, 1),
+(7, 'الأحد', 'سورة الضحى، الآية: (1)', 'سورة الضحى، الآية: (11)', 1, 1),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الليل، الآية: (1)', 'سورة الليل، الآية: (21)', 1, 1),
+(8, 'الأحد', 'سورة الشمس، الآية: (1)', 'سورة الشمس، الآية: (15)', 1, 1),
+(9, 'السبت', 'سورة البلد، الآية: (1)', 'سورة البلد، الآية: (20)', 1, 1),
+(9, 'الأحد', 'سورة الفجر، الآية: (1)', 'سورة الفجر، الآية: (18)', 1, 1),
+(10, 'السبت', 'سورة الفجر، الآية: (19)', 'سورة الفجر، الآية: (30)', 1, 1),
+(10, 'الأحد', 'سورة الغاشية، الآية: (1)', 'سورة الغاشية، الآية: (16)', 1, 1),
+(11, 'السبت', 'سورة الغاشية، الآية: (17)', 'سورة الغاشية، الآية: (26)', 1, 1),
+(11, 'الأحد', 'سورة الأعلى، الآية: (1)', 'سورة الأعلى، الآية: (19)', 1, 1),
+(12, 'السبت', 'سورة الطارق، الآية: (1)', 'سورة الطارق، الآية: (17)', 1, 1),
+(12, 'الأحد', 'سورة البروج، الآية: (1)', 'سورة البروج، الآية: (10)', 1, 1),
+(13, 'السبت', 'سورة البروج، الآية: (11)', 'سورة البروج، الآية: (22)', 1, 1),
+(13, 'الأحد', 'سورة الإنشقاق، الآية: (1)', 'سورة الإنشقاق، الآية: (12)', 1, 1),
+(14, 'السبت', 'سورة الإنشقاق، الآية: (13)', 'سورة الإنشقاق، الآية: (25)', 1, 1),
+
+-- Term 2: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة المطففين، الآية: (1)', 'سورة المطففين، الآية: (13)', 2, 1),
+(1, 'الأحد', 'سورة المطففين، الآية: (14)', 'سورة المطففين، الآية: (28)', 2, 1),
+(2, 'السبت', 'سورة المطففين، الآية: (29)', 'سورة المطففين، الآية: (36)', 2, 1),
+(2, 'الأحد', 'سورة الانفطار، الآية: (1)', 'سورة الانفطار، الآية: (19)', 2, 1),
+(3, 'السبت', 'سورة التكوير، الآية: (1)', 'سورة التكوير، الآية: (14)', 2, 1),
+(3, 'الأحد', 'سورة التكوير، الآية: (15)', 'سورة التكوير، الآية: (29)', 2, 1),
+(4, 'السبت', 'سورة عبس، الآية: (1)', 'سورة عبس، الآية: (23)', 2, 1),
+(4, 'الأحد', 'سورة عبس، الآية: (24)', 'سورة عبس، الآية: (42)', 2, 1),
+(5, 'السبت', 'سورة النازعات، الآية: (1)', 'سورة النازعات، الآية: (15)', 2, 1),
+(5, 'الأحد', 'سورة النازعات، الآية: (16)', 'سورة النازعات، الآية: (33)', 2, 1),
+(6, 'السبت', 'سورة النازعات، الآية: (34)', 'سورة النازعات، الآية: (46)', 2, 1),
+(6, 'الأحد', 'سورة النبإ، الآية: (1)', 'سورة النبإ، الآية: (17)', 2, 1),
+(7, 'السبت', 'سورة النبإ، الآية: (18)', 'سورة النبإ، الآية: (30)', 2, 1),
+(7, 'الأحد', 'سورة النبإ، الآية: (31)', 'سورة النبإ، الآية: (40)', 2, 1),
+-- Term 2: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة المرسلات، الآية: (1)', 'سورة المرسلات، الآية: (19)', 2, 1),
+(8, 'الأحد', 'سورة المرسلات، الآية: (20)', 'سورة المرسلات، الآية: (34)', 2, 1),
+(9, 'السبت', 'سورة المرسلات، الآية: (35)', 'سورة المرسلات، الآية: (50)', 2, 1),
+(9, 'الأحد', 'سورة الإنسان، الآية: (1)', 'سورة الإنسان، الآية: (9)', 2, 1),
+(10, 'السبت', 'سورة الإنسان، الآية: (10)', 'سورة الإنسان، الآية: (22)', 2, 1),
+(10, 'الأحد', 'سورة الإنسان، الآية: (23)', 'سورة الإنسان، الآية: (31)', 2, 1),
+(11, 'السبت', 'سورة القيامة، الآية: (1)', 'سورة القيامة، الآية: (19)', 2, 1),
+(11, 'الأحد', 'سورة القيامة، الآية: (20)', 'سورة القيامة، الآية: (40)', 2, 1),
+(12, 'السبت', 'سورة المدثر، الآية: (1)', 'سورة المدثر، الآية: (25)', 2, 1),
+(12, 'الأحد', 'سورة المدثر، الآية: (26)', 'سورة المدثر، الآية: (37)', 2, 1),
+(13, 'السبت', 'سورة المدثر، الآية: (38)', 'سورة المدثر، الآية: (56)', 2, 1),
+(13, 'الأحد', 'سورة المزمل، الآية: (1)', 'سورة المزمل، الآية: (11)', 2, 1),
+(14, 'السبت', 'سورة المزمل، الآية: (12)', 'سورة المزمل، الآية: (19)', 2, 1),
+(14, 'الأحد', 'سورة المزمل، الآية: (20)', 'سورة المزمل، الآية: (20)', 2, 1),
+
+-- Term 3: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الجن، الآية: (1)', 'سورة الجن، الآية: (10)', 3, 1),
+(1, 'الأحد', 'سورة الجن، الآية: (11)', 'سورة الجن، الآية: (20)', 3, 1),
+(2, 'السبت', 'سورة الجن، الآية: (21)', 'سورة الجن، الآية: (28)', 3, 1),
+(2, 'الأحد', 'سورة نوح، الآية: (1)', 'سورة نوح، الآية: (14)', 3, 1),
+(3, 'السبت', 'سورة نوح، الآية: (15)', 'سورة نوح، الآية: (28)', 3, 1),
+(3, 'الأحد', 'سورة المعارج، الآية: (1)', 'سورة المعارج، الآية: (18)', 3, 1),
+(4, 'السبت', 'سورة المعارج، الآية: (19)', 'سورة المعارج، الآية: (35)', 3, 1),
+(4, 'الأحد', 'سورة المعارج، الآية: (36)', 'سورة المعارج، الآية: (44)', 3, 1),
+(5, 'السبت', 'سورة الحاقة، الآية: (1)', 'سورة الحاقة، الآية: (24)', 3, 1),
+(5, 'الأحد', 'سورة الحاقة، الآية: (25)', 'سورة الحاقة، الآية: (52)', 3, 1),
+(6, 'السبت', 'سورة القلم، الآية: (1)', 'سورة القلم، الآية: (25)', 3, 1),
+(6, 'الأحد', 'سورة القلم، الآية: (26)', 'سورة القلم، الآية: (42)', 3, 1),
+(7, 'السبت', 'سورة القلم، الآية: (43)', 'سورة القلم، الآية: (52)', 3, 1),
+(7, 'الأحد', 'سورة الملك، الآية: (1)', 'سورة الملك، الآية: (9)', 3, 1),
+-- Term 3: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الملك، الآية: (10)', 'سورة الإنسان، الآية: (21)', 3, 1),
+(8, 'الأحد', 'سورة الملك، الآية: (22)', 'سورة الملك، الآية: (30)', 3, 1),
+(9, 'السبت', 'سورة التحريم، الآية: (1)', 'سورة التحريم، الآية: (7)', 3, 1),
+(9, 'الأحد', 'سورة التحريم، الآية: (8)', 'سورة التحريم، الآية: (12)', 3, 1),
+(10, 'السبت', 'سورة الطلاق، الآية: (1)', 'سورة الطلاق، الآية: (3)', 3, 1),
+(10, 'الأحد', 'سورة الطلاق، الآية: (4)', 'سورة الطلاق، الآية: (7)', 3, 1),
+(11, 'السبت', 'سورة الطلاق، الآية: (8)', 'سورة الطلاق، الآية: (12)', 3, 1),
+(11, 'الأحد', 'سورة التغابن، الآية: (1)', 'سورة التغابن، الآية: (9)', 3, 1),
+(12, 'السبت', 'سورة التغابن، الآية: (10)', 'سورة التغابن، الآية: (18)', 3, 1),
+(12, 'الأحد', 'سورة المنافقون، الآية: (1)', 'سورة المنافقون، الآية: (6)', 3, 1),
+(13, 'السبت', 'سورة المنافقون، الآية: (7)', 'سورة المنافقون، الآية: (11)', 3, 1),
+(13, 'الأحد', 'سورة الجمعة، الآية: (1)', 'سورة الجمعة، الآية: (7)', 3, 1),
+(14, 'السبت', 'سورة الجمعة، الآية: (8)', 'سورة الجمعة، الآية: (11)', 3, 1);
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الصف، الآية: (1)', 'سورة الصف، الآية: (8)', 1, 2),
+(1, 'الأحد', 'سورة الصف، الآية: (9)', 'سورة الصف، الآية: (14)', 1, 2),
+(2, 'السبت', 'سورة الممتحنة، الآية: (1)', 'سورة الممتحنة، الآية: (5)', 1, 2),
+(2, 'الأحد', 'سورة الممتحنة، الآية: (6)', 'سورة الممتحنة، الآية: (13)', 1, 2),
+(3, 'السبت', 'سورة الحشر، الآية: (1)', 'سورة الحشر، الآية: (5)', 1, 2),
+(3, 'الأحد', 'سورة الحشر، الآية: (6)', 'سورة الحشر، الآية: (9)', 1, 2),
+(4, 'السبت', 'سورة الحشر، الآية: (10)', 'سورة الحشر، الآية: (16)', 1, 2),
+(4, 'الأحد', 'سورة الحشر، الآية: (17)', 'سورة الحشر، الآية: (24)', 1, 2),
+(5, 'السبت', 'سورة المجادلة، الآية: (1)', 'سورة المجادلة، الآية: (6)', 1, 2),
+(5, 'الأحد', 'سورة المجادلة، الآية: (7)', 'سورة المجادلة، الآية: (11)', 1, 2),
+(6, 'السبت', 'سورة المجادلة، الآية: (12)', 'سورة المجادلة، الآية: (21)', 1, 2),
+(6, 'الأحد', 'سورة المجادلة، الآية: (22)', 'سورة المجادلة، الآية: (22)', 1, 2),
+(7, 'السبت', 'سورة الحديد، الآية: (1)', 'سورة الحديد، الآية: (5)', 1, 2),
+(7, 'الأحد', 'سورة الحديد، الآية: (6)', 'سورة الحديد، الآية: (11)', 1, 2),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الحديد، الآية: (19)', 'سورة الحديد، الآية: (24)', 1, 2),
+(8, 'الأحد', 'سورة الحديد، الآية: (25)', 'سورة الحديد، الآية: (29)', 1, 2),
+(9, 'السبت', 'سورة الواقعة، الآية: (1)', 'سورة الواقعة، الآية: (26)', 1, 2),
+(9, 'الأحد', 'سورة الواقعة، الآية: (27)', 'سورة الواقعة، الآية: (50)', 1, 2),
+(10, 'السبت', 'سورة الواقعة، الآية: (51)', 'سورة الواقعة، الآية: (74)', 1, 2),
+(10, 'الأحد', 'سورة الواقعة، الآية: (75)', 'سورة الواقعة، الآية: (96)', 1, 2),
+(11, 'السبت', 'سورة الرحمن، الآية: (1)', 'سورة الرحمن، الآية: (25)', 1, 2),
+(11, 'الأحد', 'سورة الرحمن، الآية: (26)', 'سورة الرحمن، الآية: (40)', 1, 2),
+(12, 'السبت', 'سورة الرحمن، الآية: (41)', 'سورة الرحمن، الآية: (61)', 1, 2),
+(12, 'الأحد', 'سورة الرحمن، الآية: (62)', 'سورة الرحمن، الآية: (78)', 1, 2),
+(13, 'السبت', 'سورة القمر، الآية: (1)', 'سورة القمر، الآية: (8)', 1, 2),
+(13, 'الأحد', 'سورة القمر، الآية: (9)', 'سورة القمر، الآية: (27)', 1, 2),
+(14, 'السبت', 'سورة القمر، الآية: (28)', 'سورة القمر، الآية: (42)', 1, 2),
+(14, 'الأحد', 'سورة القمر، الآية: (43)', 'سورة القمر، الآية: (55)', 1, 2),
+-- Term 2: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة النجم، الآية: (1)', 'سورة النجم، الآية: (30)', 2, 2),
+(1, 'الأحد', 'سورة النجم، الآية: (31)', 'سورة النجم، الآية: (62)', 2, 2),
+(2, 'السبت', 'سورة القمر، الآية: (1)', 'سورة القمر، الآية: (8)', 2, 2),
+(2, 'الأحد', 'سورة الطور، الآية: (1)', 'سورة الطور، الآية: (16)', 2, 2),
+(3, 'السبت', 'سورة الطور، الآية: (17)', 'سورة الطور، الآية: (31)', 2, 2),
+(3, 'الأحد', 'سورة الطور، الآية: (32)', 'سورة الطور، الآية: (49)', 2, 2),
+(4, 'السبت', 'سورة الذاريات، الآية: (1)', 'سورة الذاريات، الآية: (23)', 2, 2),
+(4, 'الأحد', 'سورة الذاريات، الآية: (24)', 'سورة الذاريات، الآية: (42)', 2, 2),
+(5, 'السبت', 'سورة الذاريات، الآية: (43)', 'سورة الذاريات، الآية: (60)', 2, 2),
+(5, 'الأحد', 'سورة ق، الآية: (1)', 'سورة ق، الآية: (15)', 2, 2),
+(6, 'السبت', 'سورة ق، الآية: (16)', 'سورة ق، الآية: (35)', 2, 2),
+(6, 'الأحد', 'سورة ق، الآية: (36)', 'سورة ق، الآية: (45)', 2, 2),
+(7, 'السبت', 'سورة الحجرات، الآية: (1)', 'سورة الحجرات، الآية: (8)', 2, 2),
+(7, 'الأحد', 'سورة الحجرات، الآية: (9)', 'سورة الحجرات، الآية: (12)', 2, 2),
+-- Term 2: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الحجرات، الآية: (13)', 'سورة الحجرات، الآية: (18)', 2, 2),
+(8, 'الأحد', 'سورة الفتح، الآية: (1)', 'سورة الفتح، الآية: (9)', 2, 2),
+(9, 'السبت', 'سورة الفتح، الآية: (10)', 'سورة الفتح، الآية: (15)', 2, 2),
+(9, 'الأحد', 'سورة الفتح، الآية: (16)', 'سورة الفتح، الآية: (23)', 2, 2),
+(10, 'السبت', 'سورة الفتح، الآية: (24)', 'سورة الفتح، الآية: (28)', 2, 2),
+(10, 'الأحد', 'سورة الفتح، الآية: (29)', 'سورة الفتح، الآية: (29)', 2, 2),
+(11, 'السبت', 'سورة محمد، الآية: (1)', 'سورة محمد، الآية: (11)', 2, 2),
+(11, 'الأحد', 'سورة محمد، الآية: (12)', 'سورة محمد، الآية: (19)', 2, 2),
+(12, 'السبت', 'سورة محمد، الآية: (20)', 'سورة محمد، الآية: (29)', 2, 2),
+(12, 'الأحد', 'سورة محمد، الآية: (30)', 'سورة محمد، الآية: (38)', 2, 2),
+(13, 'السبت', 'سورة الأحقاف، الآية: (1)', 'سورة الأحقاف، الآية: (10)', 2, 2),
+(13, 'الأحد', 'سورة الأحقاف، الآية: (11)', 'سورة الأحقاف، الآية: (20)', 2, 2),
+(14, 'السبت', 'سورة الأحقاف، الآية: (21)', 'سورة الأحقاف، الآية: (28)', 2, 2),
+(14, 'الأحد', 'سورة الأحقاف، الآية: (29)', 'سورة الأحقاف، الآية: (35)', 2, 2),
+-- Term 3: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الزخرف، الآية: (24)', 'سورة الزخرف، الآية: (33)', 3, 2),
+(1, 'الأحد', 'سورة الزخرف، الآية: (34)', 'سورة الزخرف، الآية: (47)', 3, 2),
+(2, 'السبت', 'سورة الزخرف، الآية: (48)', 'سورة الزخرف، الآية: (60)', 3, 2),
+(2, 'الأحد', 'سورة الزخرف، الآية: (61)', 'سورة الزخرف، الآية: (73)', 3, 2),
+(3, 'السبت', 'سورة الزخرف، الآية: (74)', 'سورة الزخرف، الآية: (89)', 3, 2),
+(3, 'الأحد', 'سورة الدخان، الآية: (1)', 'سورة الدخان، الآية: (18)', 3, 2),
+(4, 'السبت', 'سورة الدخان، الآية: (19)', 'سورة الدخان، الآية: (39)', 3, 2),
+(4, 'الأحد', 'سورة الدخان، الآية: (40)', 'سورة الدخان، الآية: (59)', 3, 2),
+(5, 'السبت', 'سورة الجاثية، الآية: (1)', 'سورة الجاثية، الآية: (13)', 3, 2),
+(5, 'الأحد', 'سورة الجاثية، الآية: (14)', 'سورة الجاثية، الآية: (22)', 3, 2),
+(6, 'السبت', 'سورة الجاثية، الآية: (23)', 'سورة الجاثية، الآية: (37)', 3, 2),
+(6, 'الأحد', 'سورة فصلت، الآية: (47)', 'سورة فصلت، الآية: (54)', 3, 2),
+(7, 'السبت', 'سورة الشورى، الآية: (1)', 'سورة الشورى، الآية: (10)', 3, 2),
+(7, 'الأحد', 'سورة الشورى، الآية: (11)', 'سورة الشورى، الآية: (15)', 3, 2),
+-- Term 3: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الشورى، الآية: (16)', 'سورة الشورى، الآية: (22)', 3, 2),
+(8, 'الأحد', 'سورة الشورى، الآية: (23)', 'سورة الشورى، الآية: (31)', 3, 2),
+(9, 'السبت', 'سورة الشورى، الآية: (32)', 'سورة الشورى، الآية: (44)', 3, 2),
+(9, 'الأحد', 'سورة الشورى، الآية: (45)', 'سورة الشورى، الآية: (53)', 3, 2),
+(10, 'السبت', 'سورة الزخرف، الآية: (1)', 'سورة الزخرف، الآية: (11)', 3, 2),
+(10, 'الأحد', 'سورة الزخرف، الآية: (12)', 'سورة الزخرف، الآية: (23)', 3, 2),
+(11, 'السبت', 'سورة غافر، الآية: (41)', 'سورة غافر، الآية: (49)', 3, 2),
+(11, 'الأحد', 'سورة غافر، الآية: (50)', 'سورة غافر، الآية: (58)', 3, 2),
+(12, 'السبت', 'سورة غافر، الآية: (59)', 'سورة غافر، الآية: (66)', 3, 2),
+(12, 'الأحد', 'سورة غافر، الآية: (67)', 'سورة غافر، الآية: (77)', 3, 2),
+(13, 'السبت', 'سورة غافر، الآية: (78)', 'سورة غافر، الآية: (85)', 3, 2),
+(13, 'الأحد', 'سورة فصلت، الآية: (1)', 'سورة فصلت، الآية: (14)', 3, 2),
+(14, 'السبت', 'سورة فصلت، الآية: (15)', 'سورة فصلت، الآية: (29)', 3, 2),
+(14, 'الأحد', 'سورة فصلت، الآية: (30)', 'سورة فصلت، الآية: (46)', 3, 2);
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الزمر، الآية: (32)', 'سورة الزمر، الآية: (40)', 1, 3),
+(1, 'الأحد', 'سورة الزمر، الآية: (41)', 'سورة الزمر، الآية: (47)', 1, 3),
+(2, 'السبت', 'سورة الزمر، الآية: (48)', 'سورة الزمر، الآية: (56)', 1, 3),
+(2, 'الأحد', 'سورة الزمر، الآية: (57)', 'سورة الزمر، الآية: (67)', 1, 3),
+(3, 'السبت', 'سورة الزمر، الآية: (68)', 'سورة الزمر، الآية: (74)', 1, 3),
+(3, 'الأحد', 'سورة الزمر، الآية: (75)', 'سورة غافر، الآية: (7)', 1, 3),
+(4, 'السبت', 'سورة غافر، الآية: (8)', 'سورة غافر، الآية: (16)', 1, 3),
+(4, 'الأحد', 'سورة غافر، الآية: (17)', 'سورة غافر، الآية: (25)', 1, 3),
+(5, 'السبت', 'سورة غافر، الآية: (26)', 'سورة غافر، الآية: (33)', 1, 3),
+(5, 'الأحد', 'سورة غافر، الآية: (34)', 'سورة غافر، الآية: (40)', 1, 3),
+(6, 'السبت', 'سورة الصافات، الآية: (145)', 'سورة الصافات، الآية: (182)', 1, 3),
+(6, 'الأحد', 'سورة ص، الآية: (1)', 'سورة ص، الآية: (16)', 1, 3),
+(7, 'السبت', 'سورة ص، الآية: (17)', 'سورة ص، الآية: (26)', 1, 3),
+(7, 'الأحد', 'سورة ص، الآية: (27)', 'سورة ص، الآية: (42)', 1, 3),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة ص، الآية: (43)', 'سورة ص، الآية: (61)', 1, 3),
+(8, 'الأحد', 'سورة ص، الآية: (62)', 'سورة ص، الآية: (83)', 1, 3),
+(9, 'السبت', 'سورة ص، الآية: (84)', 'سورة الزمر، الآية: (5)', 1, 3),
+(9, 'الأحد', 'سورة الزمر، الآية: (6)', 'سورة الزمر، الآية: (10)', 1, 3),
+(10, 'السبت', 'سورة الزمر، الآية: (11)', 'سورة الزمر، الآية: (21)', 1, 3),
+(10, 'الأحد', 'سورة الزمر، الآية: (22)', 'سورة الزمر، الآية: (31)', 1, 3),
+(11, 'السبت', 'سورة يس، الآية: (28)', 'سورة يس، الآية: (47)', 1, 3),
+(11, 'الأحد', 'سورة يس، الآية: (48)', 'سورة يس، الآية: (70)', 1, 3),
+(12, 'السبت', 'سورة يس، الآية: (71)', 'سورة يس، الآية: (83)', 1, 3),
+(12, 'الأحد', 'سورة الصافات، الآية: (1)', 'سورة الصافات، الآية: (35)', 1, 3),
+(13, 'السبت', 'سورة الصافات، الآية: (36)', 'سورة الصافات، الآية: (76)', 1, 3),
+(13, 'الأحد', 'سورة الصافات، الآية: (77)', 'سورة الصافات، الآية: (102)', 1, 3),
+(14, 'السبت', 'سورة الصافات، الآية: (103)', 'سورة الصافات، الآية: (126)', 1, 3),
+(14, 'الأحد', 'سورة الصافات، الآية: (127)', 'سورة الصافات، الآية: (153)', 1, 3),
+-- Term 2: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة سبإ، الآية: (23)', 'سورة سبإ، الآية: (31)', 2, 3),
+(1, 'الأحد', 'سورة سبإ، الآية: (32)', 'سورة سبإ، الآية: (39)', 2, 3),
+(2, 'السبت', 'سورة سبإ، الآية: (40)', 'سورة سبإ، الآية: (48)', 2, 3),
+(2, 'الأحد', 'سورة سبإ، الآية: (49)', 'سورة فاطر، الآية: (3)', 2, 3),
+(3, 'السبت', 'سورة فاطر، الآية: (4)', 'سورة فاطر، الآية: (11)', 2, 3),
+(3, 'الأحد', 'سورة فاطر، الآية: (12)', 'سورة فاطر، الآية: (18)', 2, 3),
+(4, 'السبت', 'سورة فاطر، الآية: (19)', 'سورة فاطر، الآية: (30)', 2, 3),
+(4, 'الأحد', 'سورة فاطر، الآية: (31)', 'سورة فاطر، الآية: (38)', 2, 3),
+(5, 'السبت', 'سورة فاطر، الآية: (39)', 'سورة فاطر، الآية: (44)', 2, 3),
+(5, 'الأحد', 'سورة فاطر، الآية: (45)', 'سورة يس، الآية: (12)', 2, 3),
+(6, 'السبت', 'سورة يس، الآية: (13)', 'سورة يس، الآية: (27)', 2, 3),
+(6, 'الأحد', 'سورة الأحزاب، الآية: (31)', 'سورة الأحزاب، الآية: (37)', 2, 3),
+(7, 'السبت', 'سورة الأحزاب، الآية: (38)', 'سورة الأحزاب، الآية: (50)', 2, 3),
+(7, 'الأحد', 'سورة الأحزاب، الآية: (51)', 'سورة الأحزاب، الآية: (57)', 2, 3),
+-- Term 2: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الأحزاب، الآية: (58)', 'سورة الأحزاب، الآية: (73)', 2, 3),
+(8, 'الأحد', 'سورة سبإ، الآية: (1)', 'سورة سبإ، الآية: (7)', 2, 3),
+(9, 'السبت', 'سورة سبإ، الآية: (8)', 'سورة سبإ، الآية: (14)', 2, 3),
+(9, 'الأحد', 'سورة سبإ، الآية: (15)', 'سورة سبإ، الآية: (22)', 2, 3),
+(10, 'السبت', 'سورة لقمان، الآية: (20)', 'سورة لقمان، الآية: (28)', 2, 3),
+(10, 'الأحد', 'سورة لقمان، الآية: (29)', 'سورة لقمان، الآية: (34)', 2, 3),
+(11, 'السبت', 'سورة السجدة، الآية: (1)', 'سورة السجدة، الآية: (15)', 2, 3),
+(11, 'الأحد', 'سورة السجدة، الآية: (16)', 'سورة السجدة، الآية: (30)', 2, 3),
+(12, 'السبت', 'سورة الأحزاب، الآية: (1)', 'سورة الأحزاب، الآية: (11)', 2, 3),
+(12, 'الأحد', 'سورة الأحزاب، الآية: (12)', 'سورة الأحزاب، الآية: (22)', 2, 3),
+(13, 'السبت', 'سورة الأحزاب، الآية: (23)', 'سورة الأحزاب، الآية: (30)', 2, 3),
+(13, 'الأحد', NULL, NULL, 2, 3), -- Missing data in document
+(14, 'السبت', NULL, NULL, 2, 3), -- Missing data in document
+(14, 'الأحد', NULL, NULL, 2, 3), -- Missing data in document
+-- Term 3: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة العنكبوت، الآية: (46)', 'سورة العنكبوت، الآية: (59)', 3, 3),
+(1, 'الأحد', 'سورة العنكبوت، الآية: (60)', 'سورة الروم، الآية: (5)', 3, 3),
+(2, 'السبت', 'سورة الروم، الآية: (6)', 'سورة الروم، الآية: (20)', 3, 3),
+(2, 'الأحد', 'سورة الروم، الآية: (21)', 'سورة الروم، الآية: (32)', 3, 3),
+(3, 'السبت', 'سورة الروم، الآية: (33)', 'سورة الروم، الآية: (46)', 3, 3),
+(3, 'الأحد', 'سورة الروم، الآية: (47)', 'سورة الروم، الآية: (60)', 3, 3),
+(4, 'السبت', 'سورة لقمان، الآية: (1)', 'سورة لقمان، الآية: (19)', 3, 3),
+(4, 'الأحد', 'سورة القصص، الآية: (51)', 'سورة القصص، الآية: (64)', 3, 3),
+(5, 'السبت', 'سورة القصص، الآية: (65)', 'سورة القصص، الآية: (77)', 3, 3),
+(5, 'الأحد', 'سورة القصص، الآية: (78)', 'سورة القصص، الآية: (88)', 3, 3),
+(6, 'السبت', 'سورة العنكبوت، الآية: (1)', 'سورة العنكبوت، الآية: (14)', 3, 3),
+(6, 'الأحد', 'سورة العنكبوت، الآية: (15)', 'سورة العنكبوت، الآية: (25)', 3, 3),
+(7, 'السبت', 'سورة العنكبوت، الآية: (26)', 'سورة العنكبوت، الآية: (38)', 3, 3),
+(7, 'الأحد', 'سورة العنكبوت، الآية: (39)', 'سورة العنكبوت، الآية: (45)', 3, 3),
+-- Term 3: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة النمل، الآية: (56)', 'سورة القصص، الآية: (67)', 3, 3),
+(8, 'الأحد', 'سورة النمل، الآية: (68)', 'سورة النمل، الآية: (88)', 3, 3),
+(9, 'السبت', 'سورة النمل، الآية: (89)', 'سورة القصص، الآية: (9)', 3, 3),
+(9, 'الأحد', 'سورة القصص، الآية: (10)', 'سورة القصص، الآية: (21)', 3, 3),
+(10, 'السبت', 'سورة القصص، الآية: (22)', 'سورة القصص، الآية: (30)', 3, 3),
+(10, 'الأحد', 'سورة القصص، الآية: (31)', 'سورة القصص، الآية: (43)', 3, 3),
+(11, 'السبت', 'سورة القصص، الآية: (44)', 'سورة القصص، الآية: (50)', 3, 3),
+(11, 'الأحد', 'سورة الشعراء، الآية: (111)', 'سورة الشعراء، الآية: (149)', 3, 3),
+(12, 'السبت', 'سورة الشعراء، الآية: (150)', 'سورة الشعراء، الآية: (183)', 3, 3),
+(12, 'الأحد', 'سورة الشعراء، الآية: (184)', 'سورة الشعراء، الآية: (216)', 3, 3),
+(13, 'السبت', 'سورة الشعراء، الآية: (217)', 'سورة النمل، الآية: (13)', 3, 3),
+(13, 'الأحد', 'سورة النمل، الآية: (14)', 'سورة النمل، الآية: (28)', 3, 3),
+(14, 'السبت', 'سورة النمل، الآية: (29)', 'سورة النمل، الآية: (44)', 3, 3),
+(14, 'الأحد', 'سورة النمل، الآية: (45)', 'سورة النمل، الآية: (55)', 3, 3);
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الفرقان، الآية: (21)', 'سورة الفرقان، الآية: (39)', 1, 4),
+(1, 'الأحد', 'سورة الفرقان، الآية: (40)', 'سورة الفرقان، الآية: (55)', 1, 4),
+(2, 'السبت', 'سورة الفرقان، الآية: (56)', 'سورة الفرقان، الآية: (71)', 1, 4),
+(2, 'الأحد', 'سورة الفرقان، الآية: (72)', 'سورة الشعراء، الآية: (19)', 1, 4),
+(3, 'السبت', 'سورة الشعراء، الآية: (20)', 'سورة الشعراء، الآية: (51)', 1, 4),
+(3, 'الأحد', 'سورة الشعراء، الآية: (52)', 'سورة الشعراء، الآية: (83)', 1, 4),
+(4, 'السبت', 'سورة الشعراء، الآية: (84)', 'سورة الشعراء، الآية: (110)', 1, 4),
+(4, 'الأحد', 'سورة النور، الآية: (21)', 'سورة النور، الآية: (30)', 1, 4),
+(5, 'السبت', 'سورة النور، الآية: (31)', 'سورة النور، الآية: (36)', 1, 4),
+(5, 'الأحد', 'سورة النور، الآية: (37)', 'سورة النور، الآية: (47)', 1, 4),
+(6, 'السبت', 'سورة النور، الآية: (48)', 'سورة النور، الآية: (58)', 1, 4),
+(6, 'الأحد', 'سورة النور، الآية: (59)', 'سورة النور، الآية: (64)', 1, 4),
+(7, 'السبت', 'سورة الفرقان، الآية: (1)', 'سورة الفرقان، الآية: (11)', 1, 4),
+(7, 'الأحد', 'سورة الفرقان، الآية: (12)', 'سورة الفرقان، الآية: (20)', 1, 4),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة المؤمنون، الآية: (1)', 'سورة المؤمنون، الآية: (22)', 1, 4),
+(8, 'الأحد', 'سورة المؤمنون، الآية: (23)', 'سورة المؤمنون، الآية: (42)', 1, 4),
+(9, 'السبت', 'سورة المؤمنون، الآية: (43)', 'سورة المؤمنون، الآية: (67)', 1, 4),
+(9, 'الأحد', 'سورة المؤمنون، الآية: (68)', 'سورة المؤمنون، الآية: (89)', 1, 4),
+(10, 'السبت', 'سورة المؤمنون، الآية: (90)', 'سورة المؤمنون، الآية: (111)', 1, 4),
+(10, 'الأحد', 'سورة المؤمنون، الآية: (112)', 'سورة النور، الآية: (10)', 1, 4),
+(11, 'السبت', 'سورة النور، الآية: (11)', 'سورة النور، الآية: (20)', 1, 4),
+(11, 'الأحد', 'سورة الحج، الآية: (1)', 'سورة الحج، الآية: (10)', 1, 4),
+(12, 'السبت', 'سورة الحج، الآية: (11)', 'سورة الحج، الآية: (23)', 1, 4),
+(12, 'الأحد', 'سورة الحج، الآية: (24)', 'سورة الحج، الآية: (34)', 1, 4),
+(13, 'السبت', 'سورة الحج، الآية: (35)', 'سورة الحج، الآية: (46)', 1, 4),
+(13, 'الأحد', 'سورة الحج، الآية: (47)', 'سورة الحج، الآية: (59)', 1, 4),
+(14, 'السبت', 'سورة الحج، الآية: (60)', 'سورة الحج، الآية: (72)', 1, 4),
+(14, 'الأحد', 'سورة الحج، الآية: (73)', 'سورة الحج، الآية: (78)', 1, 4),
+-- Term 2: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الفرقان، الآية: (21)', 'سورة الفرقان، الآية: (39)', 2, 4),
+(1, 'الأحد', 'سورة الفرقان، الآية: (40)', 'سورة الفرقان، الآية: (55)', 2, 4),
+(2, 'السبت', 'سورة الفرقان، الآية: (56)', 'سورة الفرقان، الآية: (71)', 2, 4),
+(2, 'الأحد', 'سورة الفرقان، الآية: (72)', 'سورة الشعراء، الآية: (19)', 2, 4),
+(3, 'السبت', 'سورة الشعراء، الآية: (20)', 'سورة الشعراء، الآية: (51)', 2, 4),
+(3, 'الأحد', 'سورة الشعراء، الآية: (52)', 'سورة الشعراء، الآية: (83)', 2, 4),
+(4, 'السبت', 'سورة الشعراء، الآية: (84)', 'سورة الشعراء، الآية: (110)', 2, 4),
+(4, 'الأحد', 'سورة النور، الآية: (21)', 'سورة النور، الآية: (30)', 2, 4),
+(5, 'السبت', 'سورة النور، الآية: (31)', 'سورة النور، الآية: (36)', 2, 4),
+(5, 'الأحد', 'سورة النور، الآية: (37)', 'سورة النور، الآية: (47)', 2, 4),
+(6, 'السبت', 'سورة النور، الآية: (48)', 'سورة النور، الآية: (58)', 2, 4),
+(6, 'الأحد', 'سورة النور، الآية: (59)', 'سورة النور، الآية: (64)', 2, 4),
+(7, 'السبت', 'سورة الفرقان، الآية: (1)', 'سورة الفرقان، الآية: (11)', 2, 4),
+(7, 'الأحد', 'سورة الفرقان، الآية: (12)', 'سورة الفرقان، الآية: (20)', 2, 4),
+-- Term 2: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة المؤمنون، الآية: (1)', 'سورة المؤمنون، الآية: (22)', 2, 4),
+(8, 'الأحد', 'سورة المؤمنون، الآية: (23)', 'سورة المؤمنون، الآية: (42)', 2, 4),
+(9, 'السبت', 'سورة المؤمنون، الآية: (43)', 'سورة المؤمنون، الآية: (67)', 2, 4),
+(9, 'الأحد', 'سورة المؤمنون، الآية: (68)', 'سورة المؤمنون، الآية: (89)', 2, 4),
+(10, 'السبت', 'سورة المؤمنون، الآية: (90)', 'سورة المؤمنون، الآية: (111)', 2, 4),
+(10, 'الأحد', 'سورة المؤمنون، الآية: (112)', 'سورة النور، الآية: (10)', 2, 4),
+(11, 'السبت', 'سورة النور، الآية: (11)', 'سورة النور، الآية: (20)', 2, 4),
+(11, 'الأحد', 'سورة الحج، الآية: (1)', 'سورة الحج، الآية: (10)', 2, 4),
+(12, 'السبت', 'سورة الحج، الآية: (11)', 'سورة الحج، الآية: (23)', 2, 4),
+(12, 'الأحد', 'سورة الحج، الآية: (24)', 'سورة الحج، الآية: (34)', 2, 4),
+(13, 'السبت', 'سورة الحج، الآية: (35)', 'سورة الحج، الآية: (46)', 2, 4),
+(13, 'الأحد', 'سورة الحج، الآية: (47)', 'سورة الحج، الآية: (59)', 2, 4),
+(14, 'السبت', 'سورة الحج، الآية: (60)', 'سورة الحج، الآية: (72)', 2, 4),
+(14, 'الأحد', 'سورة الحج، الآية: (73)', 'سورة الحج، الآية: (78)', 2, 4),
+-- Term 3: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الإسراء، الآية: (1)', 'سورة الإسراء، الآية: (17)', 3, 4),
+(1, 'الأحد', 'سورة الإسراء، الآية: (18)', 'سورة الإسراء، الآية: (38)', 3, 4),
+(2, 'السبت', 'سورة الإسراء، الآية: (39)', 'سورة الإسراء، الآية: (58)', 3, 4),
+(2, 'الأحد', 'سورة الإسراء، الآية: (59)', 'سورة الإسراء، الآية: (75)', 3, 4),
+(3, 'السبت', 'سورة الإسراء، الآية: (76)', 'سورة الإسراء، الآية: (98)', 3, 4),
+(3, 'الأحد', 'سورة النحل، الآية: (43)', 'سورة النحل، الآية: (64)', 3, 4),
+(4, 'السبت', 'سورة النحل، الآية: (65)', 'سورة النحل، الآية: (79)', 3, 4),
+(4, 'الأحد', 'سورة النحل، الآية: (80)', 'سورة النحل، الآية: (93)', 3, 4),
+(5, 'السبت', 'سورة النحل، الآية: (94)', 'سورة النحل، الآية: (110)', 3, 4),
+(5, 'الأحد', 'سورة النحل، الآية: (111)', 'سورة النحل، الآية: (128)', 3, 4),
+(6, 'السبت', 'سورة الحجر، الآية: (1)', 'سورة الحجر، الآية: (31)', 3, 4),
+(6, 'الأحد', 'سورة الحجر، الآية: (32)', 'سورة الحجر، الآية: (70)', 3, 4),
+(7, 'السبت', 'سورة الحجر، الآية: (71)', 'سورة النحل، الآية: (6)', 3, 4),
+(7, 'الأحد', 'سورة النحل، الآية: (7)', 'سورة النحل، الآية: (26)', 3, 4),
+-- Term 3: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة النحل، الآية: (27)', 'سورة النحل، الآية: (42)', 3, 4),
+(8, 'الأحد', 'سورة الرعد، الآية: (19)', 'سورة الرعد، الآية: (34)', 3, 4),
+(9, 'السبت', 'سورة الرعد، الآية: (35)', 'سورة إبراهيم، الآية: (5)', 3, 4),
+(9, 'الأحد', 'سورة إبراهيم، الآية: (6)', 'سورة إبراهيم، الآية: (18)', 3, 4),
+(10, 'السبت', 'سورة إبراهيم، الآية: (19)', 'سورة إبراهيم، الآية: (33)', 3, 4),
+(10, 'الأحد', 'سورة إبراهيم، الآية: (34)', 'سورة إبراهيم، الآية: (52)', 3, 4),
+(11, 'السبت', 'سورة يوسف، الآية: (53)', 'سورة يوسف، الآية: (69)', 3, 4),
+(11, 'الأحد', 'سورة يوسف، الآية: (70)', 'سورة يوسف، الآية: (86)', 3, 4),
+(12, 'السبت', 'سورة يوسف، الآية: (87)', 'سورة يوسف، الآية: (103)', 3, 4),
+(12, 'الأحد', 'سورة يوسف، الآية: (104)', 'سورة الرعد، الآية: (5)', 3, 4),
+(13, 'السبت', 'سورة الرعد، الآية: (6)', 'سورة الرعد، الآية: (18)', 3, 4),
+(13, 'الأحد', NULL, NULL, 3, 4), -- Missing data in document
+(14, 'السبت', NULL, NULL, 3, 4), -- Missing data in document
+(14, 'الأحد', NULL, NULL, 3, 4); -- Missing data in document
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة هود، الآية: (84)', 'سورة هود، الآية: (97)', 1, 5),
+(1, 'الأحد', 'سورة هود، الآية: (98)', 'سورة هود، الآية: (117)', 1, 5),
+(2, 'السبت', 'سورة هود، الآية: (118)', 'سورة يوسف، الآية: (14)', 1, 5),
+(2, 'الأحد', 'سورة يوسف، الآية: (15)', 'سورة يوسف، الآية: (30)', 1, 5),
+(3, 'السبت', 'سورة يوسف، الآية: (31)', 'سورة يوسف، الآية: (43)', 1, 5),
+(3, 'الأحد', 'سورة هود، الآية: (6)', 'سورة هود، الآية: (19)', 1, 5),
+(4, 'السبت', 'سورة هود، الآية: (20)', 'سورة هود، الآية: (37)', 1, 5),
+(4, 'الأحد', 'سورة هود، الآية: (38)', 'سورة هود، الآية: (53)', 1, 5),
+(5, 'السبت', 'سورة هود، الآية: (54)', 'سورة هود، الآية: (71)', 1, 5),
+(5, 'الأحد', 'سورة هود، الآية: (72)', 'سورة هود، الآية: (83)', 1, 5),
+(6, 'السبت', 'سورة يونس، الآية: (26)', 'سورة يونس، الآية: (42)', 1, 5),
+(6, 'الأحد', 'سورة يونس، الآية: (43)', 'سورة يونس، الآية: (61)', 1, 5),
+(7, 'السبت', 'سورة يونس، الآية: (62)', 'سورة يونس، الآية: (78)', 1, 5),
+(7, 'الأحد', 'سورة يونس، الآية: (79)', 'سورة يونس، الآية: (97)', 1, 5),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة يونس، الآية: (98)', 'سورة هود، الآية: (5)', 1, 5),
+(8, 'الأحد', 'سورة التوبة، الآية: (93)', 'سورة التوبة، الآية: (106)', 1, 5),
+(9, 'السبت', 'سورة التوبة، الآية: (107)', 'سورة التوبة، الآية: (117)', 1, 5),
+(9, 'الأحد', 'سورة التوبة، الآية: (118)', 'سورة التوبة، الآية: (129)', 1, 5),
+(10, 'السبت', 'سورة يونس، الآية: (1)', 'سورة يونس، الآية: (14)', 1, 5),
+(10, 'الأحد', 'سورة يونس، الآية: (15)', 'سورة يونس، الآية: (25)', 1, 5),
+(11, 'السبت', 'سورة التوبة، الآية: (34)', 'سورة التوبة، الآية: (40)', 1, 5),
+(11, 'الأحد', 'سورة التوبة، الآية: (41)', 'سورة التوبة، الآية: (54)', 1, 5),
+(12, 'السبت', 'سورة التوبة، الآية: (55)', 'سورة التوبة، الآية: (68)', 1, 5),
+(12, 'الأحد', 'سورة التوبة، الآية: (69)', 'سورة التوبة، الآية: (79)', 1, 5),
+(13, 'السبت', 'سورة التوبة، الآية: (80)', 'سورة التوبة، الآية: (92)', 1, 5),
+(13, 'الأحد', NULL, NULL, 1, 5), -- Missing data in document
+(14, 'السبت', NULL, NULL, 1, 5), -- Missing data in document
+(14, 'الأحد', NULL, NULL, 1, 5), -- Missing data in document
+-- Term 2: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الأنفال، الآية: (41)', 'سورة الأنفال، الآية: (52)', 2, 5),
+(1, 'الأحد', 'سورة الأنفال، الآية: (53)', 'سورة الأنفال، الآية: (69)', 2, 5),
+(2, 'السبت', 'سورة الأنفال، الآية: (70)', 'سورة التوبة، الآية: (6)', 2, 5),
+(2, 'الأحد', 'سورة التوبة، الآية: (7)', 'سورة التوبة، الآية: (20)', 2, 5),
+(3, 'السبت', 'سورة التوبة، الآية: (21)', 'سورة التوبة، الآية: (33)', 2, 5),
+(3, 'الأحد', 'سورة الأعراف، الآية: (171)', 'سورة الأعراف، الآية: (187)', 2, 5),
+(4, 'السبت', 'سورة الأعراف، الآية: (188)', 'سورة الأعراف، الآية: (206)', 2, 5),
+(4, 'الأحد', 'سورة الأنفال، الآية: (1)', 'سورة الأنفال، الآية: (16)', 2, 5),
+(5, 'السبت', 'سورة الأنفال، الآية: (17)', 'سورة الأنفال، الآية: (33)', 2, 5),
+(5, 'الأحد', 'سورة الأنفال، الآية: (34)', 'سورة الأنفال، الآية: (40)', 2, 5),
+(6, 'السبت', 'سورة الأعراف، الآية: (88)', 'سورة الأعراف، الآية: (104)', 2, 5),
+(6, 'الأحد', 'سورة الأعراف، الآية: (105)', 'سورة الأعراف، الآية: (130)', 2, 5),
+(7, 'السبت', 'سورة الأعراف، الآية: (131)', 'سورة الأعراف، الآية: (143)', 2, 5),
+(7, 'الأحد', 'سورة الأعراف، الآية: (144)', 'سورة الأعراف، الآية: (155)', 2, 5),
+-- Term 2: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة الأعراف، الآية: (156)', 'سورة الأعراف، الآية: (163)', 2, 5),
+(8, 'الأحد', 'سورة الأعراف، الآية: (164)', 'سورة الأعراف، الآية: (170)', 2, 5),
+(9, 'السبت', 'سورة الأعراف، الآية: (1)', 'سورة الأعراف، الآية: (22)', 2, 5),
+(9, 'الأحد', 'سورة الأعراف، الآية: (23)', 'سورة الأعراف، الآية: (37)', 2, 5),
+(10, 'السبت', 'سورة الأعراف، الآية: (38)', 'سورة الأعراف، الآية: (51)', 2, 5),
+(10, 'الأحد', 'سورة الأعراف، الآية: (52)', 'سورة الأعراف، الآية: (67)', 2, 5),
+(11, 'السبت', 'سورة الأعراف، الآية: (68)', 'سورة الأعراف، الآية: (81)', 2, 5),
+(11, 'الأحد', 'سورة الأعراف، الآية: (82)', 'سورة الأعراف، الآية: (87)', 2, 5),
+(12, 'السبت', 'سورة الأنعام، الآية: (111)', 'سورة الأنعام، الآية: (124)', 2, 5),
+(12, 'الأحد', 'سورة الأنعام، الآية: (125)', 'سورة الأنعام، الآية: (137)', 2, 5),
+(13, 'السبت', 'سورة الأنعام، الآية: (138)', 'سورة الأنعام، الآية: (146)', 2, 5),
+(13, 'الأحد', 'سورة الأنعام، الآية: (147)', 'سورة الأنعام، الآية: (157)', 2, 5),
+(14, 'السبت', 'سورة الأنعام، الآية: (158)', 'سورة الأنعام، الآية: (165)', 2, 5),
+(14, 'الأحد', NULL, NULL, 2, 5), -- Missing data in document
+-- Term 3: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة الأنعام، الآية: (35)', 'سورة الأنعام، الآية: (58)', 3, 5),
+(1, 'الأحد', 'سورة الأنعام، الآية: (59)', 'سورة الأنعام، الآية: (83)', 3, 5),
+(2, 'السبت', 'سورة الأنعام، الآية: (84)', 'سورة الأنعام، الآية: (94)', 3, 5),
+(2, 'الأحد', 'سورة الأنعام، الآية: (95)', 'سورة الأنعام، الآية: (110)', 3, 5),
+(3, 'السبت', 'سورة المائدة، الآية: (81)', 'سورة المائدة، الآية: (96)', 3, 5),
+(3, 'الأحد', 'سورة المائدة، الآية: (97)', 'سورة الأنعام، الآية: (108)', 3, 5),
+(4, 'السبت', 'سورة المائدة، الآية: (109)', 'سورة الأنعام، الآية: (12)', 3, 5),
+(4, 'الأحد', 'سورة الأنعام، الآية: (13)', 'سورة الأنعام، الآية: (35)', 3, 5),
+(5, 'السبت', 'سورة المائدة، الآية: (27)', 'سورة المائدة، الآية: (40)', 3, 5),
+(5, 'الأحد', 'سورة المائدة، الآية: (41)', 'سورة المائدة، الآية: (50)', 3, 5),
+(6, 'السبت', 'سورة المائدة، الآية: (51)', 'سورة المائدة، الآية: (66)', 3, 5),
+(6, 'الأحد', 'سورة المائدة، الآية: (67)', 'سورة المائدة، الآية: (81)', 3, 5),
+(7, 'السبت', 'سورة النساء، الآية: (148)', 'سورة النساء، الآية: (162)', 3, 5),
+(7, 'الأحد', 'سورة النساء، الآية: (163)', 'سورة النساء، الآية: (176)', 3, 5),
+-- Term 3: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة المائدة، الآية: (1)', 'سورة المائدة، الآية: (11)', 3, 5),
+(8, 'الأحد', 'سورة المائدة، الآية: (12)', 'سورة المائدة، الآية: (26)', 3, 5),
+(9, 'السبت', 'سورة النساء، الآية: (88)', 'سورة النساء، الآية: (99)', 3, 5),
+(9, 'الأحد', 'سورة النساء، الآية: (100)', 'سورة النساء، الآية: (113)', 3, 5),
+(10, 'السبت', 'سورة النساء، الآية: (114)', 'سورة النساء، الآية: (134)', 3, 5),
+(10, 'الأحد', 'سورة النساء، الآية: (135)', 'سورة النساء، الآية: (147)', 3, 5),
+(11, 'السبت', 'سورة النساء، الآية: (24)', 'سورة النساء، الآية: (35)', 3, 5),
+(11, 'الأحد', 'سورة النساء، الآية: (36)', 'سورة النساء، الآية: (57)', 3, 5),
+(12, 'السبت', 'سورة النساء، الآية: (58)', 'سورة النساء، الآية: (73)', 3, 5),
+(12, 'الأحد', 'سورة النساء، الآية: (74)', 'سورة النساء، الآية: (87)', 3, 5),
+(13, 'السبت', 'سورة آل عمران، الآية: (171)', 'سورة آل عمران، الآية: (185)', 3, 5),
+(13, 'الأحد', 'سورة آل عمران، الآية: (186)', 'سورة آل عمران، الآية: (200)', 3, 5),
+(14, 'السبت', 'سورة النساء، الآية: (1)', 'سورة النساء، الآية: (11)', 3, 5),
+(14, 'الأحد', 'سورة النساء، الآية: (12)', 'سورة النساء، الآية: (23)', 3, 5);
+
+INSERT INTO Daily_Memorization_Scheme (week, day, from_surah_ayah, to_surah_ayah, term, class_id) VALUES
+-- Term 1: Weeks 1-7 (Right table)
+(1, 'السبت', 'سورة آل عمران، الآية: (93)', 'سورة آل عمران، الآية: (112)', 1, 6),
+(1, 'الأحد', 'سورة آل عمران، الآية: (113)', 'سورة آل عمران، الآية: (132)', 1, 6),
+(2, 'السبت', 'سورة آل عمران، الآية: (133)', 'سورة آل عمران، الآية: (152)', 1, 6),
+(2, 'الأحد', 'سورة آل عمران، الآية: (153)', 'سورة آل عمران، الآية: (170)', 1, 6),
+(3, 'السبت', 'سورة آل عمران، الآية: (15)', 'سورة آل عمران، الآية: (32)', 1, 6),
+(3, 'الأحد', 'سورة آل عمران، الآية: (33)', 'سورة آل عمران، الآية: (51)', 1, 6),
+(4, 'السبت', 'سورة آل عمران، الآية: (52)', 'سورة آل عمران، الآية: (74)', 1, 6),
+(4, 'الأحد', 'سورة آل عمران، الآية: (75)', 'سورة آل عمران، الآية: (92)', 1, 6),
+(5, 'السبت', 'سورة البقرة، الآية: (203)', 'سورة البقرة، الآية: (262)', 1, 6),
+(5, 'الأحد', 'سورة البقرة، الآية: (263)', 'سورة البقرة، الآية: (271)', 1, 6),
+(6, 'السبت', 'سورة البقرة، الآية: (272)', 'سورة البقرة، الآية: (282)', 1, 6),
+(6, 'الأحد', 'سورة البقرة، الآية: (283)', 'سورة آل عمران، الآية: (14)', 1, 6),
+(7, 'السبت', 'سورة البقرة، الآية: (203)', 'سورة البقرة، الآية: (218)', 1, 6), -- Potential error: verse 203 is after 218
+(7, 'الأحد', 'سورة البقرة، الآية: (219)', 'سورة البقرة، الآية: (232)', 1, 6),
+-- Term 1: Weeks 8-14 (Left table)
+(8, 'السبت', 'سورة البقرة، الآية: (233)', 'سورة البقرة، الآية: (242)', 1, 6),
+(8, 'الأحد', 'سورة البقرة، الآية: (243)', 'سورة البقرة، الآية: (252)', 1, 6),
+(9, 'السبت', 'سورة البقرة، الآية: (142)', 'سورة البقرة، الآية: (157)', 1, 6),
+(9, 'الأحد', 'سورة البقرة، الآية: (158)', 'سورة البقرة، الآية: (176)', 1, 6),
+(10, 'السبت', 'سورة البقرة، الآية: (177)', 'سورة البقرة، الآية: (188)', 1, 6),
+(10, 'الأحد', 'سورة البقرة، الآية: (189)', 'سورة البقرة، الآية: (202)', 1, 6),
+(11, 'السبت', 'سورة البقرة، الآية: (75)', 'سورة البقرة، الآية: (91)', 1, 6),
+(11, 'الأحد', 'سورة البقرة، الآية: (92)', 'سورة البقرة، الآية: (105)', 1, 6),
+(12, 'السبت', 'سورة البقرة، الآية: (106)', 'سورة البقرة، الآية: (123)', 1, 6),
+(12, 'الأحد', 'سورة البقرة، الآية: (124)', 'سورة البقرة، الآية: (141)', 1, 6),
+(13, 'السبت', 'سورة البقرة، الآية: (1)', 'سورة البقرة، الآية: (25)', 1, 6),
+(13, 'الأحد', 'سورة البقرة، الآية: (26)', 'سورة البقرة، الآية: (43)', 1, 6),
+(14, 'السبت', 'سورة البقرة، الآية: (44)', 'سورة البقرة، الآية: (59)', 1, 6),
+(14, 'الأحد', 'سورة البقرة، الآية: (60)', 'سورة البقرة، الآية: (74)', 1, 6);
+
+
+
+
+
+-- Schema changes to add academic_year
+ALTER TABLE Student_Enrollments ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE Daily_Memorization_Scheme ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE Student_Memorization_Assessments ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE Student_Memorization_Assessments ADD COLUMN term INT NOT NULL DEFAULT 1;
+ALTER TABLE Student_Subject_Assessments ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE Student_Attendance ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE staff_classes ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE staff_subjects ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+ALTER TABLE staff_form_master ADD COLUMN academic_year VARCHAR(9) NOT NULL DEFAULT '2025/2026';
+
+-- Add session support to database
+
+-- Create Sessions table
+CREATE TABLE IF NOT EXISTS Sessions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    session_year VARCHAR(20) UNIQUE NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    is_current BOOLEAN DEFAULT FALSE,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Insert sample sessions
+INSERT INTO Sessions (session_year, start_date, end_date, is_current) VALUES
+('2023/2024', '2023-09-01', '2024-08-31', FALSE),
+('2024/2025', '2024-09-01', '2025-08-31', TRUE),
+('2025/2026', '2025-09-01', '2026-08-31', FALSE);
+
+-- Add session column to Daily_Memorization_Scheme
+ALTER TABLE Daily_Memorization_Scheme 
+ADD COLUMN session_year VARCHAR(20) DEFAULT '2024/2025' AFTER term,
+ADD FOREIGN KEY (session_year) REFERENCES Sessions(session_year);
+
+-- Add session column to Student_Memorization_Assessments
+ALTER TABLE Student_Memorization_Assessments 
+ADD COLUMN session_year VARCHAR(20) DEFAULT '2024/2025' AFTER date,
+ADD FOREIGN KEY (session_year) REFERENCES Sessions(session_year);
+
+-- Add session column to Student_Subject_Assessments
+ALTER TABLE Student_Subject_Assessments 
+ADD COLUMN session_year VARCHAR(20) DEFAULT '2024/2025' AFTER date,
+ADD FOREIGN KEY (session_year) REFERENCES Sessions(session_year);
+
+-- Add session column to Student_Enrollments
+ALTER TABLE Student_Enrollments 
+ADD COLUMN session_year VARCHAR(20) DEFAULT '2024/2025' AFTER term,
+ADD FOREIGN KEY (session_year) REFERENCES Sessions(session_year);
+
+the student i have for other pages that are working:
+// GET ALL STUDENTS
+// ==========================
+app.get('/api/students', (req, res) => {
+    if (!req.session.isAuthenticated) {
+        return res.status(401).json({ success: false, message: 'Unauthorized.' });
+    }
+
+    const query = `
+        SELECT 
+            s.id,
+            s.student_id,
+            s.full_name AS name,
+            s.gender,
+            s.guardian_phone,
+            s.address,
+            DATE_FORMAT(s.date_of_birth, '%Y-%m-%d') AS date_of_birth,
+            s.email,
+            s.profile_picture,
+            GROUP_CONCAT(CONCAT(se.section_id, ':', se.class_ref) SEPARATOR ',') AS classes,
+            GROUP_CONCAT(ss.subject_id SEPARATOR ',') AS subjects
+        FROM Students s
+        LEFT JOIN Student_Enrollments se ON s.id = se.student_id
+        LEFT JOIN Student_Subjects ss ON se.enrollment_id = ss.enrollment_id
+        GROUP BY s.id
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching students:', err);
+            return res.status(500).json({ success: false, message: 'Database error.' });
+        }
+
+        results.forEach(student => {
+            // Profile picture handling
+            student.profile_picture = student.profile_picture
+                ? 'Uploads/' + student.profile_picture.split('/').pop()
+                : 'Uploads/default.jpg';
+
+            // Convert comma-separated values into arrays
+            student.classes = student.classes ? student.classes.split(',') : [];
+            student.subjects = student.subjects ? student.subjects.split(',') : [];
+        });
+
+        res.status(200).json({ success: true, data: results });
+    });
+});
+
+// ==========================
+// GET SINGLE STUDENT
+// ==========================
+app.get('/api/students/:id', (req, res) => {
+    if (!req.session.isAuthenticated) {
+        return res.status(401).json({ success: false, message: 'Unauthorized.' });
+    }
+
+    const studentId = req.params.id;
+
+    const studentQuery = `
+        SELECT 
+            s.id,
+            s.student_id,
+            s.full_name AS name,
+            s.gender,
+            DATE_FORMAT(s.date_of_birth, '%Y-%m-%d') AS date_of_birth,
+            s.guardian_phone,
+            s.address,
+            s.email,
+            s.profile_picture,
+            GROUP_CONCAT(
+                CONCAT(se.section_id, ':', se.class_ref)
+                ORDER BY se.section_id, se.class_ref SEPARATOR ','
+            ) AS classes,
+            GROUP_CONCAT(
+                CONCAT(su.dept_id, ':', ss.subject_id)
+                ORDER BY su.dept_id, ss.subject_id SEPARATOR ','
+            ) AS subjects
+        FROM Students s
+        LEFT JOIN Student_Enrollments se ON s.id = se.student_id
+        LEFT JOIN Student_Subjects ss ON se.enrollment_id = ss.enrollment_id
+        LEFT JOIN Subjects su ON ss.subject_id = su.subject_id
+        WHERE s.id = ?
+        GROUP BY s.id
+    `;
+
+    db.query(studentQuery, [studentId], (err, studentResults) => {
+        if (err) {
+            console.error('Error fetching student:', err);
+            return res.status(500).json({ success: false, message: 'Database error.', error: err.message });
+        }
+
+        if (studentResults.length === 0) {
+            return res.status(404).json({ success: false, message: 'Student not found.' });
+        }
+
+        const student = studentResults[0];
+        student.profile_picture = student.profile_picture
+            ? 'Uploads/' + student.profile_picture.split('/').pop()
+            : 'Uploads/default.jpg';
+        student.classes = student.classes ? student.classes.split(',') : [];
+        student.subjects = student.subjects ? student.subjects.split(',') : [];
+
+        res.status(200).json({ success: true, data: student });
+    });
+});
+
+// ==========================
+// POST ADD STUDENT
+// ==========================
+app.post('/api/students', upload.single('profile_picture'), (req, res) => {
+    const {
+        student_id, full_name, guardian_phone, email, address, gender,
+        date_of_birth, level = 1, term = 1
+    } = req.body;
+
+    // Updated: Handle both classes/classes[] and subjects/subjects[]
+    const classes = req.body['classes[]'] || req.body.classes
+        ? (Array.isArray(req.body['classes[]'] || req.body.classes)
+            ? (req.body['classes[]'] || req.body.classes)
+            : [(req.body['classes[]'] || req.body.classes)])
+        : [];
+    const subjects = req.body['subjects[]'] || req.body.subjects
+        ? (Array.isArray(req.body['subjects[]'] || req.body.subjects)
+            ? (req.body['subjects[]'] || req.body.subjects).map(s => s.includes(':') ? s.split(':')[1] : s)
+            : [(req.body['subjects[]'] || req.body.subjects).includes(':') ? (req.body['subjects[]'] || req.body.subjects).split(':')[1] : (req.body['subjects[]'] || req.body.subjects)])
+        : [];
+
+    console.log('Received request body:', req.body); // Debug
+    console.log('Processed classes:', classes); // Debug
+    console.log('Processed subjects:', subjects); // Debug
+
+    // Validate inputs
+    if (!student_id || !full_name || !guardian_phone || !address || !gender || !date_of_birth) {
+        return res.status(400).json({ success: false, message: 'Missing required fields.' });
+    }
+    if (classes.length === 0) {
+        return res.status(400).json({ success: false, message: 'At least one class is required.' });
+    }
+
+    // Validate classes
+    const classQueries = classes.map(cls => {
+        const [section_id, class_ref] = cls.split(':').map(Number);
+        const table = section_id === 1 ? 'Classes' : 'Western_Classes';
+        const idField = section_id === 1 ? 'class_id' : 'western_class_id';
+        return `SELECT ${idField} FROM ${table} WHERE ${idField} = ${class_ref}`;
+    });
+
+    db.query(classQueries.join(' UNION '), (err, validClasses) => {
+        if (err) {
+            console.error('Error validating classes:', err);
+            return res.status(500).json({ success: false, message: 'Failed to validate classes.', error: err.message });
+        }
+        const validClassIds = validClasses.map(c => c.class_id || c.western_class_id);
+        const invalidClasses = classes.filter(cls => {
+            const [, class_ref] = cls.split(':').map(Number);
+            return !validClassIds.includes(class_ref);
+        });
+        if (invalidClasses.length > 0) {
+            return res.status(400).json({ success: false, message: 'Invalid class IDs provided.' });
+        }
+
+        // Validate subjects
+        if (subjects.length > 0) {
+            db.query(`SELECT subject_id FROM Subjects WHERE subject_id IN (?)`, [subjects.map(Number)], (err2, validSubjects) => {
+                if (err2) {
+                    console.error('Error validating subjects:', err2);
+                    return res.status(500).json({ success: false, message: 'Failed to validate subjects.', error: err2.message });
+                }
+                const validSubjectIds = validSubjects.map(s => s.subject_id);
+                const invalidSubjects = subjects.filter(sub => !validSubjectIds.includes(Number(sub)));
+                if (invalidSubjects.length > 0) {
+                    return res.status(400).json({ success: false, message: 'Invalid subject IDs provided.' });
+                }
+                proceedWithInsert();
+            });
+        } else {
+            proceedWithInsert();
+        }
+    });
+
+    function proceedWithInsert() {
+        // Validate date_of_birth
+        let parsedDob;
+        if (date_of_birth.includes('/')) {
+            parsedDob = moment(date_of_birth, 'DD/MM/YYYY', true);
+            if (!parsedDob.isValid()) return res.status(400).json({ success: false, message: 'Invalid Date of Birth format. Use DD/MM/YYYY.' });
+        } else {
+            parsedDob = moment(date_of_birth, 'YYYY-MM-DD', true);
+            if (!parsedDob.isValid()) return res.status(400).json({ success: false, message: 'Invalid Date of Birth format. Use YYYY-MM-DD.' });
+        }
+        const formattedDob = parsedDob.format('YYYY-MM-DD');
+
+        const profilePic = req.file ? req.file.filename : null;
+
+        // Insert student
+        const insertStudentSql = `
+            INSERT INTO Students (student_id, full_name, guardian_phone, email, address, gender, date_of_birth, profile_picture)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        db.query(insertStudentSql, [student_id, full_name, guardian_phone, email || null, address, gender, formattedDob, profilePic], (err, result) => {
+            if (err) {
+                console.error('Error inserting student:', err);
+                return res.status(500).json({ success: false, message: 'Failed to save student.', error: err.message });
+            }
+
+            const studentDbId = result.insertId;
+
+            // Insert enrollments
+            const enrollSql = `
+                INSERT INTO Student_Enrollments (student_id, section_id, class_ref, level, term)
+                VALUES ?
+            `;
+            const enrollValues = classes.map(cls => {
+                const [section_id, class_ref] = cls.split(':').map(Number);
+                return [studentDbId, section_id, class_ref, level, term];
+            });
+
+            db.query(enrollSql, [enrollValues], (err2, enrResult) => {
+                if (err2) {
+                    console.error('Error inserting enrollments:', err2);
+                    return res.status(500).json({ success: false, message: 'Failed to save enrollments.', error: err2.message });
+                }
+
+                if (subjects.length > 0) {
+                    // Fetch enrollment IDs
+                    db.query(`SELECT enrollment_id FROM Student_Enrollments WHERE student_id = ?`, [studentDbId], (err3, enrollments) => {
+                        if (err3) {
+                            console.error('Error fetching enrollments:', err3);
+                            return res.status(500).json({ success: false, message: 'Failed to fetch enrollments.', error: err3.message });
+                        }
+
+                        const subjSql = `INSERT INTO Student_Subjects (enrollment_id, subject_id, term) VALUES ?`;
+                        const subjValues = enrollments.reduce((acc, enrollment) => {
+                            subjects.forEach(sub => {
+                                acc.push([enrollment.enrollment_id, Number(sub), term]);
+                            });
+                            return acc;
+                        }, []);
+
+                        if (subjValues.length > 0) {
+                            db.query(subjSql, [subjValues], (err4) => {
+                                if (err4) {
+                                    console.error('Error inserting subjects:', err4);
+                                    return res.status(500).json({ success: false, message: 'Failed to save subjects.', error: err4.message });
+                                }
+                                res.json({ success: true, data: { id: studentDbId } });
+                            });
+                        } else {
+                            res.json({ success: true, data: { id: studentDbId } });
+                        }
+                    });
+                } else {
+                    res.json({ success: true, data: { id: studentDbId } });
+                }
+            });
+        });
+    }
+});
+
+// ==========================
+// PUT UPDATE STUDENT (SAFE UPDATE)
+// ==========================
+// ==========================
+// PUT UPDATE STUDENT (Partial Update)
+// ==========================
+app.put('/api/students/:id', upload.single('profile_picture'), (req, res) => {
+    const studentDbId = req.params.id;
+    
+    // Helper function to safely get and standardize array input from form data
+    const getFormDataArray = (key) => {
+        // Checks for 'key' (e.g., 'classes') or 'key[]' (e.g., 'classes[]')
+        let values = req.body[key] || req.body[`${key}[]`];
+        
+        if (!values) return [];
+        
+        // Ensure values is an array (converts string to array if only one item selected)
+        if (!Array.isArray(values)) {
+            values = [values];
+        }
+        return values;
+    };
+
+    // 1. Safely parse classes and subjects (FIX: Ensures they are arrays)
+    const classes = getFormDataArray('classes');
+    
+    // Subjects array should contain simple IDs, as determined by client-side logic
+    const subjects = getFormDataArray('subjects');
+    const simpleSubjectIds = subjects.map(s => {
+        const strS = String(s);
+        // We use the simple ID here since the client-side form submit handler sends the simple ID.
+        return strS.includes(':') ? strS.split(':')[1] : strS;
+    });
+
+    const {
+        student_id, full_name, guardian_phone, email, address, gender,
+        date_of_birth, level = 1, term = 1
+    } = req.body;
+    
+    // Helper to check if a field exists in the body (needed for partial update of core fields)
+    const hasField = (key) => Object.prototype.hasOwnProperty.call(req.body, key);
+
+    // Build UPDATE dynamically only with provided fields
+    const updateFields = [];
+    const params = [];
+
+    // Use the `hasField` check to ensure we process fields even if they are empty strings or zero
+    if (hasField('student_id')) { updateFields.push("student_id = ?"); params.push(student_id); }
+    if (hasField('full_name')) { updateFields.push("full_name = ?"); params.push(full_name); }
+    if (hasField('guardian_phone')) { updateFields.push("guardian_phone = ?"); params.push(guardian_phone); }
+    if (hasField('email')) { updateFields.push("email = ?"); params.push(email); } 
+    if (hasField('address')) { updateFields.push("address = ?"); params.push(address); }
+    if (hasField('gender')) { updateFields.push("gender = ?"); params.push(gender); }
+    if (hasField('date_of_birth')) { updateFields.push("date_of_birth = ?"); params.push(date_of_birth); }
+
+    if (req.file) { // only if profile picture uploaded
+        updateFields.push("profile_picture = ?");
+        params.push(req.file.filename);
+    }
+
+    params.push(studentDbId);
+
+    // If we have fields to update, run UPDATE first
+    const updateSql = updateFields.length > 0
+        ? `UPDATE Students SET ${updateFields.join(", ")} WHERE id = ?`
+        : null;
+
+    function proceed() {
+        // Now using the reliably parsed 'classes' and 'simpleSubjectIds' arrays
+        updateClasses(() => updateSubjects(() => {
+            return res.json({ success: true, message: "Student updated successfully" });
+        }));
+    }
+
+    if (updateSql) {
+        db.query(updateSql, params, (err) => {
+            if (err) {
+                console.error("Error updating student:", err);
+                return res.status(500).json({ success: false, message: "Failed to update student." });
+            }
+            proceed();
+        });
+    } else {
+        proceed(); // nothing to update in Students table, go to relations
+    }
+
+    // ====================
+    // Update Classes only if provided (uses the parsed 'classes' array)
+    // FIX: Added deletion of Student_Subjects before Student_Enrollments
+    // ====================
+    function updateClasses(next) {
+        // The client-side logic ensures classes are sent if anything related to relations changes
+        if (classes.length > 0) {
+            
+            // 1. IMPORTANT FIX: Delete dependent Student_Subjects first to satisfy Foreign Key constraints
+            db.query("DELETE FROM Student_Subjects WHERE enrollment_id IN (SELECT enrollment_id FROM Student_Enrollments WHERE student_id = ?)", [studentDbId], (errSub) => {
+                if (errSub) {
+                    console.error("Error clearing associated subjects before enrollments:", errSub);
+                    return res.status(500).json({ success: false, message: "Failed to clear associated subjects before updating classes." });
+                }
+
+                // 2. Now safely delete the Student_Enrollments (Classes)
+                db.query("DELETE FROM Student_Enrollments WHERE student_id = ?", [studentDbId], (errEnroll) => {
+                    if (errEnroll) {
+                        console.error("Error clearing old classes/enrollments:", errEnroll);
+                        return res.status(500).json({ success: false, message: "Failed to clear old classes." }); 
+                    }
+
+                    // 3. Insert new enrollments
+                    const enrollValues = classes.map(cls => {
+                        const [section_id, class_ref] = String(cls).split(":").map(Number);
+                        return [studentDbId, section_id, class_ref, level, term];
+                    });
+
+                    db.query("INSERT INTO Student_Enrollments (student_id, section_id, class_ref, level, term) VALUES ?", [enrollValues], (err2) => {
+                        if (err2) {
+                            console.error("Error inserting new classes:", err2);
+                            return res.status(500).json({ success: false, message: "Failed to insert classes." });
+                        }
+                        next();
+                    });
+                });
+            });
+        } else {
+            next(); // skip classes if not provided
+        }
+    }
+
+    // ====================
+    // Update Subjects only if provided (uses the parsed 'simpleSubjectIds' array)
+    // NOTE: The delete logic here is mostly redundant if updateClasses ran, but kept for safety.
+    // ====================
+    function updateSubjects(next) {
+        // The client-side logic ensures subjects are sent if anything related to relations changes
+        if (simpleSubjectIds.length > 0) {
+            // Delete old subjects based on enrollments related to this student
+            db.query("DELETE FROM Student_Subjects WHERE enrollment_id IN (SELECT enrollment_id FROM Student_Enrollments WHERE student_id = ?)", [studentDbId], (err) => {
+                if (err) return res.status(500).json({ success: false, message: "Failed to clear old subjects." });
+
+                // Fetch current enrollment IDs (these are the newly inserted ones from updateClasses)
+                db.query("SELECT enrollment_id FROM Student_Enrollments WHERE student_id = ?", [studentDbId], (err2, enrollments) => {
+                    if (err2) return res.status(500).json({ success: false, message: "Failed to fetch enrollments." });
+
+                    const subjValues = [];
+                    enrollments.forEach(enr => {
+                        simpleSubjectIds.forEach(subId => subjValues.push([enr.enrollment_id, Number(subId), term]));
+                    });
+
+                    if (subjValues.length > 0) {
+                        db.query("INSERT INTO Student_Subjects (enrollment_id, subject_id, term) VALUES ?", [subjValues], (err3) => {
+                            if (err3) return res.status(500).json({ success: false, message: "Failed to insert subjects." });
+                            next();
+                        });
+                    } else {
+                        next();
+                    }
+                });
+            });
+        } else {
+            next(); // skip subjects if not provided
+        }
+    }
+});
+
+// ==========================
+// Delete student
+// ==========================
+app.delete('/api/students/:id', (req, res) => {
+    if (!req.session.isAuthenticated)
+        return res.status(401).json({ success: false, message: 'Unauthorized.' });
+
+    const studentId = req.params.id;
+
+    db.beginTransaction(err => {
+        if (err) {
+            console.error('Transaction start error:', err);
+            return res.status(500).json({ success: false, message: 'Transaction start error.', error: err.message });
+        }
+
+        // Delete subjects
+        const deleteSubjectsQuery = `
+            DELETE FROM Student_Subjects 
+            WHERE enrollment_id IN (
+                SELECT enrollment_id FROM Student_Enrollments WHERE student_id = ?
+            )
+        `;
+        db.query(deleteSubjectsQuery, [studentId], err => {
+            if (err) {
+                console.error('Error deleting subjects:', err);
+                return db.rollback(() => res.status(500).json({ success: false, message: 'Database error deleting subjects.', error: err.message }));
+            }
+
+            // Delete enrollments
+            const deleteEnrollmentsQuery = `DELETE FROM Student_Enrollments WHERE student_id = ?`;
+            db.query(deleteEnrollmentsQuery, [studentId], err => {
+                if (err) {
+                    console.error('Error deleting enrollments:', err);
+                    return db.rollback(() => res.status(500).json({ success: false, message: 'Database error deleting enrollments.', error: err.message }));
+                }
+
+                // Delete student
+                const deleteStudentQuery = `DELETE FROM Students WHERE id = ?`;
+                db.query(deleteStudentQuery, [studentId], (err, result) => {
+                    if (err) {
+                        console.error('Error deleting student:', err);
+                        return db.rollback(() => res.status(500).json({ success: false, message: 'Database error deleting student.', error: err.message }));
+                    }
+                    if (result.affectedRows === 0) {
+                        return db.rollback(() => res.status(404).json({ success: false, message: 'Student not found.' }));
+                    }
+
+                    db.commit(err => {
+                        if (err) {
+                            console.error('Commit error:', err);
+                            return db.rollback(() => res.status(500).json({ success: false, message: 'Commit error.', error: err.message }));
+                        }
+                        res.status(200).json({ success: true, message: 'Student deleted successfully.' });
+                    });
+                });
+            });
+        });
+    });
+});
+
+// ==========================
+// Upload student profile picture
+// ==========================
+app.post('/api/students/upload-profile-picture', upload.single('profile_picture'), (req, res) => {
+    if (!req.session.isAuthenticated)
+        return res.status(401).json({ success: false, message: 'Unauthorized.' });
+
+    const studentId = req.body.studentId;
+    const profilePicture = req.file ? `Uploads/${req.file.filename}` : null;
+
+    if (!studentId || !profilePicture) {
+        console.log('Missing studentId or profile picture:', { studentId, profilePicture });
+        return res.status(400).json({ success: false, message: 'Student ID and profile picture are required.' });
+    }
+
+    const updateQuery = `
+        UPDATE Students
+        SET profile_picture = ?
+        WHERE id = ?
+    `;
+    db.query(updateQuery, [profilePicture, studentId], (err, result) => {
+        if (err) {
+            console.error('Error updating profile picture:', err);
+            return res.status(500).json({ success: false, message: 'Database error updating profile picture.', error: err.message });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Student not found.' });
+        }
+        res.status(200).json({ success: true, message: 'Profile picture uploaded successfully.', profile_picture: profilePicture });
+    });
+});
+staff:
+
+app.get('/api/staff', (req, res) => {
+    if (!req.session.isAuthenticated) {
+        return res.status(401).json({ success: false, message: 'Unauthorized.' });
+    }
+
+    const query = `
+        SELECT 
+            s.id,
+            s.staff_id,
+            s.name,
+            s.email,
+            s.phone,
+            s.role,
+            s.profile_picture,
+            GROUP_CONCAT(DISTINCT 
+                COALESCE(c.class_name, wc.class_name)
+                ORDER BY c.class_name, wc.class_name SEPARATOR ', '
+            ) AS classes_taught,
+            GROUP_CONCAT(DISTINCT 
+                sub.subject_name
+                ORDER BY sub.subject_name SEPARATOR ', '
+            ) AS subjects_taught,
+            GROUP_CONCAT(DISTINCT 
+                CASE 
+                    WHEN sfm.section_id = 1 THEN CONCAT('Form Master: ', c_fm.class_name)
+                    WHEN sfm.section_id = 2 THEN CONCAT('Form Master: ', wc_fm.class_name)
+                    ELSE NULL
+                END SEPARATOR ' | '
+            ) AS form_master_info
+        FROM staff s
+        LEFT JOIN staff_classes sc ON s.id = sc.staff_id
+        LEFT JOIN Classes c ON sc.class_id = c.class_id AND sc.section_id = 1
+        LEFT JOIN Western_Classes wc ON sc.western_class_id = wc.western_class_id AND sc.section_id = 2
+        LEFT JOIN staff_subjects ss ON s.id = ss.staff_id
+        LEFT JOIN Subjects sub ON ss.subject_id = sub.subject_id
+        LEFT JOIN staff_form_master sfm ON s.id = sfm.staff_id AND sfm.term = (SELECT MAX(term) FROM staff_form_master)
+        LEFT JOIN Classes c_fm ON sfm.class_id = c_fm.class_id AND sfm.section_id = 1
+        LEFT JOIN Western_Classes wc_fm ON sfm.western_class_id = wc_fm.western_class_id AND sfm.section_id = 2
+        GROUP BY s.id, s.staff_id, s.name, s.email, s.phone, s.role, s.profile_picture
+        ORDER BY s.id DESC;
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching staff:', err);
+            return res.status(500).json({ success: false, message: 'Database error.' });
+        }
+        res.status(200).json({ success: true, data: results });
+    });
+});
+
+// ================== Fetch single staff ==================
+app.get('/api/staff/:id', (req, res) => {
+    if (!req.session.isAuthenticated) {
+        return res.status(401).json({ success: false, message: 'Unauthorized.' });
+    }
+
+    const staffId = req.params.id;
+    const staffQuery = 'SELECT id, staff_id, name, email, phone, role, profile_picture FROM staff WHERE id = ?';
+
+    db.query(staffQuery, [staffId], (err, staffResults) => {
+        if (err) {
+            console.error('Error fetching staff details:', err);
+            return res.status(500).json({ success: false, message: 'Database error.' });
+        }
+        if (staffResults.length === 0) {
+            return res.status(404).json({ success: false, message: 'Staff member not found.' });
+        }
+
+        const staff = staffResults[0];
+
+        const classesQuery = 'SELECT class_id, western_class_id, section_id FROM staff_classes WHERE staff_id = ?;';
+        const subjectsQuery = 'SELECT subject_id, section_id FROM staff_subjects WHERE staff_id = ?;'; // ✅ include section_id
+        const formMasterQuery = `
+            SELECT class_id, western_class_id, section_id 
+            FROM staff_form_master 
+            WHERE staff_id = ? 
+            AND term = (SELECT MAX(term) FROM staff_form_master) 
+            LIMIT 1;
+        `;
+
+        db.query(classesQuery, [staffId], (err, classesResults) => {
+            if (err) return res.status(500).json({ success: false, message: 'Classes fetch error.' });
+
+            db.query(subjectsQuery, [staffId], (err, subjectsResults) => {
+                if (err) return res.status(500).json({ success: false, message: 'Subjects fetch error.' });
+
+                db.query(formMasterQuery, [staffId], (err, formMasterResults) => {
+                    if (err) return res.status(500).json({ success: false, message: 'Form Master fetch error.' });
+
+                    staff.classes = classesResults.map(r => ({
+                        class_id: r.class_id || r.western_class_id,
+                        section_id: r.section_id
+                    }));
+
+                    staff.subjects = subjectsResults.map(r => ({
+                        subject_id: r.subject_id,
+                        section_id: r.section_id
+                    }));
+
+                    staff.formMaster = formMasterResults.length > 0 ? {
+                        class_id: formMasterResults[0].class_id || formMasterResults[0].western_class_id,
+                        section_id: formMasterResults[0].section_id
+                    } : null;
+
+                    res.status(200).json({ success: true, data: staff });
+                });
+            });
+        });
+    });
+});
+
+// ================== Add or Update staff ==================
+app.post('/api/staff', async (req, res) => {
+    if (!req.session.isAuthenticated) {
+        console.error('Unauthorized access attempt to /api/staff');
+        return res.status(401).json({ success: false, message: 'Unauthorized.' });
+    }
+
+    const { id, staff_id, name, email, phone, role, password, classes_taught, subjects_taught, form_master_class } = req.body;
+
+    if (!staff_id || !name || !phone || !role) {
+        console.error('Missing required fields:', { staff_id, name, phone, role });
+        return res.status(400).json({ success: false, message: 'Required fields are missing.' });
+    }
+
+    const isUpdate = !!id;
+    const term = 1; // default term
+
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error('Transaction start error:', err);
+            return res.status(500).json({ success: false, message: 'Database error.' });
+        }
+
+        if (!isUpdate) {
+            const rawPassword = password || "default";
+            bcrypt.hash(rawPassword, 10, (err, hash) => {
+                if (err) {
+                    return db.rollback(() => {
+                        console.error('Hashing error:', err);
+                        res.status(500).json({ success: false, message: 'Error hashing password.' });
+                    });
+                }
+                insertStaff(hash);
+            });
+        } else {
+            updateStaff();
+        }
+
+        function insertStaff(hashedPassword) {
+            const createQuery = 'INSERT INTO staff (staff_id, name, email, phone, role, password, profile_picture) VALUES (?, ?, ?, ?, ?, ?, NULL)';
+            db.query(createQuery, [staff_id, name, email, phone, role, hashedPassword], (err, result) => {
+                if (err) {
+                    return db.rollback(() => {
+                        console.error('Error creating staff:', err);
+                        res.status(500).json({ success: false, message: 'Database error.' });
+                    });
+                }
+                const newStaffId = result.insertId; // Capture the new ID
+                console.log(`Created staff with ID: ${newStaffId}, staff_id: ${staff_id}`);
+                insertRelationships(newStaffId);
+            });
+        }
+
+        function updateStaff() {
+            const updateQuery = 'UPDATE staff SET staff_id = ?, name = ?, email = ?, phone = ?, role = ? WHERE id = ?';
+            db.query(updateQuery, [staff_id, name, email, phone, role, id], (err) => {
+                if (err) {
+                    return db.rollback(() => {
+                        console.error('Error updating staff:', err);
+                        res.status(500).json({ success: false, message: 'Database error.' });
+                    });
+                }
+                deleteOldRelationships(id);
+            });
+        }
+
+        function deleteOldRelationships(staffId) {
+            db.query('DELETE FROM staff_classes WHERE staff_id = ?', [staffId], (err) => {
+                if (err) return rollbackError('Error deleting staff classes:', err);
+
+                db.query('DELETE FROM staff_subjects WHERE staff_id = ?', [staffId], (err) => {
+                    if (err) return rollbackError('Error deleting staff subjects:', err);
+
+                    db.query('DELETE FROM staff_form_master WHERE staff_id = ? AND term = ?', [staffId, term], (err) => {
+                        if (err) return rollbackError('Error deleting form master:', err);
+                        insertRelationships(staffId);
+                    });
+                });
+            });
+        }
+
+        function insertRelationships(staffId) {
+            if (classes_taught && Array.isArray(classes_taught) && classes_taught.length > 0) {
+                const classValues = classes_taught.map(cls => {
+                    const [section_id, class_id] = cls.split(':').map(Number);
+                    return [
+                        staffId,
+                        section_id === 1 ? class_id : null,
+                        section_id === 2 ? class_id : null,
+                        section_id,
+                        term
+                    ];
+                }).filter(row => row[1] !== null || row[2] !== null);
+
+                if (classValues.length > 0) {
+                    const classInsertQuery = `
+                        INSERT INTO staff_classes (staff_id, class_id, western_class_id, section_id, term)
+                        VALUES ?
+                    `;
+                    db.query(classInsertQuery, [classValues], (err) => {
+                        if (err) return rollbackError('Error inserting staff classes:', err);
+                    });
+                }
+            }
+
+            if (subjects_taught && Array.isArray(subjects_taught) && subjects_taught.length > 0) {
+                const subjectValues = subjects_taught.map(subject => {
+                    const [section_id, subject_id] = subject.split(':').map(Number);
+                    return [staffId, subject_id, section_id, term];
+                }).filter(row => row[1] && row[2]);
+
+                if (subjectValues.length > 0) {
+                    const subjectInsertQuery = `
+                        INSERT INTO staff_subjects (staff_id, subject_id, section_id, term)
+                        VALUES ?
+                    `;
+                    db.query(subjectInsertQuery, [subjectValues], (err) => {
+                        if (err) {
+                            console.error('Error inserting staff subjects:', err);
+                            return rollbackError('Error inserting staff subjects:', err);
+                        }
+                    });
+                }
+            }
+
+            if (form_master_class) {
+                const [section_id, class_id] = form_master_class.split(':').map(Number);
+                const fmInsertQuery = `
+                    INSERT INTO staff_form_master (staff_id, class_id, western_class_id, section_id, term)
+                    VALUES (?, ?, ?, ?, ?)
+                `;
+                db.query(fmInsertQuery, [staffId, section_id === 1 ? class_id : null, section_id === 2 ? class_id : null, section_id, term], (err) => {
+                    if (err) return rollbackError('Error inserting form master:', err);
+                });
+            }
+
+            db.commit((err) => {
+                if (err) return rollbackError('Commit error:', err);
+
+                fetchEnrichedStaff(staffId, (staff) => {
+                    if (!staff) {
+                        console.error('Failed to fetch enriched staff data for ID:', staffId);
+                        return res.status(500).json({ success: false, message: 'Failed to fetch staff data.' });
+                    }
+                    console.log(`Returning staff data for ID: ${staffId}, staff_id: ${staff.staff_id}, profile_picture: ${staff.profile_picture || 'NULL'}`);
+                    res.status(200).json({ 
+                        success: true, 
+                        message: isUpdate ? 'Staff updated successfully.' : 'Staff created successfully.',
+                        data: staff,
+                        id: staffId // Explicitly return the staff ID
+                    });
+                });
+            });
+        }
+
+        function rollbackError(msg, err) {
+            return db.rollback(() => {
+                console.error(msg, err);
+                res.status(500).json({ success: false, message: 'Database error.' });
+            });
+        }
+    });
+});
+
+// Helper: Fetch Enriched Staff
+function fetchEnrichedStaff(staffId, callback) {
+    const staffQuery = 'SELECT id, staff_id, name, email, phone, role, profile_picture FROM staff WHERE id = ?';
+    const classesQuery = 'SELECT class_id, western_class_id, section_id FROM staff_classes WHERE staff_id = ?';
+    const subjectsQuery = 'SELECT subject_id, section_id FROM staff_subjects WHERE staff_id = ?';
+    const formMasterQuery = `
+        SELECT class_id, western_class_id, section_id 
+        FROM staff_form_master 
+        WHERE staff_id = ? 
+        AND term = (SELECT MAX(term) FROM staff_form_master) 
+        LIMIT 1
+    `;
+
+    db.query(staffQuery, [staffId], (err, staffResults) => {
+        if (err || staffResults.length === 0) {
+            console.error('Error fetching staff:', err || `No staff found for ID: ${staffId}`);
+            return callback(null);
+        }
+
+        const staff = staffResults[0];
+        console.log(`Fetched staff: ID=${staff.id}, staff_id=${staff.staff_id}, profile_picture=${staff.profile_picture || 'NULL'}`);
+
+        db.query(classesQuery, [staffId], (err, classesResults) => {
+            if (err) {
+                console.error('Error fetching classes for staff ID:', staffId, err);
+                return callback(null);
+            }
+            staff.classes = classesResults.map(r => ({
+                class_id: r.class_id || r.western_class_id,
+                section_id: r.section_id
+            }));
+
+            db.query(subjectsQuery, [staffId], (err, subjectsResults) => {
+                if (err) {
+                    console.error('Error fetching subjects for staff ID:', staffId, err);
+                    return callback(null);
+                }
+                staff.subjects = subjectsResults.map(r => ({
+                    subject_id: r.subject_id,
+                    section_id: r.section_id
+                }));
+
+                db.query(formMasterQuery, [staffId], (err, formMasterResults) => {
+                    if (err) {
+                        console.error('Error fetching form master for staff ID:', staffId, err);
+                        return callback(null);
+                    }
+                    staff.formMaster = formMasterResults.length > 0 ? {
+                        class_id: formMasterResults[0].class_id || formMasterResults[0].western_class_id,
+                        section_id: formMasterResults[0].section_id
+                    } : null;
+
+                    console.log(`Enriched staff data for ID: ${staffId}, profile_picture: ${staff.profile_picture || 'NULL'}`);
+                    callback(staff);
+                });
+            });
+        });
+    });
+}
+// ==========================
+// PUT UPDATE STAFF (SAFE UPDATE)
+// ==========================
+app.put('/api/staff/:id', async (req, res) => {
+    if (!req.session.isAuthenticated) {
+        return res.status(401).json({ success: false, message: 'Unauthorized.' });
+    }
+
+    const id = req.params.id;
+    const { staff_id, name, email, phone, role, classes_taught, subjects_taught, form_master_class } = req.body;
+    const term = 1;
+
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error('Transaction start error:', err);
+            return res.status(500).json({ success: false, message: 'Database error.' });
+        }
+
+        // 🔹 Build dynamic UPDATE for staff table
+        const updateFields = [];
+        const params = [];
+
+        if (staff_id) { updateFields.push("staff_id = ?"); params.push(staff_id.trim()); }
+        if (name) { updateFields.push("name = ?"); params.push(name.trim()); }
+        if (email !== undefined) { updateFields.push("email = ?"); params.push(email || null); }
+        if (phone) { updateFields.push("phone = ?"); params.push(phone.trim()); }
+        if (role) { updateFields.push("role = ?"); params.push(role.trim()); }
+
+        params.push(id);
+
+        if (updateFields.length > 0) {
+            const sql = `UPDATE staff SET ${updateFields.join(", ")} WHERE id = ?`;
+            db.query(sql, params, (err, result) => {
+                if (err) return rollbackError('Error updating staff table:', err);
+                if (result.affectedRows === 0) {
+                    return db.rollback(() => res.status(404).json({ success: false, message: 'Staff not found.' }));
+                }
+                updateRelations(id);
+            });
+        } else {
+            updateRelations(id); // no basic fields changed, go straight to relations
+        }
+
+        // 🔹 Update relations only if provided
+        function updateRelations(staffId) {
+            // 1. Update classes if sent
+            if (classes_taught && Array.isArray(classes_taught) && classes_taught.length > 0) {
+                db.query("DELETE FROM staff_classes WHERE staff_id = ?", [staffId], (err) => {
+                    if (err) return rollbackError("Error clearing old classes:", err);
+
+                    const classValues = classes_taught.map(cls => {
+                        const [section_id, class_id] = cls.split(':').map(Number);
+                        return [staffId, section_id === 1 ? class_id : null, section_id === 2 ? class_id : null, section_id, term];
+                    });
+
+                    db.query("INSERT INTO staff_classes (staff_id, class_id, western_class_id, section_id, term) VALUES ?", [classValues], (err) => {
+                        if (err) return rollbackError("Error inserting classes:", err);
+                        updateSubjects(staffId);
+                    });
+                });
+            } else {
+                updateSubjects(staffId); // skip classes update
+            }
+        }
+
+        // 2. Update subjects if sent
+        function updateSubjects(staffId) {
+            if (subjects_taught && Array.isArray(subjects_taught) && subjects_taught.length > 0) {
+                db.query("DELETE FROM staff_subjects WHERE staff_id = ?", [staffId], (err) => {
+                    if (err) return rollbackError("Error clearing old subjects:", err);
+
+                    const subjectValues = subjects_taught.map(sub => {
+                        const [section_id, subject_id] = sub.split(':').map(Number);
+                        return [staffId, subject_id, section_id, term];
+                    });
+
+                    db.query("INSERT INTO staff_subjects (staff_id, subject_id, section_id, term) VALUES ?", [subjectValues], (err) => {
+                        if (err) return rollbackError("Error inserting subjects:", err);
+                        updateFormMaster(staffId);
+                    });
+                });
+            } else {
+                updateFormMaster(staffId); // skip subjects update
+            }
+        }
+
+        // 3. Update form master class if sent
+        function updateFormMaster(staffId) {
+            // Check if form_master_class is explicitly null or undefined
+            if (form_master_class === null || form_master_class === undefined) {
+                db.query("DELETE FROM staff_form_master WHERE staff_id = ?", [staffId], (err) => {
+                    if (err) return rollbackError("Error clearing form master:", err);
+                    finish(staffId); // No new form master record to insert
+                });
+            } else if (form_master_class) {
+                // Handle case where form_master_class is provided
+                db.query("DELETE FROM staff_form_master WHERE staff_id = ?", [staffId], (err) => {
+                    if (err) return rollbackError("Error clearing old form master:", err);
+
+                    const [section_id, class_id] = form_master_class.split(':').map(Number);
+                    db.query(
+                        "INSERT INTO staff_form_master (staff_id, class_id, western_class_id, section_id, term) VALUES (?, ?, ?, ?, ?)",
+                        [staffId, section_id === 1 ? class_id : null, section_id === 2 ? class_id : null, section_id, term],
+                        (err) => {
+                            if (err) return rollbackError("Error inserting form master:", err);
+                            finish(staffId);
+                        }
+                    );
+                });
+            } else {
+                finish(staffId); // No changes to form master if form_master_class is an empty string or other falsy value
+            }
+        }
+
+        // Commit and return data
+        function finish(staffId) {
+            db.commit((err) => {
+                if (err) return rollbackError("Commit error:", err);
+
+                fetchEnrichedStaff(staffId, (staff) => {
+                    res.status(200).json({
+                        success: true,
+                        message: "Staff updated successfully.",
+                        data: staff
+                    });
+                });
+            });
+        }
+
+        function rollbackError(msg, err) {
+            return db.rollback(() => {
+                console.error(msg, err);
+                res.status(500).json({ success: false, message: msg });
+            });
+        }
+    });
+});
+
+// ================== Helper: Fetch Enriched Staff ==================
+function fetchEnrichedStaff(staffId, callback) {
+    const staffQuery = 'SELECT id, staff_id, name, email, phone, role, profile_picture FROM staff WHERE id = ?';
+    const classesQuery = 'SELECT class_id, western_class_id, section_id FROM staff_classes WHERE staff_id = ?;';
+    const subjectsQuery = 'SELECT subject_id, section_id FROM staff_subjects WHERE staff_id = ?;';
+    const formMasterQuery = `
+        SELECT class_id, western_class_id, section_id 
+        FROM staff_form_master 
+        WHERE staff_id = ? 
+        AND term = (SELECT MAX(term) FROM staff_form_master) 
+        LIMIT 1;
+    `;
+
+    db.query(staffQuery, [staffId], (err, staffResults) => {
+        if (err || staffResults.length === 0) return callback(null);
+
+        const staff = staffResults[0];
+
+        db.query(classesQuery, [staffId], (err, classesResults) => {
+            staff.classes = classesResults.map(r => ({
+                class_id: r.class_id || r.western_class_id,
+                section_id: r.section_id
+            }));
+
+            db.query(subjectsQuery, [staffId], (err, subjectsResults) => {
+                staff.subjects = subjectsResults.map(r => ({
+                    subject_id: r.subject_id,
+                    section_id: r.section_id
+                }));
+
+                db.query(formMasterQuery, [staffId], (err, formMasterResults) => {
+                    staff.formMaster = formMasterResults.length > 0 ? {
+                        class_id: formMasterResults[0].class_id || formMasterResults[0].western_class_id,
+                        section_id: formMasterResults[0].section_id
+                    } : null;
+
+                    callback(staff);
+                });
+            });
+        });
+    });
+}
+
+
+
