@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" style="height: auto; min-height: 100%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silver Screen Cinemas - Kano</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        cinema: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                            accent: '#e11d48',
+                            gold: '#f59e0b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { height: auto; min-height: 100%; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .seat { transition: all 0.2s; }
+        .seat:not(.occupied):hover { transform: scale(1.1); }
+        .sidebar-overlay { display: none; }
+        @media (max-width: 768px) {
+            .sidebar-overlay.active { display: block; }
+        }
+    </style>
+</head>
+<body class="bg-cinema-900 text-white font-sans antialiased selection:bg-cinema-accent selection:text-white" style="height: auto; min-height: 100%;">
+
+<script>
+    let currentUser = null;
+    const CINEMA_NAME = 'Silver Screen Cinemas';
+    const LOCATION = 'Kano - Shoprite';
+    let selectedLocation = LOCATION;
+    let mobileMenuOpen = false;
+    let sidebarOpen = true;
+    let currentAdminTab = 'movies';
+    let currentUserTab = 'bookings';
+    let authMode = 'signin';
+    let booking = {
+        movie: null,
+        location: LOCATION,
+        cinema: CINEMA_NAME,
+        date: null,
+        time: null,
+        seats: [],
+        total: 0
+    };
+
+    const movies = [
+        { 
+            title: "Dune: Part Two", 
+            poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80", 
+            genre: "Sci-Fi", 
+            rating: 9.2,
+            duration: "2h 46m",
+            description: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+            status: "Showing"
+        },
+        { 
+            title: "Oppenheimer", 
+            poster: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800&q=80", 
+            genre: "Drama", 
+            rating: 8.9,
+            duration: "3h 0m",
+            description: "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.",
+            status: "Showing"
+        },
+        { 
+            title: "The Dark Knight", 
+            poster: "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=800&q=80", 
+            genre: "Action", 
+            rating: 9.5,
+            duration: "2h 32m",
+            description: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests.",
+            status: "Finished"
+        },
+        { 
+            title: "Inception", 
+            poster: "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=800&q=80", 
+            genre: "Thriller", 
+            rating: 8.8,
+            duration: "2h 28m",
+            description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea.",
+            status: "Finished"
+        },
+        { 
+            title: "Interstellar", 
+            poster: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=80", 
+            genre: "Sci-Fi", 
+            rating: 8.6,
+            duration: "2h 49m",
+            description: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+            status: "Coming Soon"
+        },
+        { 
+            title: "The Matrix", 
+            poster: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80", 
+            genre: "Sci-Fi", 
+            rating: 8.7,
+            duration: "2h 16m",
+            description: "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
+            status: "Finished"
+        }
+    ];
+
+    const mockUsers = [
+        { id: 1, name: 'Sabo Ahmed', email: 'sabo@example.com', role: 'User', joined: 'Jan 15, 2026', bookings: 12, status: 'Active' },
+        { id: 2, name: 'Amina Bello', email: 'amina@example.com', role: 'User', joined: 'Jan 10, 2026', bookings: 8, status: 'Active' },
+        { id: 3, name: 'Chidi Okafor', email: 'chidi@example.com', role: 'User', joined: 'Jan 5, 2026', bookings: 15, status: 'Active' },
+        { id: 4, name: 'Fatima Yusuf', email: 'fatima@example.com', role: 'User', joined: 'Dec 28, 2025', bookings: 3, status: 'Inactive' },
+        { id: 5, name: 'Emeka Nwosu', email: 'emeka@example.com', role: 'User', joined: 'Dec 20, 2025', bookings: 20, status: 'Active' }
+    ];
+
+    const mockBookings = [
+        { id: 'SSC-847291', movie: 'Dune: Part Two', user: 'Sabo Ahmed', date: 'Jan 18, 2026', time: '7:45 PM', seats: 'A5, A6', amount: 5600, status: 'Confirmed' },
+        { id: 'SSC-847290', movie: 'Oppenheimer', user: 'Amina Bello', date: 'Jan 17, 2026', time: '4:30 PM', seats: 'B3', amount: 2800, status: 'Confirmed' },
+        { id: 'SSC-847289', movie: 'The Dark Knight', user: 'Chidi Okafor', date: 'Jan 17, 2026', time: '10:00 PM', seats: 'C1, C2, C3', amount: 8400, status: 'Confirmed' },
+        { id: 'SSC-847288', movie: 'Inception', user: 'Fatima Yusuf', date: 'Jan 16, 2026', time: '1:15 PM', seats: 'D4', amount: 2800, status: 'Cancelled' },
+        { id: 'SSC-847287', movie: 'Dune: Part Two', user: 'Emeka Nwosu', date: 'Jan 15, 2026', time: '7:45 PM', seats: 'B7, B8', amount: 5600, status: 'Confirmed' }
+    ];
+
+    const userBookingHistory = [
+        { id: 'SSC-847291', movie: 'Dune: Part Two', poster: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&q=80', date: 'Jan 18, 2026', time: '7:45 PM', seats: 'A5, A6', cinema: CINEMA_NAME, amount: 5600, status: 'Upcoming' },
+        { id: 'SSC-842156', movie: 'Oppenheimer', poster: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400&q=80', date: 'Jan 10, 2026', time: '4:30 PM', seats: 'C3, C4', cinema: CINEMA_NAME, amount: 5600, status: 'Completed' },
+        { id: 'SSC-839847', movie: 'The Dark Knight', poster: 'https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=400&q=80', date: 'Jan 5, 2026', time: '10:00 PM', seats: 'B5', cinema: CINEMA_NAME, amount: 2800, status: 'Completed' }
+    ];
+
+    const validCredentials = {
+        user: { email: 'user@silverscreen.com', password: 'user123' },
+        admin: { email: 'admin@silverscreen.com', password: 'admin123' }
+    };
+
+    function toggleMobileMenu() {
+        mobileMenuOpen = !mobileMenuOpen;
+        const menu = document.getElementById('mobile-menu');
+        if (mobileMenuOpen) {
+            menu.classList.remove('hidden');
+        } else {
+            menu.classList.add('hidden');
+        }
+    }
+
+    function toggleSidebar() {
+        sidebarOpen = !sidebarOpen;
+        const activeDashboard = document.querySelector('.dashboard-container:not(.hidden)');
+        if (!activeDashboard) return;
+
+        const sidebar = activeDashboard.querySelector('.dashboard-sidebar');
+        const overlay = activeDashboard.querySelector('.sidebar-overlay');
+        const toggleBtn = activeDashboard.querySelector('.sidebar-toggle-btn');
+        
+        if (sidebarOpen) {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+            if (overlay) overlay.classList.add('active');
+            if (toggleBtn) {
+                toggleBtn.innerHTML = '<i data-lucide="panel-left-close" class="h-5 w-5"></i>';
+            }
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+            if (overlay) overlay.classList.remove('active');
+            if (toggleBtn) {
+                toggleBtn.innerHTML = '<i data-lucide="panel-left-open" class="h-5 w-5"></i>';
+            }
+        }
+        lucide.createIcons();
+    }
+
+    function closeSidebarOnMobile() {
+        if (window.innerWidth < 768) {
+            sidebarOpen = false;
+            const activeDashboard = document.querySelector('.dashboard-container:not(.hidden)');
+            if (!activeDashboard) return;
+            
+            const sidebar = activeDashboard.querySelector('.dashboard-sidebar');
+            const overlay = activeDashboard.querySelector('.sidebar-overlay');
+            if (sidebar) {
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+            }
+            if (overlay) overlay.classList.remove('active');
+        }
+    }
+
+    function showView(viewId) {
+        document.querySelectorAll('.app-view, .dashboard-container').forEach(el => el.classList.add('hidden'));
+        const el = document.getElementById(viewId);
+        if (el) el.classList.remove('hidden');
+        
+        const mainHeader = document.getElementById('main-header');
+        if (viewId === 'admin-dashboard' || viewId === 'user-dashboard') {
+            mainHeader.classList.add('hidden');
+            sidebarOpen = window.innerWidth >= 768;
+            const sidebar = el.querySelector('.dashboard-sidebar');
+            if (sidebar) {
+                if (sidebarOpen) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                }
+            }
+        } else {
+            mainHeader.classList.remove('hidden');
+        }
+        
+        if (viewId === 'cinemas-view') updateCinemas();
+        if (viewId === 'confirmation-view') generateQRCode();
+        if (viewId === 'details-view') updateDetailsView();
+        if (viewId === 'home-view') updateHomeView();
+        if (viewId === 'admin-dashboard') renderAdminContent();
+        if (viewId === 'user-dashboard') renderUserContent();
+        
+        mobileMenuOpen = false;
+        document.getElementById('mobile-menu').classList.add('hidden');
+        window.scrollTo(0, 0);
+        lucide.createIcons();
+    }
+
+    function setAuthMode(mode) {
+        authMode = mode;
+        renderAuthView();
+    }
+
+    function renderAuthView() {
+        const container = document.getElementById('auth-container');
+        if (authMode === 'signin') {
+            container.innerHTML = `
+                <div class="text-center mb-8">
+                    <i data-lucide="film" class="h-12 w-12 text-cinema-accent mx-auto mb-4"></i>
+                    <h2 class="text-3xl font-bold">Silver Screen Cinemas</h2>
+                    <p class="text-gray-400 mt-2">Sign in to access your account</p>
+                </div>
+                <div class="bg-cinema-800 rounded-2xl p-8 border border-white/5">
+                    <div class="flex justify-center space-x-6 mb-6">
+                        <button id="role-user" onclick="document.getElementById('selected-role').value = 'user'; updateRoleSelection('user');" class="role-icon p-4 rounded-full bg-cinema-accent hover:bg-cinema-accent/80 transition-colors">
+                            <i data-lucide="user" class="h-8 w-8"></i>
+                        </button>
+                        <button id="role-admin" onclick="document.getElementById('selected-role').value = 'admin'; updateRoleSelection('admin');" class="role-icon p-4 rounded-full bg-cinema-700 hover:bg-cinema-600 transition-colors">
+                            <i data-lucide="shield" class="h-8 w-8"></i>
+                        </button>
+                    </div>
+                    <form id="signin-form" onsubmit="return handleSignIn(event);">
+                        <input type="hidden" id="selected-role" value="user">
+                        <div class="mb-4">
+                            <label class="block text-sm text-gray-400 mb-2">Email Address</label>
+                            <input type="email" id="signin-email" required class="w-full bg-cinema-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cinema-accent" placeholder="user@silverscreen.com">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm text-gray-400 mb-2">Password</label>
+                            <input type="password" id="signin-password" required class="w-full bg-cinema-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cinema-accent" placeholder="user123 or admin123">
+                        </div>
+                        <div id="signin-error" class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm"></div>
+                        <div class="flex items-center justify-between text-sm mb-6">
+                            <label class="flex items-center text-gray-400">
+                                <input type="checkbox" class="rounded bg-cinema-900 border-gray-700 text-cinema-accent mr-2"> Remember me
+                            </label>
+                            <button type="button" onclick="showView('forgot-password-view')" class="text-cinema-accent hover:text-rose-500">Forgot password?</button>
+                        </div>
+                        <button type="submit" class="w-full bg-cinema-accent hover:bg-rose-700 py-3 rounded-xl font-bold">Sign In</button>
+                    </form>
+                    <div class="mt-8 text-center">
+                        <p class="text-gray-400 text-sm">Don't have an account? <button onclick="setAuthMode('signup')" class="text-white hover:underline">Sign up</button></p>
+                    </div>
+                    <div class="mt-6 p-4 bg-cinema-900/50 rounded-lg border border-white/10">
+                        <p class="text-xs text-gray-400 mb-2">Demo Credentials:</p>
+                        <p class="text-xs text-gray-300">User: user@silverscreen.com / user123</p>
+                        <p class="text-xs text-gray-300">Admin: admin@silverscreen.com / admin123</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="text-center mb-8">
+                    <i data-lucide="user-plus" class="h-12 w-12 text-cinema-accent mx-auto mb-4"></i>
+                    <h2 class="text-3xl font-bold">Create Account</h2>
+                    <p class="text-gray-400 mt-2">Join Silver Screen Cinemas</p>
+                </div>
+                <div class="bg-cinema-800 rounded-2xl p-8 border border-white/5">
+                    <form id="signup-form" onsubmit="return handleSignUp(event);">
+                        <div class="mb-4">
+                            <label class="block text-sm text-gray-400 mb-2">Full Name</label>
+                            <input type="text" required class="w-full bg-cinema-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cinema-accent" placeholder="John Doe">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm text-gray-400 mb-2">Email Address</label>
+                            <input type="email" required class="w-full bg-cinema-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cinema-accent" placeholder="you@example.com">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm text-gray-400 mb-2">Phone Number</label>
+                            <input type="tel" required class="w-full bg-cinema-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cinema-accent" placeholder="+234 800 000 0000">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm text-gray-400 mb-2">Password</label>
+                            <input type="password" id="signup-password" required class="w-full bg-cinema-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cinema-accent" placeholder="••••••••">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-sm text-gray-400 mb-2">Confirm Password</label>
+                            <input type="password" id="signup-confirm" required class="w-full bg-cinema-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cinema-accent" placeholder="••••••••">
+                        </div>
+                        <div id="signup-error" class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm"></div>
+                        <button type="submit" class="w-full bg-cinema-accent hover:bg-rose-700 py-3 rounded-xl font-bold">Create Account</button>
+                    </form>
+                    <div class="mt-8 text-center">
+                        <p class="text-gray-400 text-sm">Already have an account? <button onclick="setAuthMode('signin')" class="text-white hover:underline">Sign in</button></p>
+                    </div>
+                </div>
+            `;
+        }
+        lucide.createIcons();
+    }
+
+    function updateRoleSelection(role) {
+        document.querySelectorAll('.role-icon').forEach(el => {
+            el.classList.remove('bg-cinema-accent');
+            el.classList.add('bg-cinema-700');
+        });
+        document.getElementById('role-' + role).classList.remove('bg-cinema-700');
+        document.getElementById('role-' + role).classList.add('bg-cinema-accent');
+    }
+
+    function handleSignIn(event) {
+        event.preventDefault();
+        const email = document.getElementById('signin-email').value;
+        const password = document.getElementById('signin-password').value;
+        const role = document.getElementById('selected-role').value;
+        const errorDiv = document.getElementById('signin-error');
+
+        if (email === validCredentials[role].email && password === validCredentials[role].password) {
+            currentUser = { role: role, name: role === 'admin' ? 'Admin User' : 'Sabo Ahmed', email: email };
+            errorDiv.classList.add('hidden');
+            showView(role === 'admin' ? 'admin-dashboard' : 'user-dashboard');
+            return false;
+        } else {
+            errorDiv.textContent = 'Invalid email or password. Please check the demo credentials below.';
+            errorDiv.classList.remove('hidden');
+            return false;
+        }
+    }
+
+    function handleSignUp(event) {
+        event.preventDefault();
+        const password = document.getElementById('signup-password').value;
+        const confirm = document.getElementById('signup-confirm').value;
+        const errorDiv = document.getElementById('signup-error');
+
+        if (password !== confirm) {
+            errorDiv.textContent = 'Passwords do not match!';
+            errorDiv.classList.remove('hidden');
+            return false;
+        }
+
+        currentUser = { role: 'user', name: 'New User', email: 'newuser@example.com' };
+        errorDiv.classList.add('hidden');
+        showView('user-dashboard');
+        return false;
+    }
+
+    function logout() {
+        currentUser = null;
+        showView('home-view');
+    }
+
+    function setLocation(loc) {
+        selectedLocation = loc;
+        booking.location = loc;
+    }
+
+function updateHomeView() {
+        const heroMovie = movies[0];
+        document.getElementById('hero-image').src = heroMovie.poster;
+        document.getElementById('hero-title').innerText = heroMovie.title;
+        document.getElementById('hero-rating').innerText = heroMovie.rating;
+        document.getElementById('hero-genre').innerText = heroMovie.genre + ' / Adventure';
+        document.getElementById('hero-duration').innerText = heroMovie.duration;
+        
+        const grid = document.getElementById('movies-grid');
+        grid.innerHTML = '';
+        movies.forEach(movie => {
+            const card = document.createElement('div');
+            card.className = 'group cursor-pointer';
+            card.onclick = () => { booking.movie = movie.title; showView('details-view'); };
+            card.innerHTML = '<div class="relative aspect-[2/3] rounded-xl overflow-hidden mb-3"><img src="' + movie.poster + '" alt="' + movie.title + '" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"><div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><span class="bg-cinema-accent text-white px-6 py-2 rounded-full font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform">Book Now</span></div></div><h3 class="font-bold text-lg truncate">' + movie.title + '</h3><div class="flex justify-between items-center text-sm text-gray-400 mt-1"><span>' + movie.genre + '</span><span class="flex items-center text-cinema-gold"><i data-lucide="star" class="h-3 w-3 fill-current mr-1"></i> ' + movie.rating + '</span></div>';
+            grid.appendChild(card);
+        });
+        lucide.createIcons();
+    }
+
+    function updateDetailsView() {
+        const movie = movies.find(m => m.title === booking.movie) || movies[0];
+        document.getElementById('details-backdrop').src = movie.poster;
+        document.getElementById('details-poster').src = movie.poster;
+        document.getElementById('details-title').innerText = movie.title;
+        document.getElementById('details-rating').innerText = movie.rating;
+        document.getElementById('details-genre').innerText = movie.genre + ', Adventure';
+        document.getElementById('details-duration').innerText = movie.duration;
+        document.getElementById('details-description').innerText = movie.description;
+    }
+
+    function updateCinemas() {
+        const list = document.getElementById('cinemas-list');
+        list.innerHTML = `
+            <div class="max-w-4xl mx-auto bg-cinema-800 rounded-2xl overflow-hidden shadow-xl">
+                <div class="relative h-64 md:h-80">
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1200&q=80" class="w-full h-full object-cover" alt="Silver Screen Cinemas">
+                    <div class="absolute inset-0 bg-gradient-to-t from-cinema-800 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-3xl font-bold text-white mb-2">${CINEMA_NAME}</h3>
+                        <p class="text-gray-300 flex items-center"><i data-lucide="map-pin" class="h-5 w-5 mr-2 text-cinema-accent"></i> ${LOCATION}</p>
+                    </div>
+                </div>
+                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xl font-bold mb-4 text-cinema-accent">About Us</h4>
+                        <p class="text-gray-400 mb-4">Experience movies like never before at Silver Screen Cinemas in Kano. Featuring state-of-the-art projection, immersive sound systems, and premium seating for the ultimate cinematic experience.</p>
+                        <div class="flex items-center space-x-4 text-sm text-gray-300">
+                            <span class="flex items-center"><i data-lucide="monitor" class="h-4 w-4 mr-2"></i> 4K Projection</span>
+                            <span class="flex items-center"><i data-lucide="speaker" class="h-4 w-4 mr-2"></i> Dolby Atmos</span>
+                            <span class="flex items-center"><i data-lucide="wifi" class="h-4 w-4 mr-2"></i> Free WiFi</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold mb-4 text-cinema-accent">Contact & Hours</h4>
+                        <ul class="space-y-3 text-gray-400">
+                            <li class="flex items-start"><i data-lucide="clock" class="h-5 w-5 mr-3 mt-0.5"></i> <span>Daily: 10:00 AM - 11:00 PM</span></li>
+                            <li class="flex items-start"><i data-lucide="phone" class="h-5 w-5 mr-3 mt-0.5"></i> <span>+234 800 SILVER</span></li>
+                            <li class="flex items-start"><i data-lucide="mail" class="h-5 w-5 mr-3 mt-0.5"></i> <span>info@silverscreen.com</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `;
+        lucide.createIcons();
+    }
+
+    function toggleSeat(el) {
+        if (el.classList.contains('occupied')) return;
+        el.classList.toggle('bg-cinema-accent');
+        el.classList.toggle('bg-cinema-700');
+        el.classList.toggle('selected');
+        updateSummary();
+    }
+
+    function updateSummary() {
+        const selected = document.querySelectorAll('.seat.selected');
+        booking.seats = Array.from(selected).map(el => el.dataset.seat);
+        booking.total = selected.length * 2800;
+        document.getElementById('seat-count').innerText = selected.length;
+        document.getElementById('total-price').innerText = '₦' + booking.total.toLocaleString();
+    }
+
+    function generateQRCode() {
+        const qr = document.getElementById('qrcode');
+        qr.innerHTML = '';
+        const refNum = 'SSC-' + Date.now().toString().slice(-6);
+        const data = 'Silver Screen Cinemas - Ref: ' + refNum + ' - ' + (booking.movie || 'Movie') + ' - ' + CINEMA_NAME + ' - Seats: ' + (booking.seats.join(', ') || 'None') + ' - ' + (booking.date || '') + ' ' + (booking.time || '');
+        new QRCode(qr, { text: data, width: 140, height: 140, colorDark:"#000000", colorLight:"#ffffff" });
+
+        document.getElementById('confirm-movie').innerText = booking.movie || 'Selected Movie';
+        document.getElementById('confirm-datetime').innerText = (booking.date || 'Date') + ', ' + (booking.time || 'Time');
+        document.getElementById('confirm-seats').innerText = booking.seats.join(', ') || '—';
+        document.getElementById('confirm-hall').innerText = CINEMA_NAME;
+        document.getElementById('confirm-ref').innerText = refNum;
+    }
+
+    function selectDate(date) {
+        booking.date = date;
+        document.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('bg-cinema-accent'));
+        event.target.closest('.date-btn').classList.add('bg-cinema-accent');
+    }
+
+    function selectTime(time) {
+        booking.time = time;
+        document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.classList.remove('border-cinema-accent', 'bg-cinema-accent/10', 'text-cinema-accent');
+            btn.classList.add('border-gray-600', 'text-gray-300');
+        });
+        event.target.classList.remove('border-gray-600', 'text-gray-300');
+        event.target.classList.add('border-cinema-accent', 'bg-cinema-accent/10', 'text-cinema-accent');
+    }
+
+    function setAdminTab(tab) {
+        currentAdminTab = tab;
+        renderAdminContent();
+        closeSidebarOnMobile();
+    }
+
+    function setUserTab(tab) {
+        currentUserTab = tab;
+        renderUserContent();
+        closeSidebarOnMobile();
+    }
+
+    function renderAdminContent() {
+        const content = document.getElementById('admin-content');
+        if (currentAdminTab === 'movies') {
+            content.innerHTML = `
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Movie Management</h1>
+                    <button class="bg-cinema-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 flex items-center w-full sm:w-auto justify-center">
+                        <i data-lucide="plus" class="h-4 w-4 mr-2"></i> Add Movie
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-50 text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                                <tr>
+                                    <th class="px-4 sm:px-6 py-4 font-medium">Movie</th>
+                                    <th class="px-4 sm:px-6 py-4 font-medium hidden sm:table-cell">Genre</th>
+                                    <th class="px-4 sm:px-6 py-4 font-medium hidden md:table-cell">Rating</th>
+                                    <th class="px-4 sm:px-6 py-4 font-medium hidden md:table-cell">Duration</th>
+                                    <th class="px-4 sm:px-6 py-4 font-medium">Status</th>
+                                    <th class="px-4 sm:px-6 py-4 font-medium text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                ${movies.map(movie => `
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 sm:px-6 py-4 font-medium text-gray-900">${movie.title}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-500 hidden sm:table-cell">${movie.genre}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-500 hidden md:table-cell">${movie.rating}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-500 hidden md:table-cell">${movie.duration}</td>
+                                        <td class="px-4 sm:px-6 py-4"><span class="px-2 py-1 ${movie.status === 'Showing' ? 'bg-green-100 text-green-700' : movie.status === 'Finished' ? 'bg-gray-100 text-gray-600' : 'bg-blue-100 text-blue-700'} rounded-full text-xs font-medium">${movie.status}</span></td>
+                                        <td class="px-4 sm:px-6 py-4 text-right">
+                                            <button class="text-gray-400 hover:text-cinema-accent mr-2"><i data-lucide="edit-2" class="h-4 w-4"></i></button>
+                                            <button class="text-gray-400 hover:text-red-500"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        } else if (currentAdminTab === 'bookings') {
+            content.innerHTML = `
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Booking Management</h1>
+                    <button class="bg-cinema-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 flex items-center w-full sm:w-auto justify-center">
+                        <i data-lucide="download" class="h-4 w-4 mr-2"></i> Export
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <p class="text-gray-500 text-sm font-medium">Total Bookings</p>
+                            <i data-lucide="ticket" class="h-5 w-5 text-cinema-accent"></i>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-900">3,842</p>
+                        <p class="text-green-600 text-sm mt-2 flex items-center"><i data-lucide="trending-up" class="h-3 w-3 mr-1"></i> +18% this month</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <p class="text-gray-500 text-sm font-medium">Revenue</p>
+                            <i data-lucide="dollar-sign" class="h-5 w-5 text-cinema-gold"></i>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-900">₦48.7M</p>
+                        <p class="text-green-600 text-sm mt-2 flex items-center"><i data-lucide="trending-up" class="h-3 w-3 mr-1"></i> +14% this month</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <p class="text-gray-500 text-sm font-medium">Cancelled</p>
+                            <i data-lucide="x-circle" class="h-5 w-5 text-red-500"></i>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-900">127</p>
+                        <p class="text-gray-600 text-sm mt-2">3.3% cancellation rate</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-50 text-gray-500 uppercase tracking-wider">
+                                <tr>
+                                    <th class="px-4 sm:px-6 py-3 font-medium">Booking ID</th>
+                                    <th class="px-4 sm:px-6 py-3 font-medium">Movie</th>
+                                    <th class="px-4 sm:px-6 py-3 font-medium hidden md:table-cell">User</th>
+                                    <th class="px-4 sm:px-6 py-3 font-medium hidden lg:table-cell">Date & Time</th>
+                                    <th class="px-4 sm:px-6 py-3 font-medium hidden sm:table-cell">Amount</th>
+                                    <th class="px-4 sm:px-6 py-3 font-medium">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                ${mockBookings.map(booking => `
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 sm:px-6 py-4 font-mono text-xs text-gray-500">${booking.id}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-900">${booking.movie}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-500 hidden md:table-cell">${booking.user}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-500 hidden lg:table-cell">${booking.date} ${booking.time}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-900 font-medium hidden sm:table-cell">₦${booking.amount.toLocaleString()}</td>
+                                        <td class="px-4 sm:px-6 py-4"><span class="px-2 py-1 ${booking.status === 'Confirmed' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} rounded-full text-xs font-medium">${booking.status}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        } else if (currentAdminTab === 'users') {
+            content.innerHTML = `
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">User Management</h1>
+                    <button class="bg-cinema-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 flex items-center w-full sm:w-auto justify-center">
+                        <i data-lucide="user-plus" class="h-4 w-4 mr-2"></i> Add User
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-50 text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                                <tr>
+                                    <th class="px-4 sm:px-6 py-4 font-medium">Name</th>
+                                    <th class="px-4 sm:px-6 py-4 font-medium hidden md:table-cell">Email</th>
+                                    <th class="px-4 sm:px-6 py-4 font-medium hidden lg:table-cell">Joined</th>
+                                    <th class="px-4 sm:px-6 py-4 font-medium hidden sm:table-cell">Bookings</th>
+                                    <th class="px-4 sm:px-6 py-4 font-medium">Status</th>
+                                    <th class="px-4 sm:px-6 py-4 font-medium text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                ${mockUsers.map(user => `
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 sm:px-6 py-4 font-medium text-gray-900">${user.name}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-500 hidden md:table-cell">${user.email}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-500 hidden lg:table-cell">${user.joined}</td>
+                                        <td class="px-4 sm:px-6 py-4 text-gray-500 hidden sm:table-cell">${user.bookings}</td>
+                                        <td class="px-4 sm:px-6 py-4"><span class="px-2 py-1 ${user.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'} rounded-full text-xs font-medium">${user.status}</span></td>
+                                        <td class="px-4 sm:px-6 py-4 text-right">
+                                            <button class="text-gray-400 hover:text-cinema-accent mr-2"><i data-lucide="edit-2" class="h-4 w-4"></i></button>
+                                            <button class="text-gray-400 hover:text-red-500"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        } else if (currentAdminTab === 'settings') {
+            content.innerHTML = `
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">System Settings</h1>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">General Settings</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-2">System Name</label>
+                                <input type="text" value="Silver Screen Cinemas" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-gray-900">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-2">Support Email</label>
+                                <input type="email" value="support@silverscreen.com" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-gray-900">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-2">Ticket Price (₦)</label>
+                                <input type="number" value="2800" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-gray-900">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Notification Settings</h3>
+                        <div class="space-y-4">
+                            <label class="flex items-center justify-between">
+                                <span class="text-gray-700">Email Notifications</span>
+                                <input type="checkbox" checked class="rounded text-cinema-accent">
+                            </label>
+                            <label class="flex items-center justify-between">
+                                <span class="text-gray-700">SMS Notifications</span>
+                                <input type="checkbox" checked class="rounded text-cinema-accent">
+                            </label>
+                            <label class="flex items-center justify-between">
+                                <span class="text-gray-700">Booking Confirmations</span>
+                                <input type="checkbox" checked class="rounded text-cinema-accent">
+                            </label>
+                            <label class="flex items-center justify-between">
+                                <span class="text-gray-700">Promotional Emails</span>
+                                <input type="checkbox" class="rounded text-cinema-accent">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Payment Settings</h3>
+                        <div class="space-y-4">
+                            <label class="flex items-center justify-between">
+                                <span class="text-gray-700">Accept Card Payments</span>
+                                <input type="checkbox" checked class="rounded text-cinema-accent">
+                            </label>
+                            <label class="flex items-center justify-between">
+                                <span class="text-gray-700">Accept Bank Transfer</span>
+                                <input type="checkbox" checked class="rounded text-cinema-accent">
+                            </label>
+                            <label class="flex items-center justify-between">
+                                <span class="text-gray-700">Accept Mobile Money</span>
+                                <input type="checkbox" class="rounded text-cinema-accent">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Security Settings</h3>
+                        <div class="space-y-3">
+                            <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-2 rounded-lg font-medium">Change Password</button>
+                            <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-2 rounded-lg font-medium">Two-Factor Authentication</button>
+                            <button class="w-full bg-red-100 hover:bg-red-200 text-red-700 py-2 rounded-lg font-medium">Clear Cache</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button class="bg-cinema-accent hover:bg-rose-700 text-white px-6 py-2 rounded-lg font-medium w-full sm:w-auto">Save Changes</button>
+                </div>
+            `;
+        }
+        lucide.createIcons();
+    }
+
+    function renderUserContent() {
+        const content = document.getElementById('user-content');
+        if (currentUserTab === 'bookings') {
+            content.innerHTML = `
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">My Bookings</h1>
+                <div class="space-y-6">
+                    ${userBookingHistory.map(booking => `
+                        <div class="bg-white rounded-xl shadow border border-gray-200 p-4 sm:p-6 flex flex-col md:flex-row gap-4 sm:gap-6">
+                            <img src="${booking.poster}" class="w-full md:w-32 h-48 md:h-auto object-cover rounded-lg">
+                            <div class="flex-1">
+                                <div class="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-0 mb-4">
+                                    <div>
+                                        <h3 class="text-lg sm:text-xl font-bold text-gray-900">${booking.movie}</h3>
+                                        <p class="text-gray-500 text-sm mt-1">${booking.cinema}</p>
+                                    </div>
+                                    <span class="px-3 py-1 ${booking.status === 'Upcoming' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'} rounded-full text-xs font-medium">${booking.status}</span>
+                                </div>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Date</p>
+                                        <p class="font-medium text-gray-900">${booking.date}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Time</p>
+                                        <p class="font-medium text-gray-900">${booking.time}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Seats</p>
+                                        <p class="font-medium text-gray-900">${booking.seats}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Amount</p>
+                                        <p class="font-medium text-gray-900">₦${booking.amount.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex flex-col sm:flex-row gap-3">
+                                    <button class="bg-cinema-accent hover:bg-rose-700 text-white px-4 py-2 rounded-lg text-sm font-medium w-full sm:w-auto">View Ticket</button>
+                                    ${booking.status === 'Upcoming' ? '<button class="bg-gray-100 hover:bg-gray-200 text-gray-900 px-4 py-2 rounded-lg text-sm font-medium w-full sm:w-auto">Cancel Booking</button>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        } else if (currentUserTab === 'profile') {
+            content.innerHTML = `
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">My Profile</h1>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Personal Information</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-2">Full Name</label>
+                                <input type="text" value="Sabo Ahmed" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-gray-900">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-2">Email Address</label>
+                                <input type="email" value="sabo@example.com" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-gray-900">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-2">Phone Number</label>
+                                <input type="tel" value="+234 800 123 4567" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-gray-900">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Account Statistics</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                                <span class="text-gray-600">Total Bookings</span>
+                                <span class="font-bold text-gray-900">12</span>
+                            </div>
+                            <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                                <span class="text-gray-600">Total Spent</span>
+                                <span class="font-bold text-gray-900">₦33,600</span>
+                            </div>
+                            <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                                <span class="text-gray-600">Member Since</span>
+                                <span class="font-bold text-gray-900">Jan 2026</span>
+                            </div>
+                            <div class="flex justify-between items-center py-3">
+                                <span class="text-gray-600">Loyalty Points</span>
+                                <span class="font-bold text-cinema-gold">340 pts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button class="bg-cinema-accent hover:bg-rose-700 text-white px-6 py-2 rounded-lg font-medium w-full sm:w-auto">Update Profile</button>
+                </div>
+            `;
+        } else if (currentUserTab === 'settings') {
+            content.innerHTML = `
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">Account Settings</h1>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Notification Preferences</h3>
+                        <div class="space-y-4">
+                            <label class="flex items-center justify-between">
+                                <span class="text-gray-700">Email Notifications</span>
+                                <input type="checkbox" checked class="rounded text-cinema-accent">
+                            </label>
+                            <label class="flex items-center justify-between">
+                                <span class="text-gray-700">SMS Notifications</span>
+                                <input type="checkbox" checked class="rounded text-cinema-accent">
+                            </label>
+                            <label class="flex items-center justify-between">
+                                <span class="text-gray-700">Booking Reminders</span>
+                                <input type="checkbox" checked class="rounded text-cinema-accent">
+                            </label>
+                            <label class="flex items-center justify-between">
+                                <span class="text-gray-700">Promotional Offers</span>
+                                <input type="checkbox" class="rounded text-cinema-accent">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Security</h3>
+                        <div class="space-y-3">
+                            <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-2 rounded-lg font-medium text-left px-4">Change Password</button>
+                            <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-2 rounded-lg font-medium text-left px-4">Enable Two-Factor Auth</button>
+                            <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-2 rounded-lg font-medium text-left px-4">Manage Devices</button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Payment Methods</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <i data-lucide="credit-card" class="h-5 w-5 text-gray-500 mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-gray-900">•••• 4242</p>
+                                        <p class="text-xs text-gray-500">Expires 12/25</p>
+                                    </div>
+                                </div>
+                                <button class="text-gray-400 hover:text-red-500"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+                            </div>
+                            <button class="w-full border-2 border-dashed border-gray-300 hover:border-cinema-accent text-gray-600 hover:text-cinema-accent py-3 rounded-lg font-medium">+ Add Payment Method</button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Danger Zone</h3>
+                        <div class="space-y-3">
+                            <button class="w-full bg-red-50 hover:bg-red-100 text-red-700 py-2 rounded-lg font-medium">Deactivate Account</button>
+                            <button class="w-full bg-red-100 hover:bg-red-200 text-red-700 py-2 rounded-lg font-medium">Delete Account</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button class="bg-cinema-accent hover:bg-rose-700 text-white px-6 py-2 rounded-lg font-medium w-full sm:w-auto">Save Changes</button>
+                </div>
+            `;
+        }
+        lucide.createIcons();
+    }
+
+    window.onload = function() {
+        booking.date = 'JAN 18';
+        booking.time = '1:15 PM';
+        updateHomeView();
+        renderAuthView();
+        lucide.createIcons();
+    };
+</script>
+
+<div class="flex flex-col">
+
+    <header id="main-header" class="bg-cinema-900/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center cursor-pointer" onclick="showView('home-view')">
+                    <i data-lucide="film" class="h-8 w-8 text-cinema-accent mr-2"></i>
+                    <span class="text-xl font-bold tracking-tight">Silver Screen <span class="text-cinema-accent">Cinemas</span></span>
+                </div>
+
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" onclick="showView('home-view')" class="text-gray-300 hover:text-white text-sm font-medium">Movies</a>
+                    <a href="#" onclick="showView('cinemas-view')" class="text-gray-300 hover:text-white text-sm font-medium">The Cinema</a>
+                    <a href="#" onclick="showView('offers-view')" class="text-gray-300 hover:text-white text-sm font-medium">Offers</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center text-sm text-gray-400">
+                        <i data-lucide="map-pin" class="h-4 w-4 mr-1"></i> Kano - Shoprite
+                    </div>
+                    <button onclick="showView('auth-view')" class="hidden md:block bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full text-sm font-medium">Sign In</button>
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-gray-400 hover:text-white">
+                        <i data-lucide="menu" class="h-6 w-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-cinema-800 border-t border-white/10">
+            <nav class="px-4 py-4 space-y-2">
+                <a href="#" onclick="showView('home-view')" class="block text-gray-300 hover:text-white py-2">Movies</a>
+                <a href="#" onclick="showView('cinemas-view')" class="block text-gray-300 hover:text-white py-2">The Cinema</a>
+                <a href="#" onclick="showView('offers-view')" class="block text-gray-300 hover:text-white py-2">Offers</a>
+                <div class="py-2 text-gray-400 text-sm flex items-center"><i data-lucide="map-pin" class="h-4 w-4 mr-2"></i> Kano - Shoprite</div>
+                <button onclick="showView('auth-view')" class="w-full bg-cinema-accent hover:bg-rose-700 px-4 py-2 rounded-lg text-sm font-medium mt-4">Sign In</button>
+            </nav>
+        </div>
+    </header>
+
+    <main id="home-view" class="app-view flex-1">
+        <div class="relative h-96 overflow-hidden">
+            <img id="hero-image" src="" class="w-full h-full object-cover opacity-60" alt="Hero">
+            <div class="absolute inset-0 bg-gradient-to-t from-cinema-900 via-cinema-900/60 to-transparent flex items-end">
+                <div class="max-w-7xl mx-auto px-4 pb-12 w-full">
+                    <span class="inline-block py-1 px-3 rounded bg-cinema-accent text-xs font-bold uppercase mb-2">Now Showing</span>
+                    <h1 id="hero-title" class="text-4xl md:text-5xl font-bold mb-2"></h1>
+                    <div class="flex items-center space-x-4 text-sm text-gray-300 mb-6">
+                        <span class="flex items-center"><i data-lucide="star" class="h-4 w-4 text-cinema-gold mr-1 fill-current"></i> <span id="hero-rating"></span></span>
+                        <span id="hero-genre"></span>
+                        <span id="hero-duration"></span>
+                    </div>
+                    <button onclick="booking.movie = movies[0].title; showView('details-view')" class="bg-cinema-accent hover:bg-rose-700 px-8 py-3 rounded-lg font-semibold flex items-center">
+                        Book Tickets <i data-lucide="chevron-right" class="ml-2 h-4 w-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <div class="flex justify-between items-end mb-8">
+                <h2 class="text-2xl font-bold">Now Showing at Silver Screen Cinemas</h2>
+                <div class="flex space-x-2">
+                    <button class="p-2 rounded-full bg-white/5 hover:bg-white/10"><i data-lucide="chevron-left" class="h-5 w-5"></i></button>
+                    <button class="p-2 rounded-full bg-white/5 hover:bg-white/10"><i data-lucide="chevron-right" class="h-5 w-5"></i></button>
+                </div>
+            </div>
+            <div id="movies-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        </div>
+    </main>
+
+    <main id="details-view" class="app-view hidden flex-1">
+        <div class="relative">
+            <div class="absolute inset-0 h-96 overflow-hidden">
+                <img id="details-backdrop" src="" class="w-full h-full object-cover blur-xl opacity-30">
+                <div class="absolute inset-0 bg-gradient-to-b from-cinema-900/50 to-cinema-900"></div>
+            </div>
+
+            <div class="relative max-w-7xl mx-auto px-4 py-12">
+                <button onclick="showView('home-view')" class="flex items-center text-gray-400 hover:text-white mb-8">
+                    <i data-lucide="arrow-left" class="h-5 w-5 mr-2"></i> Back to Movies
+                </button>
+
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="w-full md:w-1/3 flex-shrink-0">
+                        <img id="details-poster" src="" class="w-full rounded-xl shadow-2xl">
+                    </div>
+                    <div class="flex-1">
+                        <h1 id="details-title" class="text-4xl font-bold mb-2"></h1>
+                        <div class="flex flex-wrap gap-4 text-sm text-gray-300 mb-6">
+                            <span class="px-2 py-1 bg-white/10 rounded">PG-13</span>
+                            <span id="details-duration"></span>
+                            <span id="details-genre"></span>
+                            <span class="flex items-center text-cinema-gold"><i data-lucide="star" class="h-4 w-4 fill-current mr-1"></i> <span id="details-rating"></span></span>
+                        </div>
+                        <p id="details-description" class="text-gray-300 mb-8 max-w-2xl"></p>
+
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold mb-4">Select Date</h3>
+                            <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                                <button onclick="selectDate('JAN 18')" class="date-btn flex flex-col items-center w-16 h-20 bg-cinema-accent rounded-xl">
+                                    <span class="text-xs opacity-80">JAN</span>
+                                    <span class="text-xl font-bold">18</span>
+                                    <span class="text-xs">Today</span>
+                                </button>
+                                <button onclick="selectDate('JAN 19')" class="date-btn flex flex-col items-center w-16 h-20 bg-cinema-800 hover:bg-cinema-700 rounded-xl transition-colors">
+                                    <span class="text-xs text-gray-400">JAN</span>
+                                    <span class="text-xl font-bold">19</span>
+                                    <span class="text-xs text-gray-400">Mon</span>
+                                </button>
+                                <button onclick="selectDate('JAN 20')" class="date-btn flex flex-col items-center w-16 h-20 bg-cinema-800 hover:bg-cinema-700 rounded-xl transition-colors">
+                                    <span class="text-xs text-gray-400">JAN</span>
+                                    <span class="text-xl font-bold">20</span>
+                                    <span class="text-xs text-gray-400">Tue</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold mb-4">Select Time</h3>
+                            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                                <button class="py-2 px-4 rounded-lg border border-gray-600 text-gray-400 opacity-50 cursor-not-allowed">10:30 AM</button>
+                                <button onclick="selectTime('1:15 PM')" class="time-btn py-2 px-4 rounded-lg border border-cinema-accent bg-cinema-accent/10 text-cinema-accent hover:bg-cinema-accent hover:text-white">1:15 PM</button>
+                                <button onclick="selectTime('4:30 PM')" class="time-btn py-2 px-4 rounded-lg border border-gray-600 hover:border-white text-gray-300">4:30 PM</button>
+                                <button onclick="selectTime('7:45 PM')" class="time-btn py-2 px-4 rounded-lg border border-gray-600 hover:border-white text-gray-300">7:45 PM</button>
+                                <button onclick="selectTime('10:00 PM')" class="time-btn py-2 px-4 rounded-lg border border-gray-600 hover:border-white text-gray-300">10:00 PM</button>
+                            </div>
+                        </div>
+
+                        <button onclick="showView('seats-view')" class="w-full md:w-auto bg-white text-cinema-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-200 flex items-center justify-center">
+                            Select Seats <i data-lucide="armchair" class="ml-2 h-5 w-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main id="seats-view" class="app-view hidden flex-1 flex flex-col items-center py-12 px-4">
+        <div class="w-full max-w-3xl">
+            <div class="flex items-center justify-between mb-8">
+                <button onclick="showView('details-view')" class="p-2 rounded-full hover:bg-white/10">
+                    <i data-lucide="arrow-left" class="h-6 w-6"></i>
+                </button>
+                <div class="text-center">
+                    <h2 class="text-xl font-bold" id="seats-movie-title">Movie</h2>
+                    <p class="text-sm text-gray-400"><span id="seats-date">Date</span>, <span id="seats-time">Time</span> • <span id="seats-cinema">Silver Screen</span></p>
+                </div>
+                <div class="w-10"></div>
+            </div>
+
+            <div class="mb-12 relative">
+                <div class="h-2 bg-white rounded-full shadow-[0_10px_30px_rgba(255,255,255,0.3)] mb-8 mx-12"></div>
+                <p class="text-center text-xs text-gray-500 uppercase tracking-widest">Screen</p>
+            </div>
+
+            <div class="flex flex-col gap-3 items-center mb-12">
+                <div class="flex items-center gap-2 md:gap-4">
+                    <span class="w-4 text-gray-400 font-medium text-sm">A</span>
+                    <button onclick="toggleSeat(this)" data-seat="A1" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="A2" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <div class="w-4 md:w-8"></div>
+                    <button onclick="toggleSeat(this)" data-seat="A3" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="A4" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="A5" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="A6" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <div class="w-4 md:w-8"></div>
+                    <button onclick="toggleSeat(this)" data-seat="A7" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="A8" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                </div>
+                <div class="flex items-center gap-2 md:gap-4">
+                    <span class="w-4 text-gray-400 font-medium text-sm">B</span>
+                    <button onclick="toggleSeat(this)" data-seat="B1" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="B2" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <div class="w-4 md:w-8"></div>
+                    <button class="seat occupied w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-white opacity-50 cursor-not-allowed" data-seat="B3"></button>
+                    <button class="seat occupied w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-white opacity-50 cursor-not-allowed" data-seat="B4"></button>
+                    <button onclick="toggleSeat(this)" data-seat="B5" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="B6" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <div class="w-4 md:w-8"></div>
+                    <button onclick="toggleSeat(this)" data-seat="B7" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="B8" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                </div>
+                <div class="flex items-center gap-2 md:gap-4">
+                    <span class="w-4 text-gray-400 font-medium text-sm">C</span>
+                    <button onclick="toggleSeat(this)" data-seat="C1" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="C2" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <div class="w-4 md:w-8"></div>
+                    <button onclick="toggleSeat(this)" data-seat="C3" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="C4" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="C5" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="C6" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <div class="w-4 md:w-8"></div>
+                    <button onclick="toggleSeat(this)" data-seat="C7" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="C8" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                </div>
+                <div class="flex items-center gap-2 md:gap-4">
+                    <span class="w-4 text-gray-400 font-medium text-sm">D</span>
+                    <button onclick="toggleSeat(this)" data-seat="D1" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="D2" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <div class="w-4 md:w-8"></div>
+                    <button onclick="toggleSeat(this)" data-seat="D3" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="D4" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="D5" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="D6" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <div class="w-4 md:w-8"></div>
+                    <button onclick="toggleSeat(this)" data-seat="D7" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                    <button onclick="toggleSeat(this)" data-seat="D8" class="seat w-8 h-8 md:w-10 md:h-10 rounded-t-lg bg-cinema-700 hover:bg-cinema-600"></button>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-6 mb-12 text-sm text-gray-400">
+                <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-cinema-700 mr-2"></div> Available</div>
+                <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-cinema-accent mr-2"></div> Selected</div>
+                <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-white opacity-50 mr-2"></div> Booked</div>
+            </div>
+
+            <div class="bg-cinema-800 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <p class="text-sm text-gray-400 mb-1">Total Price</p>
+                    <div class="text-2xl font-bold"><span id="total-price">₦0</span> <span class="text-sm text-gray-400">/ <span id="seat-count">0</span> seats</span></div>
+                </div>
+                <button onclick="showView('confirmation-view')" class="bg-cinema-accent hover:bg-rose-700 px-8 py-3 rounded-xl font-bold w-full sm:w-auto">Confirm Booking</button>
+            </div>
+        </div>
+    </main>
+
+    <main id="confirmation-view" class="app-view hidden flex-1 flex items-center justify-center p-4">
+        <div class="bg-cinema-800 rounded-3xl p-8 max-w-md w-full text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cinema-accent via-cinema-gold to-cinema-accent"></div>
+            <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i data-lucide="check" class="h-10 w-10 text-green-500"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Booking Confirmed!</h2>
+            <p class="text-gray-400 mb-8">Your tickets have been sent to your email.</p>
+            <div class="bg-cinema-900 rounded-xl p-6 mb-8 text-left border border-white/5 relative">
+                <div class="absolute -left-3 top-1/2 w-6 h-6 bg-cinema-800 rounded-full -translate-y-1/2"></div>
+                <div class="absolute -right-3 top-1/2 w-6 h-6 bg-cinema-800 rounded-full -translate-y-1/2"></div>
+                <div class="border-b-2 border-dashed border-gray-700 mb-4 pb-4">
+                    <h3 id="confirm-movie" class="font-bold text-lg mb-1">Movie</h3>
+                    <p id="confirm-datetime" class="text-sm text-gray-400">Date • Time</p>
+                </div>
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase mb-1">Seats</p>
+                        <p id="confirm-seats" class="font-bold">—</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase mb-1">Hall</p>
+                        <p id="confirm-hall" class="font-bold">—</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-gray-500 uppercase mb-1">Ref</p>
+                        <p id="confirm-ref" class="font-mono text-cinema-accent text-sm">—</p>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <div id="qrcode" class="bg-white p-2 rounded"></div>
+                </div>
+            </div>
+            <div class="flex flex-col gap-3">
+                <button class="w-full bg-white text-cinema-900 py-3 rounded-xl font-bold hover:bg-gray-200">Download Ticket</button>
+                <button onclick="showView('home-view')" class="w-full text-gray-400 hover:text-white py-3">Back to Home</button>
+            </div>
+        </div>
+    </main>
+
+    <main id="auth-view" class="app-view hidden flex-1 flex items-center justify-center p-4">
+        <div id="auth-container" class="w-full max-w-md"></div>
+    </main>
+
+    <main id="forgot-password-view" class="app-view hidden flex-1 flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <i data-lucide="key" class="h-12 w-12 text-cinema-accent mx-auto mb-4"></i>
+                <h2 class="text-3xl font-bold">Reset Password</h2>
+                <p class="text-gray-400 mt-2">Enter your email to receive a reset link</p>
+            </div>
+            <div class="bg-cinema-800 rounded-2xl p-8 border border-white/5">
+                <form onsubmit="event.preventDefault(); alert('Password reset link sent to your email!'); showView('auth-view');">
+                    <div class="mb-6">
+                        <label class="block text-sm text-gray-400 mb-2">Email Address</label>
+                        <input type="email" required class="w-full bg-cinema-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cinema-accent" placeholder="you@example.com">
+                    </div>
+                    <button type="submit" class="w-full bg-cinema-accent hover:bg-rose-700 py-3 rounded-xl font-bold mb-4">Send Reset Link</button>
+                    <button type="button" onclick="showView('auth-view')" class="w-full text-gray-400 hover:text-white py-2">Back to Sign In</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <main id="cinemas-view" class="app-view hidden flex-1">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <button onclick="showView('home-view')" class="flex items-center text-gray-400 hover:text-white mb-8">
+                <i data-lucide="arrow-left" class="h-5 w-5 mr-2"></i> Back to Movies
+            </button>
+            <h2 class="text-2xl font-bold mb-8">Our Location</h2>
+            <div id="cinemas-list"></div>
+        </div>
+    </main>
+
+    <main id="offers-view" class="app-view hidden flex-1">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <button onclick="showView('home-view')" class="flex items-center text-gray-400 hover:text-white mb-8">
+                <i data-lucide="arrow-left" class="h-5 w-5 mr-2"></i> Back to Movies
+            </button>
+            <h2 class="text-2xl font-bold mb-8">Special Offers & Promotions</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-cinema-800 rounded-xl p-6 border border-white/10 hover:border-cinema-accent transition-colors">
+                    <div class="w-12 h-12 bg-cinema-accent/20 rounded-full flex items-center justify-center mb-4">
+                        <i data-lucide="ticket" class="h-6 w-6 text-cinema-accent"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Buy 1 Get 1 Free</h3>
+                    <p class="text-gray-400 mb-4">Valid on weekdays for selected movies. Limited time offer!</p>
+                    <button class="bg-cinema-accent hover:bg-rose-700 px-4 py-2 rounded-lg font-medium w-full">Apply Offer</button>
+                </div>
+                <div class="bg-cinema-800 rounded-xl p-6 border border-white/10 hover:border-cinema-accent transition-colors">
+                    <div class="w-12 h-12 bg-cinema-gold/20 rounded-full flex items-center justify-center mb-4">
+                        <i data-lucide="graduation-cap" class="h-6 w-6 text-cinema-gold"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Student Discount</h3>
+                    <p class="text-gray-400 mb-4">Get 20% off with valid student ID. Available all days.</p>
+                    <button class="bg-cinema-accent hover:bg-rose-700 px-4 py-2 rounded-lg font-medium w-full">Apply Offer</button>
+                </div>
+                <div class="bg-cinema-800 rounded-xl p-6 border border-white/10 hover:border-cinema-accent transition-colors">
+                    <div class="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
+                        <i data-lucide="users" class="h-6 w-6 text-green-500"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Family Pack</h3>
+                    <p class="text-gray-400 mb-4">Buy 4 tickets for the price of 3. Perfect for family outings!</p>
+                    <button class="bg-cinema-accent hover:bg-rose-700 px-4 py-2 rounded-lg font-medium w-full">Apply Offer</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="admin-dashboard" class="dashboard-container hidden flex bg-gray-100 text-gray-900">
+        <div class="sidebar-overlay fixed inset-0 bg-black/50 z-40" onclick="toggleSidebar()"></div>
+        
+        <aside class="dashboard-sidebar fixed md:static w-72 bg-cinema-900 text-white flex flex-col flex-shrink-0 transition-transform duration-300 translate-x-0 z-50 h-screen overflow-y-auto">
+            <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+                <div class="flex items-center">
+                    <i data-lucide="layout-dashboard" class="h-6 w-6 text-cinema-accent mr-3"></i>
+                    <span class="font-bold text-lg">Admin Panel</span>
+                </div>
+                <button onclick="toggleSidebar()" class="sidebar-toggle-btn text-gray-400 hover:text-white">
+                    <i data-lucide="panel-left-close" class="h-5 w-5"></i>
+                </button>
+            </div>
+            <nav class="flex-1 p-5 space-y-2">
+                <a href="#" onclick="setAdminTab('movies')" class="flex items-center px-4 py-3 bg-cinema-accent rounded-lg text-white">
+                    <i data-lucide="film" class="h-5 w-5 mr-3"></i> Movies
+                </a>
+                <a href="#" onclick="setAdminTab('bookings')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-white/10 rounded-lg transition-colors">
+                    <i data-lucide="calendar" class="h-5 w-5 mr-3"></i> Bookings
+                </a>
+                <a href="#" onclick="setAdminTab('users')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-white/10 rounded-lg transition-colors">
+                    <i data-lucide="users" class="h-5 w-5 mr-3"></i> Users
+                </a>
+                <a href="#" onclick="setAdminTab('settings')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-white/10 rounded-lg transition-colors">
+                    <i data-lucide="settings" class="h-5 w-5 mr-3"></i> Settings
+                </a>
+            </nav>
+            <div class="p-5 border-t border-gray-800">
+                <button onclick="logout()" class="flex items-center text-gray-400 hover:text-white text-sm w-full">
+                    <i data-lucide="log-out" class="h-4 w-4 mr-2"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-4 sm:p-6 md:p-10 overflow-auto">
+            <button onclick="toggleSidebar()" class="md:hidden mb-4 p-2 bg-cinema-900 text-white rounded-lg">
+                <i data-lucide="menu" class="h-5 w-5"></i>
+            </button>
+            <div id="admin-content"></div>
+        </main>
+    </div>
+
+    <div id="user-dashboard" class="dashboard-container hidden flex bg-gray-100 text-gray-900">
+        <div class="sidebar-overlay fixed inset-0 bg-black/50 z-40" onclick="toggleSidebar()"></div>
+        
+        <aside class="dashboard-sidebar fixed md:static w-72 bg-cinema-900 text-white flex flex-col flex-shrink-0 transition-transform duration-300 translate-x-0 z-50 h-screen overflow-y-auto">
+            <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+                <div class="flex items-center">
+                    <i data-lucide="user" class="h-6 w-6 text-cinema-accent mr-3"></i>
+                    <span class="font-bold text-lg">My Account</span>
+                </div>
+                <button onclick="toggleSidebar()" class="sidebar-toggle-btn text-gray-400 hover:text-white">
+                    <i data-lucide="panel-left-close" class="h-5 w-5"></i>
+                </button>
+            </div>
+            <nav class="flex-1 p-5 space-y-2">
+                <a href="#" onclick="setUserTab('bookings')" class="flex items-center px-4 py-3 bg-cinema-accent rounded-lg text-white">
+                    <i data-lucide="ticket" class="h-5 w-5 mr-3"></i> My Bookings
+                </a>
+                <a href="#" onclick="setUserTab('profile')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-white/10 rounded-lg transition-colors">
+                    <i data-lucide="user-circle" class="h-5 w-5 mr-3"></i> Profile
+                </a>
+                <a href="#" onclick="setUserTab('settings')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-white/10 rounded-lg transition-colors">
+                    <i data-lucide="settings" class="h-5 w-5 mr-3"></i> Settings
+                </a>
+                <a href="#" onclick="showView('home-view')" class="flex items-center px-4 py-3 text-gray-300 hover:bg-white/10 rounded-lg transition-colors">
+                    <i data-lucide="home" class="h-5 w-5 mr-3"></i> Browse Movies
+                </a>
+            </nav>
+            <div class="p-5 border-t border-gray-800">
+                <button onclick="logout()" class="flex items-center text-gray-400 hover:text-white text-sm w-full">
+                    <i data-lucide="log-out" class="h-4 w-4 mr-2"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-4 sm:p-6 md:p-10 overflow-auto">
+            <button onclick="toggleSidebar()" class="md:hidden mb-4 p-2 bg-cinema-900 text-white rounded-lg">
+                <i data-lucide="menu" class="h-5 w-5"></i>
+            </button>
+            <div id="user-content"></div>
+        </main>
+    </div>
+
+</div>
+
+<script>
+    showView = (function(originalShowView) {
+        return function(viewId) {
+            originalShowView(viewId);
+            if (viewId === 'seats-view') {
+                document.getElementById('seats-movie-title').innerText = booking.movie || 'Movie';
+                document.getElementById('seats-date').innerText = booking.date || 'Date';
+                document.getElementById('seats-time').innerText = booking.time || 'Time';
+                document.getElementById('seats-cinema').innerText = CINEMA_NAME;
+            }
+        };
+    })(showView);
+</script>
+
+</body>
+</html>

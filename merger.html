@@ -1,0 +1,57 @@
+const [sectionId, classId] = classValue.split(":")
+
+  window.selectedSchemeId = schemeId
+  window.selectedWeek = week
+
+  document.getElementById("selectedAyahDisplay").textContent = `Week ${week} - ${day}: ${fromAyah} to ${toAyah}`
+  document.getElementById("selectedAyahInfo").style.display = "block"
+
+  try {
+    const response = await fetch(
+      `/api/staff-memorization/${currentStaffId}?section_id=${sectionId}&class_id=${classId}&scheme_id=${schemeId}&session=${session}`,
+    )
+    const data = await response.json()
+
+    if (data.success) {
+      const tbody = document.getElementById("memorizationTableBody")
+      tbody.innerHTML = ""
+
+      data.data.forEach((student) => {
+        const row = document.createElement("tr")
+        row.innerHTML = `
+          <td>${student.student_name}</td>
+          <td>
+            <select class="form-select" data-enrollment-id="${student.enrollment_id}" data-scheme-id="${schemeId}">
+              <option value="">-</option>
+              <option value="A" ${student.daily_grade === "A" ? "selected" : ""}>A</option>
+              <option value="B" ${student.daily_grade === "B" ? "selected" : ""}>B</option>
+              <option value="C" ${student.daily_grade === "C" ? "selected" : ""}>C</option>
+              <option value="D" ${student.daily_grade === "D" ? "selected" : ""}>D</option>
+              <option value="E" ${student.daily_grade === "E" ? "selected" : ""}>E</option>
+              <option value="F" ${student.daily_grade === "F" ? "selected" : ""}>F</option>
+            </select>
+          </td>
+          <td>
+            <input type="number" class="form-control" min="0" max="100" 
+                   value="${student.exam_grade || ""}" 
+                   data-enrollment-id="${student.enrollment_id}"
+                   data-scheme-id="${schemeId}">
+          </td>
+          <td>
+            <input type="text" class="form-control" value="${student.comments || ""}" 
+                   data-enrollment-id="${student.enrollment_id}"
+                   data-scheme-id="${schemeId}">
+          </td>
+        `
+        tbody.appendChild(row)
+      })
+
+      document.getElementById("memorizationStudentsSection").style.display = "block"
+    } else {
+      alert("No students found for this selection")
+    }
+  } catch (error) {
+    console.error("Error loading memorization:", error)
+    alert("Error loading memorization data")
+  }
+}

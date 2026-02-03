@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Portal - Halqatu Ibadurrahman</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #004d40;
+      --primary-dark: #00332b;
+      --secondary: #2f4f4f;
+      --light: #f0f8f0;
+      --white: #ffffff;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .text-arabic { font-family: 'Amiri', serif; }
+    .role-card {
+      transition: all 0.4s ease;
+      cursor: pointer;
+      border: 3px solid transparent;
+      border-radius: 1.5rem;
+      background: var(--white);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .role-card:hover { transform: translateY(-12px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+    .role-card.selected { border-color: var(--primary); background: #e0f2f1; box-shadow: 0 15px 35px rgba(0,77,64,0.2); }
+    .form-panel { display: none; animation: fadeSlide 0.6s ease forwards; }
+    .form-panel.active { display: block; }
+    @keyframes fadeSlide { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .password-toggle { cursor: pointer; color: #6b7280; }
+    .password-toggle:hover { color: var(--primary); }
+    .branding-panel { background: var(--secondary); color: var(--white); }
+    .btn-primary-custom {
+      background-color: var(--primary);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      border-radius: 9999px;
+      transition: all 0.3s ease;
+    }
+    .btn-primary-custom:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+
+  <div class="container max-w-6xl mx-auto">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+      <div class="row g-0">
+        <!-- Branding -->
+        <div class="col-lg-5 branding-panel d-none d-lg-flex flex-column justify-content-center align-items-center p-10 text-center">
+          <h1 class="display-5 fw-bold mb-4" data-translate="collegeName">Halqatu Ibadurrahman</h1>
+          <p class="lead mb-5 opacity-90" data-translate="secureAccess">Secure access to the system</p>
+          <div class="row text-center mt-8">
+            <div class="col-4"><i class="fas fa-shield-alt fa-3x mb-3"></i><p data-translate="secure">Secure</p></div>
+            <div class="col-4"><i class="fas fa-cogs fa-3x mb-3"></i><p data-translate="control">Control</p></div>
+            <div class="col-4"><i class="fas fa-chart-line fa-3x mb-3"></i><p data-translate="analytics">Analytics</p></div>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-7 p-8 p-lg-12">
+          <div class="text-center mb-8">
+            <h2 class="text-4xl fw-bold text-[var(--secondary)]" data-translate="welcome">Welcome Back</h2>
+            <p class="text-muted mt-2" data-translate="selectRole">Select your role</p>
+          </div>
+
+  <!-- Back to Home Icon + Roles -->
+<div class="text-center mb-6">
+  <a href="/" class="inline-block mb-4 text-[var(--primary)] hover:text-[var(--primary-dark)] transition-colors" title="Back to Home">
+    <i class="fas fa-home text-3xl"></i>
+  </a>
+</div>
+
+<!-- Roles - Very compact with smaller text, always 3 in a row -->
+<div class="grid grid-cols-3 gap-2 mb-8 px-2">
+  <div class="role-card selected py-4 px-3 text-center rounded-xl cursor-pointer transition-all" data-role="student">
+    <i class="fas fa-user-graduate text-2xl text-[var(--primary)] mb-2 block"></i>
+    <h3 class="text-sm font-semibold leading-tight" data-translate="student">Student</h3>
+  </div>
+  <div class="role-card py-4 px-3 text-center rounded-xl cursor-pointer transition-all" data-role="staff">
+    <i class="fas fa-chalkboard-teacher text-2xl text-[var(--primary)] mb-2 block"></i>
+    <h3 class="text-sm font-semibold leading-tight" data-translate="staff">Staff</h3>
+  </div>
+  <div class="role-card py-4 px-3 text-center rounded-xl cursor-pointer transition-all" data-role="admin">
+    <i class="fas fa-user-shield text-2xl text-[var(--primary)] mb-2 block"></i>
+    <h3 class="text-sm font-semibold leading-tight" data-translate="admin">Administrator</h3>
+  </div>
+</div>
+
+          <!-- Student Form -->
+          <div id="studentForm" class="form-panel active">
+            <h3 class="text-3xl fw-bold text-center mb-3" data-translate="studentLogin">Student Login</h3>
+            <form id="studentLoginForm" class="needs-validation" novalidate>
+              <div class="mb-5">
+                <label class="form-label fw-medium" data-translate="studentIdLabel">Student ID</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text rounded-start-pill bg-light"><i class="fas fa-user text-[var(--primary)]"></i></span>
+                  <input type="text" id="studentId" class="form-control rounded-end-pill" required />
+                </div>
+              </div>
+              <div class="mb-5 position-relative">
+                <label class="form-label fw-medium" data-translate="passwordLabel">Password</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text rounded-start-pill bg-light"><i class="fas fa-lock text-[var(--primary)]"></i></span>
+                  <input type="password" id="studentPass" class="form-control rounded-end-pill" required />
+                  <span class="password-toggle position-absolute end-0 top-50 translate-middle-y pe-4" onclick="togglePassword('studentPass')"><i class="fas fa-eye"></i></span>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary-custom w-100 py-3 fw-bold rounded-pill shadow-lg text-white"><span data-translate="signIn">Sign In</span></button>
+            </form>
+          </div>
+
+          <!-- Staff Form -->
+          <div id="staffForm" class="form-panel">
+            <h3 class="text-3xl fw-bold text-center mb-3" data-translate="staffLogin">Staff Login</h3>
+            <form id="staffLoginForm" class="needs-validation" novalidate>
+              <div class="mb-5">
+                <label class="form-label fw-medium" data-translate="staffIdLabel">Staff ID</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text rounded-start-pill bg-light"><i class="fas fa-id-card text-[var(--primary)]"></i></span>
+                  <input type="text" id="staffId" class="form-control rounded-end-pill" required />
+                </div>
+              </div>
+              <div class="mb-5 position-relative">
+                <label class="form-label fw-medium" data-translate="passwordLabel">Password</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text rounded-start-pill bg-light"><i class="fas fa-lock text-[var(--primary)]"></i></span>
+                  <input type="password" id="staffPass" class="form-control rounded-end-pill" required />
+                  <span class="password-toggle position-absolute end-0 top-50 translate-middle-y pe-4" onclick="togglePassword('staffPass')"><i class="fas fa-eye"></i></span>
+                </div>
+              </div>
+              <div class="d-flex justify-content-end mb-6">
+                <a href="#" class="text-[var(--primary)] hover:underline" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" data-translate="forgotPassword">Forgot Password?</a>
+              </div>
+              <button type="submit" class="btn btn-primary-custom w-100 py-3 fw-bold rounded-pill shadow-lg text-white"><span data-translate="signIn">Sign In</span></button>
+            </form>
+          </div>
+
+          <!-- Admin Form -->
+          <div id="adminForm" class="form-panel">
+            <h3 class="text-3xl fw-bold text-center mb-3" data-translate="adminLogin">Administrator Login</h3>
+            <form id="adminLoginForm" class="needs-validation" novalidate>
+              <div class="mb-5">
+                <label class="form-label fw-medium" data-translate="usernameLabel">Username</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text rounded-start-pill bg-light"><i class="fas fa-user text-[var(--primary)]"></i></span>
+                  <input type="text" id="adminUsername" class="form-control rounded-end-pill" required />
+                </div>
+              </div>
+              <div class="mb-5 position-relative">
+                <label class="form-label fw-medium" data-translate="passwordLabel">Password</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text rounded-start-pill bg-light"><i class="fas fa-lock text-[var(--primary)]"></i></span>
+                  <input type="password" id="adminPassword" class="form-control rounded-end-pill" required />
+                  <span class="password-toggle position-absolute end-0 top-50 translate-middle-y pe-4" onclick="togglePassword('adminPassword')"><i class="fas fa-eye"></i></span>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between mb-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="adminRemember" />
+                  <label class="form-check-label" for="adminRemember" data-translate="rememberMe">Remember me</label>
+                </div>
+                <a href="#" class="text-[var(--primary)] hover:underline" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" data-translate="forgotPassword">Forgot Password?</a>
+              </div>
+              <button type="submit" class="btn btn-primary-custom w-100 py-3 fw-bold rounded-pill shadow-lg text-white">
+                <i class="fas fa-sign-in-alt me-2"></i> <span data-translate="signIn">Sign In</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Language Toggle -->
+          <div class="text-center mt-8">
+            <button id="langToggle" class="btn btn-outline-secondary rounded-pill px-5 py-2" data-translate="toggleLanguage">العربية</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message Modal -->
+  <div class="modal fade" id="messageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-xl shadow-2xl">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="messageModalLabel">Message</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-6 text-center">
+          <p id="messageText" class="text-lg"></p>
+        </div>
+        <div class="modal-footer border-0 justify-content-center">
+          <button type="button" class="btn btn-secondary rounded-pill px-5" data-bs-dismiss="modal" data-translate="close">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Forgot Password Modal -->
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="forgotPasswordModalLabel" data-translate="forgotPassword">Forgot Password?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="forgotStep1">
+            <label id="forgotIdLabel" class="form-label" data-translate="usernameLabel">Username</label>
+            <input type="text" id="forgotIdentifier" class="form-control mb-3" required>
+            <button id="forgotNextBtn" class="btn btn-primary-custom w-100" data-translate="next">Next</button>
+          </div>
+          <div id="forgotStep2" style="display: none;">
+            <p class="fw-bold mb-3" id="securityQuestionDisplay"></p>
+            <label class="form-label" data-translate="securityAnswer">Security Answer</label>
+            <input type="text" id="forgotSecurityAnswer" class="form-control mb-3" required>
+            <button id="forgotVerifyBtn" class="btn btn-success w-100" data-translate="verify">Verify</button>
+          </div>
+          <div id="forgotStep3" style="display: none;">
+            <label class="form-label" data-translate="newPasswordLabel">New Password</label>
+            <input type="password" id="newForgotPassword" class="form-control mb-3" required>
+            <label class="form-label" data-translate="confirmPasswordLabel">Confirm Password</label>
+            <input type="password" id="confirmForgotPassword" class="form-control mb-3" required>
+            <button id="forgotResetBtn" class="btn btn-warning w-100" data-translate="resetPassword">Reset Password</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Staff Update Credentials Section -->
+  <div id="updateCredentialsSection" class="d-none container max-w-6xl mx-auto mt-5">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden p-8">
+      <h2 class="text-3xl fw-bold text-center mb-6" data-translate="updateCredentials">Update Your Credentials</h2>
+      <form id="updateCredentialsForm" class="needs-validation" novalidate>
+        <input type="hidden" id="originalStaffId">
+        <div class="mb-4">
+          <label class="form-label" data-translate="newStaffIdLabel">New Staff ID</label>
+          <input type="text" id="newStaffId" class="form-control rounded-pill" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label" data-translate="nameLabel">Full Name</label>
+          <input type="text" id="newName" class="form-control rounded-pill" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label" data-translate="phoneLabel">Phone Number</label>
+          <input type="tel" id="newPhone" class="form-control rounded-pill" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label" data-translate="emailLabel">Email (Optional)</label>
+          <input type="email" id="newEmail" class="form-control rounded-pill">
+        </div>
+        <div class="mb-4 position-relative">
+          <label class="form-label" data-translate="newPasswordLabel">New Password</label>
+          <input type="password" id="newPasswordInput" class="form-control rounded-pill" required minlength="6">
+          <span class="password-toggle position-absolute end-0 top-50 translate-middle-y pe-4" onclick="togglePassword('newPasswordInput')"><i class="fas fa-eye"></i></span>
+        </div>
+        <div class="mb-4">
+          <label class="form-label" data-translate="newSecurityQuestion">Security Question</label>
+          <select id="newSecurityQuestion" class="form-control rounded-pill" required>
+            <option value="" disabled selected data-translate="selectQuestion">Select a security question</option>
+            <option value="What is your pet's name?" data-translate="securityQuestion1">What is your pet's name?</option>
+            <option value="What is your mother's maiden name?" data-translate="securityQuestion2">What is your mother's maiden name?</option>
+            <option value="What is the name of your first school?" data-translate="securityQuestion3">What is the name of your first school?</option>
+            <option value="What is your favorite book?" data-translate="securityQuestion4">What is your favorite book?</option>
+            <option value="What is the name of your hometown?" data-translate="securityQuestion5">What is the name of your hometown?</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="form-label" data-translate="newSecurityAnswer">Security Answer</label>
+          <input type="text" id="newSecurityAnswerInput" class="form-control rounded-pill" required>
+        </div>
+        <button type="submit" class="btn btn-primary-custom w-100 py-3 fw-bold rounded-pill shadow-lg text-white" data-translate="updateCredentialsBtn">Update Credentials</button>
+      </form>
+    </div>
+  </div>
+<script src="./js/login.js"></script>
+</body>
+</html>

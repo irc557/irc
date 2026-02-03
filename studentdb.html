@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Ibadurrahman College</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #34a853;
+            --dark: #202124;
+            --light: #f8f9fa;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f7fa;
+            color: #202124;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .sidebar {
+            width: 260px;
+            background: #202124;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding-top: 1rem;
+            z-index: 1000;
+            transition: transform .3s;
+        }
+        .sidebar .nav-link {
+            color: #bdc1c6;
+            padding: .75rem 1rem;
+            border-radius: .375rem;
+            display: flex;
+            align-items: center;
+            transition: all .2s;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: var(--primary);
+            color: #fff;
+        }
+        .sidebar .nav-link i {
+            margin-right: .75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        .main-content {
+            margin-left: 260px;
+            padding: 1.5rem;
+            transition: margin-left .3s;
+        }
+        .dashboard-card {
+            background: #fff;
+            border-radius: .75rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+        }
+        .card-gradient-1 { background: linear-gradient(135deg,#4285f4,#669df6); }
+        .card-gradient-2 { background: linear-gradient(135deg,#34a853,#57b76f); }
+        .card-gradient-3 { background: linear-gradient(135deg,#fbbc05,#fbdc59); }
+
+        #sidebarToggleMobile {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1101;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: .5rem;
+            padding: .6rem .8rem;
+            font-size: 1.4rem;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-260px); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 1rem; }
+            #sidebarToggleMobile { display: inline-flex; }
+        }
+
+        /* Video Player */
+        .video-player-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+        #mainVideoPlayer {
+            width: 100%;
+            height: 420px;
+            display: block;
+            background: #000;
+        }
+        .video-controls {
+            background: rgba(0,0,0,0.9);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            color: white;
+        }
+        .video-controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.6rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        .video-controls button:hover {
+            background: rgba(255,255,255,0.2);
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+        .progress-container {
+            flex: 1;
+            min-width: 200px;
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+        .time-display { font-family: monospace; font-size: 0.95rem; min-width: 90px; }
+        .video-title { font-weight: 600; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; }
+        .volume-container { display: flex; align-items: center; gap: 8px; }
+        input[type="range"] { width: 90px; height: 6px; }
+
+        /* Class Selector Styling */
+        #reportClassSelect {
+            max-width: 380px;
+        }
+        .current-class-banner {
+            background: linear-gradient(90deg, #e8f5e9, #f0fdf4);
+            border: 1px solid #34a853;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-weight: 600;
+            color: #065f46;
+            box-shadow: 0 2px 8px rgba(52,168,83,0.1);
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="p-4 border-b border-gray-700 text-center">
+            <img id="profilePicture" src="/uploads/default.jpg" alt="Profile" class="w-20 h-20 rounded-full border-4 border-white mb-3 object-cover">
+            <h5 id="studentName" class="fw-bold">Loading...</h5>
+            <p class="text-gray-400 small" id="studentIdDisplay">—</p>
+        </div>
+        <ul class="nav flex-column mt-4">
+            <li><a href="#" class="nav-link active" data-view="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#" class="nav-link" data-view="videos"><i class="fas fa-video"></i> Memorization Videos</a></li>
+            <li><a href="#" class="nav-link" data-view="attendance"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+            <li><a href="#" class="nav-link" data-view="tahfiz"><i class="fas fa-book-quran"></i> Tahfiz Report</a></li>
+            <li><a href="#" class="nav-link" data-view="academic"><i class="fas fa-graduation-cap"></i> Academic Report</a></li>
+            <li class="mt-auto p-4">
+                <button id="logoutBtn" class="btn btn-outline-light w-100"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <button id="sidebarToggleMobile"><i class="fas fa-bars"></i></button>
+
+        <!-- Dashboard View -->
+        <div id="dashboard-view">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="dashboard-card card-gradient-1 text-white">
+                    <h5 class="text-sm font-medium opacity-90">My Classes</h5>
+                    <p class="text-4xl font-bold mt-1" id="totalClassesCount">0</p>
+                </div>
+                <div class="dashboard-card card-gradient-2 text-white">
+                    <h5 class="text-sm font-medium opacity-90">My Subjects</h5>
+                    <p class="text-4xl font-bold mt-1" id="totalSubjectsCount">0</p>
+                </div>
+                <div class="dashboard-card card-gradient-3 text-white">
+                    <h5 class="text-sm font-medium opacity-90">Memorization Videos</h5>
+                    <p class="text-4xl font-bold mt-1" id="totalVideosCount">0</p>
+                </div>
+            </div>
+
+            <div class="mt-6 bg-white rounded-lg shadow p-6">
+                <h3 class="text-xl font-bold mb-4">Personal Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <p><strong>Student ID:</strong> <span id="studentIdDisplay2"></span></p>
+                    <p><strong>Gender:</strong> <span id="gender"></span></p>
+                    <p><strong>Date of Birth:</strong> <span id="dateOfBirth"></span></p>
+                    <p><strong>Phone:</strong> <span id="guardianPhone"></span></p>
+                    <p><strong>Email:</strong> <span id="email"></span></p>
+                    <p><strong>Address:</strong> <span id="address"></span></p>
+                </div>
+                <div class="mt-4">
+                    <strong>Enrolled Classes:</strong>
+                    <div id="studentClassList" class="d-inline mt-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Videos View -->
+        <div id="videos-view" style="display:none;">
+            <h2 class="text-2xl font-semibold mb-5 text-emerald-700">Memorization Videos</h2>
+
+            <!-- Class Selector for Videos -->
+            <div class="mb-4">
+                <label class="form-label fw-bold text-primary"><i class="fas fa-school me-2"></i>Select Class:</label>
+                <select id="reportClassSelect" class="form-select form-select-lg"></select>
+            </div>
+            <div class="current-class-banner mb-4">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong>Viewing videos for:</strong> <span id="selectedClassDisplay">No class selected</span>
+            </div>
+
+            <div class="video-player-container">
+                <video id="mainVideoPlayer" controls controlsList="nodownload"></video>
+                <div class="video-controls">
+                    <button id="prevBtn"><i class="fas fa-step-backward"></i></button>
+                    <button id="playPauseBtn"><i class="fas fa-play"></i></button>
+                    <button id="nextBtn"><i class="fas fa-step-forward"></i></button>
+                    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+                    <div class="time-display"><span id="currentTime">0:00</span> / <span id="duration">0:00</span></div>
+                    <div class="volume-container">
+                        <button id="muteBtn"><i class="fas fa-volume-up"></i></button>
+                        <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1">
+                    </div>
+                    <button id="fullscreenBtn"><i class="fas fa-expand"></i></button>
+                    <div class="video-title" id="videoTitle">Select a video to play</div>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <h4 class="mb-4 text-lg font-semibold">All Videos</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="videoGrid"></div>
+                <div class="text-center mt-6 mb-4">
+                    <button id="loadMoreBtn" class="btn btn-success px-8 py-3 text-lg">Load More</button>
+                    <button id="showLessBtn" class="btn btn-outline-secondary px-8 py-3 text-lg ms-3" style="display:none;">Show Less</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance View -->
+        <div id="attendance-view" style="display:none;">
+            <h2 class="text-2xl font-semibold mb-5 text-emerald-700">Cumulative Attendance</h2>
+
+            <!-- Class Selector for Attendance -->
+            <div class="mb-4">
+                <label class="form-label fw-bold text-primary"><i class="fas fa-school me-2"></i>Select Class:</label>
+                <select id="reportClassSelect" class="form-select form-select-lg"></select>
+            </div>
+            <div class="current-class-banner mb-4">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong>Attendance for:</strong> <span id="selectedClassDisplay">No class selected</span>
+            </div>
+
+            <div class="card p-5">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Session</label>
+                        <select id="cumSession" class="form-select"><option value="">Select Session</option></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Term</label>
+                        <select id="cumTerm" class="form-select"><option value="">Select Term</option></select>
+                    </div>
+                </div>
+                <button id="loadCumBtn" class="btn btn-success btn-lg">Load Cumulative Attendance</button>
+                <div id="cumResult" class="mt-4"></div>
+            </div>
+        </div>
+
+        <!-- TAHFIZ REPORT VIEW -->
+        <div id="tahfiz-view" style="display:none;">
+            <h2 class="text-2xl font-semibold mb-5 text-success">Tahfiz-ul-Qur'an Progress Report</h2>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold text-primary"><i class="fas fa-school me-2"></i>Select Class:</label>
+                <select id="reportClassSelect" class="form-select form-select-lg"></select>
+            </div>
+            <div class="current-class-banner mb-4">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong>Viewing Tahfiz report for:</strong> <span id="selectedClassDisplay">No class selected</span>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Session</label>
+                            <select id="tahfizSession" class="form-select"><option value="">Select Session</option></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Term</label>
+                            <select id="tahfizTerm" class="form-select"><option value="">Select Term</option></select>
+                        </div>
+                    </div>
+                    <button id="loadTahfiz" class="btn btn-success btn-lg">Generate Tahfiz Report</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACADEMIC REPORT VIEW -->
+        <div id="academic-view" style="display:none;">
+            <h2 class="text-2xl font-semibold mb-5 text-primary">End of Term Academic Report</h2>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold text-primary"><i class="fas fa-school me-2"></i>Select Class:</label>
+                <select id="reportClassSelect" class="form-select form-select-lg"></select>
+            </div>
+            <div class="current-class-banner mb-4">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong>Viewing academic report for:</strong> <span id="selectedClassDisplay">No class selected</span>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Session</label>
+                            <select id="academicSession" class="form-select"><option value="">Select Session</option></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Term</label>
+                            <select id="academicTerm" class="form-select"><option value="">Select Term</option></select>
+                        </div>
+                    </div>
+                    <button id="loadAcademic" class="btn btn-primary btn-lg">Generate Academic Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-xl shadow-2xl">
+                <div class="modal-header">
+                    <h5 class="modal-title font-bold text-gray-800" id="messageModalLabel">Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-6">
+                    <p id="messageText" class="text-gray-700"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tahfiz Report Modal -->
+    <div class="modal fade" id="tahfizPreviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-xl rounded-3">
+                <div class="modal-header bg-success text-white py-4">
+                    <h5 class="modal-title fs-4 fw-bold d-flex align-items-center gap-3">
+                        <i class="fas fa-book-quran"></i> Tahfiz-ul-Qur'an Progress Report
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-5 bg-light" id="tahfizPreviewBody">
+                    <div class="text-center py-5 text-muted">
+                        <div class="spinner-border text-success" style="width: 3.5rem; height: 3.5rem;"></div>
+                        <p class="mt-4 fs-5">Generating report...</p>
+                    </div>
+                </div>
+                <div class="modal-footer bg-white border-0 justify-content-center py-5 gap-4">
+                    <button onclick="downloadCurrentTahfizPdf()" class="btn btn-success btn-lg px-5 py-3 fw-bold shadow-sm">
+                        <i class="fas fa-download me-2"></i> Download PDF
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-lg px-5 py-3" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Academic Report Modal -->
+    <div class="modal fade" id="completeReportPreviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-xl rounded-3">
+                <div class="modal-header bg-primary text-white py-4">
+                    <h5 class="modal-title fs-4 fw-bold d-flex align-items-center gap-3">
+                        <i class="fas fa-graduation-cap"></i> End of Term Report Sheet
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-5 bg-light" id="completeReportPreviewBody">
+                    <div class="text-center py-5 text-muted">
+                        <div class="spinner-border text-primary" style="width: 3.5rem; height: 3.5rem;"></div>
+                        <p class="mt-4 fs-5">Generating report...</p>
+                    </div>
+                </div>
+                <div class="modal-footer bg-white border-0 justify-content-center py-5 gap-4">
+                    <button onclick="downloadCurrentCompletePdf()" class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow-sm">
+                        <i class="fas fa-file-pdf me-2"></i> Download PDF
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-lg px-5 py-3" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="./js/student_dashboard.js"></script>
+</body>
+</html>

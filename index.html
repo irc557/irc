@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title data-en="Ibadurrahman College (Halqatu Ibadurrahman) - Excellence in Islamic & Formal Education" data-ar="كلية عباد الرحمن">
+        Ibadurrahman College (Halqatu Ibadurrahman)
+    </title>
+
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="Ibadurrahman College (Halqatu Ibadurrahman) offers holistic Islamic and formal education programs in Kano, Nigeria, including Quranic memorization, Islamic studies, and Western curriculum. Full address: No. 1968 A, Gwammaja Housing Estate, Audu Wawu Street, opposite IHYA'USSUNNAH Juma'a Mosque, Dala L.G.A, Kano State, Nigeria. Contact: info@irc.org.ng | Phones: 08033459721, 09062171496">
+    <meta name="keywords" content="Ibadurrahman College, Halqatu Ibadurrahman, Islamic Education, Quranic Studies, Formal Education, Kano Nigeria, Islamic School Kano, Halqatu Ibadurrahman Kano">
+    <meta name="author" content="Ibadurrahman College">
+    <meta name="robots" content="index, follow">
+
+    <!-- Bootstrap & Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap">
+
+    <!-- Favicon -->
+    <link rel="icon" href="https://www.irc.org.ng/assets/favicon.ico" type="image/x-icon">
+
+    <!-- JSON-LD Schema.org Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Ibadurrahman College (Halqatu Ibadurrahman)",
+      "url": "https://www.irc.org.ng",
+      "logo": "https://www.irc.org.ng/assets/logo.png",
+      "email": "info@irc.org.ng",
+      "telephone": ["08033459721","09062171496"],
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "No. 1968 A, Gwammaja Housing Estate, Audu Wawu Street, opposite IHYA'USSUNNAH Juma'a Mosque",
+        "addressLocality": "Dala",
+        "addressRegion": "Kano State",
+        "postalCode": "",
+        "addressCountry": "Nigeria"
+      },
+      "sameAs": [
+        "https://www.facebook.com/ibadurrahmancollege",
+        "https://twitter.com/ibadurrahmancollege",
+        "https://www.instagram.com/ibadurrahmancollege"
+      ]
+    }
+    </script>
+    <style>
+        :root {
+            --primary-color: #004d40;
+            --secondary-color: #2f4f4f;
+            --light-color: #f0f8f0;
+            --white-color: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--light-color);
+            color: var(--secondary-color);
+            scroll-behavior: smooth;
+            direction: ltr;
+        }
+
+        body[lang="ar"] {
+            font-family: 'Amiri', serif;
+            direction: rtl;
+        }
+
+        .navbar {
+            background-color: var(--white-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            color: #00695c !important;
+        }
+
+        .navbar-brand img, .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            vertical-align: middle;
+        }
+
+        .navbar-title {
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        .nav-link, .dropdown-item {
+            color: var(--secondary-color) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s ease, background-color 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover, .dropdown-item:hover {
+            color: var(--primary-color) !important;
+            background-color: rgba(0, 77, 64, 0.1);
+        }
+
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        .navbar-toggler-icon {
+            background-image: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-toggler-icon::before {
+            content: "\f0c9";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
+            content: "\f00d";
+        }
+
+        .navbar-collapse {
+            justify-content: flex-end;
+        }
+
+        .navbar .dropdown-menu {
+            border-radius: 10px;
+            padding: 8px;
+        }
+
+        .hero-section {
+            position: relative;
+            height: 500px;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero-slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 4rem 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .hero-text {
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .hero-text.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-card, .portal-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .section-card:hover, .portal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .view-only-media img, .view-only-media video {
+            pointer-events: none;
+            width: 100%;
+            height: 270px;
+            object-fit: cover;
+        }
+
+        .gallery-item {
+            height: 270px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .footer-link, footer a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover, footer a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .social-link {
+            color: rgba(255, 255, 255, 0.7);
+            margin-right: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .social-link:hover {
+            color: #0d6efd;
+        }
+
+        .login-buttons a {
+            margin: 8px;
+            min-width: 200px;
+        }
+
+        .input-group-text {
+            background-color: var(--light-color);
+            border: 1px solid #ced4da;
+            color: var(--primary-color);
+        }
+
+        .form-label-optional::after {
+            content: " (Optional)";
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+            font-style: italic;
+        }
+
+        body[lang="ar"] .form-label-optional::after {
+            content: " (اختياري)";
+        }
+
+        .language-toggle {
+            cursor: pointer;
+            color: var(--secondary-color);
+        }
+
+        .language-toggle:hover {
+            color: var(--primary-color);
+        }
+
+        .department-title {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .subjects-list p {
+            font-weight: normal;
+        }
+
+        #departments-display .card-title {
+            font-weight: 700;
+        }
+
+        #subjects-display h3 {
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                height: 330px;
+                padding: 2rem 0;
+            }
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            .hero-content p {
+                font-size: 1rem;
+            }
+            .navbar-nav {
+                text-align: center;
+            }
+            .navbar-brand img, .logo-img {
+                height: 30px;
+                width: 30px;
+            }
+            .view-only-media img, .view-only-media video {
+                height: 200px;
+            }
+            .gallery-item {
+                height: 200px;
+            }
+            .login-buttons {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .login-buttons a {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="assets/images/logo.jpeg" alt="Ibadurrahman College Logo" class="logo-img">
+            <span class="navbar-title" data-en="Ibadurrahman College" data-ar="كلية عباد الرحمن">Ibadurrahman College</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#about" data-en="About" data-ar="نبذة عنا">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="islamicEducation" data-en="Islamic Education" data-ar="التعليم الإسلامي">Islamic Education</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="formalEducation" data-en="Formal Education" data-ar="التعليم الرسمي">Formal Education</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#gallery" data-en="Gallery" data-ar="معرض الصور">Gallery</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#admission" data-en="Admission" data-ar="القبول">Admission</a>
+                </li>
+                
+                <!-- Direct Login Link (No Dropdown) -->
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-primary" href="/login" data-en="Login" data-ar="دخول">Login</a>
+                </li>
+                
+                <!-- Language Toggle -->
+                <li class="nav-item">
+                    <button class="btn btn-outline-primary ms-2 mb-1 mb-lg-0" id="languageToggle" data-lang="ar" data-en="العربية" data-ar="English">العربية</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="hero-slideshow">
+            <div class="hero-slide active">
+                <img src="assets/images/hero.jpg" alt="Ibadurrahman College">
+            </div>
+            <div class="hero-slide">
+                <img src="assets/images/hhero.jpg" alt="Halqatu Ibadurrahman">
+            </div>
+            <div class="hero-slide">
+                <img src="assets/images/image1.jpeg" alt="Holistic Education">
+            </div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text active">
+                <h1 class="display-4 fw-bold" data-en="Ibadurrahman College" data-ar="كلية عباد الرحمن">Ibadurrahman College</h1>
+                <p class="lead" data-en="Excellence in Islamic and Formal Education" data-ar="التميز في التعليم الإسلامي والرسمي">Excellence in Islamic and Formal Education</p>
+            </div>
+            <div class="hero-text">
+                <h1 class="display-4 fw-bold" data-en="Halqatu Ibadurrahman" data-ar="حلقة عباد الرحمن">Halqatu Ibadurrahman</h1>
+                <p class="lead" data-en="Mastering Tahfiz and Islamic Studies" data-ar="إتقان التحفيظ والدراسات الإسلامية">Mastering Tahfiz and Islamic Studies</p>
+            </div>
+            <div class="hero-text">
+                <h1 class="display-4 fw-bold" data-en="A Unified Vision" data-ar="رؤية موحدة">A Unified Vision</h1>
+                <p class="lead" data-en="Blending Faith and Knowledge" data-ar="مزج الإيمان والمعرفة">Blending Faith and Knowledge</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Sections -->
+    <section id="education" class="py-5">
+        <div class="container fade-up">
+            <h2 class="text-center mb-5" data-en="Our Educational Programs" data-ar="برامجنا التعليمية">Our Educational Programs</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card section-card shadow-sm p-4 text-center h-100" id="islamic-card">
+                        <h3 class="card-title fw-bold text-primary" data-en="Islamic Education" data-ar="التعليم الإسلامي">Islamic Education</h3>
+                        <p class="card-text text-muted" data-en="Explore our departments in Quranic, Islamic, and Arabic Studies." data-ar="استكشف أقسامنا في الدراسات القرآنية والإسلامية والعربية">Explore our departments in Quranic, Islamic, and Arabic Studies.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card section-card shadow-sm p-4 text-center h-100" id="formal-card">
+                        <h3 class="card-title fw-bold text-primary" data-en="Formal Education" data-ar="التعليم الرسمي">Formal Education</h3>
+                        <p class="card-text text-muted" data-en="Discover our Western Education curriculum." data-ar="اكتشف منهجنا في التعليم الغربي">Discover our Western Education curriculum.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Departments Display (for Islamic and Formal) -->
+            <div id="departments-display" class="mt-5" style="display: none;">
+                <h3 id="departments-title" class="text-center mb-4 department-title"></h3>
+                <div id="departments-list" class="row g-4">
+                    <!-- Departments will be dynamically added here -->
+                </div>
+            </div>
+            <!-- Subjects Display -->
+            <div id="subjects-display" class="mt-5" style="display: none;">
+                <h3 id="subjects-title" class="text-center mb-4"></h3>
+                <div id="subjects-list" class="row g-4"></div>
+                <div class="text-center mt-3">
+                    <button id="back-to-depts" class="btn btn-secondary" data-en="Close" data-ar="أغلق">Close</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Buttons -->
+    <section id="login" class="py-4 bg-white">
+        <div class="container text-center login-buttons fade-up">
+            <a href="/admin-login" class="btn btn-primary" data-en="Admin Login" data-ar="دخول الإدارة">Admin Login</a>
+            <a href="/staff-login" class="btn btn-primary" data-en="Staff Login" data-ar="دخول الموظف">Staff Login</a>
+            <a href="/student-login" class="btn btn-primary" data-en="Student Login" data-ar="دخول الطالب">Student Login</a>
+        </div>
+    </section>
+
+    <section id="gallery" class="py-5">
+        <div class="container fade-up">
+            <h2 class="text-center mb-5" data-en="Gallery" data-ar="معرض الصور">Gallery</h2>
+            <!-- Pictures Section -->
+            <h4 class="mb-4" data-en="📸 Pictures" data-ar="📸 الصور">📸 Pictures</h4>
+            <div class="row g-4">
+                <div class="col-6 col-md-4">
+                    <img src="./assets/images/image5.jpeg" alt="Gallery " class="img-fluid rounded shadow-sm gallery-item">
+                </div>
+                <div class="col-6 col-md-4">
+                    <img src="./assets/images/image2.jpeg" alt="Gallery Image 2" class="img-fluid rounded shadow-sm gallery-item">
+                </div>
+                <div class="col-6 col-md-4">
+                    <img src="./assets/images/image3.jpeg" alt="Gallery Image 3" class="img-fluid rounded shadow-sm gallery-item">
+                </div>
+                <div class="col-6 col-md-4">
+                    <img src="./assets/images/image4.jpeg" alt="Gallery Image 4" class="img-fluid rounded shadow-sm gallery-item">
+                </div>
+                <h4 class="mb-2" data-en="🎥 Videos" data-ar="🎥 مقاطع الفيديو">🎥 Videos</h4>
+                <div class="row g-4">
+                    <div class="col-6 col-md-4">
+                        <video controls class="rounded shadow-sm gallery-item">
+                            <source src="./assets/videos/video1.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <video controls class="rounded shadow-sm gallery-item">
+                            <source src="./assets/videos/video2.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <video controls class="rounded shadow-sm gallery-item">
+                            <source src="./assets/videos/video3.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <video controls class="rounded shadow-sm gallery-item">
+                            <source src="./assets/videos/video4.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admission -->
+    <section id="admission" class="py-5">
+        <div class="container fade-up">
+            <h2 class="text-center mb-4" data-en="Book Admission" data-ar="حجز القبول">Book Admission</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="alert alert-info text-center mb-4" role="alert" data-en="Admissions are processed on a first-come, first-served basis. The next admission period begins in December 2025." data-ar="يتم معالجة القبول على أساس الأسبقية. تبدأ فترة القبول التالية في ديسمبر 2025.">
+                        <strong data-en="Important:" data-ar="هام:">Important:</strong> Admissions are processed on a first-come, first-served basis. The next admission period begins in December 2025.
+                    </div>
+                    <form class="p-4 rounded shadow-sm bg-white" action="/api/bookings" method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label" data-en="Candidate Name" data-ar="اسم المرشح">Candidate Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label form-label-optional" data-en="Your Email (Optional)" data-ar="بريدك الإلكتروني (اختياري)">Your Email (Optional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gender" class="form-label" data-en="Gender" data-ar="الجنس">Gender</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                                <select class="form-control" id="gender" name="gender" required>
+                                    <option value="" disabled selected data-en="Select Gender" data-ar="اختر الجنس">Select Gender</option>
+                                    <option value="Male" data-en="Male" data-ar="ذكر">Male</option>
+                                    <option value="Female" data-en="Female" data-ar="أنثى">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="date_of_birth" class="form-label" data-en="Date of Birth" data-ar="تاريخ الميلاد">Date of Birth</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label" data-en="Parent or Guardian Contact" data-ar="رقم الاتصال بالوالدين أو الوصي">Parent or Guardian Contact</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label" data-en="Address" data-ar="العنوان">Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label form-label-optional" data-en="Your Message (Optional)" data-ar="رسالتك (اختياري)">Your Message (Optional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-comment"></i></span>
+                                <textarea class="form-control" id="message" name="message" rows="4"></textarea>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary" data-en="Submit" data-ar="إرسال">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="py-5 bg-white">
+        <div class="container fade-up">
+            <h2 class="text-center mb-4" data-en="About Ibadurrahman College" data-ar="نبذة عن كلية عباد الرحمن">About Ibadurrahman College</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <p class="lead" data-en="Ibadurrahman College is a premier institution dedicated to nurturing well-rounded individuals through a unique blend of Islamic and Formal Education." data-ar="كلية عباد الرحمن هي مؤسسة رائدة مكرسة لتنشئة أفراد متكاملين من خلال مزيج فريد من التعليم الإسلامي والرسمي">Ibadurrahman College is a premier institution dedicated to nurturing well-rounded individuals through a unique blend of Islamic and Formal Education.</p>
+                    <p data-en="Our Islamic Education program, Halqatu Ibadurrahman, focuses on Quranic memorization and Islamic studies, fostering spiritual growth. Our Formal Education program equips students with academic skills for a globalized world." data-ar="برنامجنا التعليمي الإسلامي، حلقة عباد الرحمن، يركز على حفظ القرآن والدراسات الإسلامية، مع تعزيز النمو الروحي. برنامجنا التعليمي الرسمي يزود الطلاب بالمهارات الأكاديمية لعالم متغول">Our Islamic Education program, Halqatu Ibadurrahman, focuses on Quranic memorization and Islamic studies, fostering spiritual growth. Our Formal Education program equips students with academic skills for a globalized world.</p>
+                </div>
+            </div>
+            <div class="row mt-5 justify-content-center fade-up">
+                <div class="col-md-6 text-center">
+                    <div class="card p-4 shadow-sm">
+                        <img src="assets/images/director.jpeg" alt="Director's Photo" class="img-fluid rounded-circle mb-3 mx-auto d-block" style="width: 150px; height: 150px; object-fit: cover;">
+                        <h4 class="card-title" data-en="Sadiku Muhammad Ahmad" data-ar="صديقو محمد أحمد">Sadiku Muhammad Ahmad</h4>
+                        <h5 class="card-text" data-en="Director" data-ar="المدير">Director</h5>
+                        <p class="card-text text-muted" data-en="Committed to fostering academic excellence and spiritual growth." data-ar="ملتزم بتعزيز التميز الأكاديمي والنمو الروحي">Committed to fostering academic excellence and spiritual growth.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5 class="fw-bold" data-en="Quick Links" data-ar="روابط سريعة">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#about" class="footer-link" data-en="About Us" data-ar="نبذة عنا">About Us</a></li>
+                        <li><a href="#education" class="footer-link" data-en="Education Programs" data-ar="البرامج التعليمية">Education Programs</a></li>
+                        <li><a href="#gallery" class="footer-link" data-en="Gallery" data-ar="معرض الصور">Gallery</a></li>
+                        <li><a href="#admission" class="footer-link" data-en="Book Admission" data-ar="حجز القبول">Book Admission</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="fw-bold" data-en="Contact Details" data-ar="تفاصيل الاتصال">Contact Details</h5>
+                    <ul class="list-unstyled">
+                        <li>
+                            <a href="https://www.google.com/maps/search/?api=1&query=No.+1968+A,+Gwammaja+Housing+Estate,+Audu+Wawu+Street,+opp.+IHYA'USSUNNAH+JUMA'A+MOSQUE,+Dala+L.G.A,+Kano,+Nigeria" target="_blank" class="footer-link" data-en="No. 1968 A, Gwammaja Housing Estate, Audu Wawu Street, opp. IHYA'USSUNNAH JUMA'A MOSQUE, Dala L.G.A, Kano State, Nigeria" data-ar="رقم 1968 أ، منطقة غواماجا السكنية، شارع عودو واو، مقابل مسجد إحياء السنة الجمعة، دالا، ولاية كانو، نيجيريا">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                <span>No. 1968 A, Gwammaja Housing Estate,<br>Audu Wawu Street, opp. IHYA'USSUNNAH JUMA'A MOSQUE,<br>Dala L.G.A, Kano State, Nigeria</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="mailto:info@irc.com.ng" class="footer-link" data-en="info@irc.org.ng" data-ar="info@irc.org.ng">
+                                <i class="fas fa-envelope me-2"></i>info@irc.org.ng
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tel:08033459721" class="footer-link" data-en="08033459721" data-ar="08033459721">
+                                <i class="fas fa-phone me-2"></i>08033459721
+                            </a>,
+                            <a href="tel:09062171496" class="footer-link" data-en="09062171496" data-ar="09062171496">
+                                09062171496
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="fw-bold" data-en="Follow Us" data-ar="تابعنا">Follow Us</h5>
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f fa-2x"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter fa-2x"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram fa-2x"></i></a>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <small data-en="&copy; 2025 Ibadurrahman College. All Rights Reserved." data-ar="&copy; 2025 كلية عباد الرحمن. جميع الحقوق محفوظة.">&copy; 2025 Ibadurrahman College. All Rights Reserved.</small>
+            </div>
+        </div>
+    </footer>
+
+    <a href="#" id="back-to-top" class="btn btn-primary rounded-circle" style="display: none; position: fixed; bottom: 20px; right: 20px;"><i class="fas fa-arrow-up"></i></a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Hero Slideshow
+            const slides = document.querySelectorAll(".hero-slide");
+            const texts = document.querySelectorAll(".hero-text");
+            let currentSlide = 0;
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+                texts.forEach((text, i) => text.classList.toggle("active", i === index));
+            }
+
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }
+
+            showSlide(currentSlide);
+            setInterval(nextSlide, 5000);
+
+            // Fade-up Animation
+            const fadeUpObserver = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add("visible");
+                            fadeUpObserver.unobserve(entry.target);
+                        }
+                    });
+                },
+                { threshold: 0.15 }
+            );
+            document.querySelectorAll(".fade-up").forEach(el => fadeUpObserver.observe(el));
+
+            // Back to Top Button
+            const backToTopBtn = document.getElementById("back-to-top");
+            window.addEventListener("scroll", () => {
+                backToTopBtn.style.display = window.scrollY > 250 ? "block" : "none";
+            });
+            backToTopBtn.addEventListener("click", e => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+
+            // Auto-collapse Navbar
+            const navbarCollapse = document.getElementById("navbarNav");
+            function closeNavbar() {
+                if (navbarCollapse.classList.contains("show")) {
+                    bootstrap.Collapse.getInstance(navbarCollapse).hide();
+                }
+            }
+
+            document.querySelectorAll(".navbar-nav .nav-link, .navbar-nav .dropdown-item").forEach(link => {
+                link.addEventListener("click", (e) => {
+                    const isDropdownToggle = link.classList.contains("dropdown-toggle");
+                    const isInsideDropdown = link.closest(".dropdown-menu");
+                    if (!isDropdownToggle && !isInsideDropdown) {
+                        closeNavbar();
+                    }
+                });
+            });
+
+            // Language Toggle
+            const languageToggle = document.getElementById("languageToggle");
+            languageToggle.addEventListener("click", () => {
+                const isArabic = document.body.getAttribute("lang") === "ar";
+                const newLang = isArabic ? "en" : "ar";
+                document.body.setAttribute("lang", newLang);
+                languageToggle.textContent = isArabic ? "English" : "العربية";
+                languageToggle.setAttribute("data-lang", newLang);
+
+                document.querySelectorAll("[data-en]").forEach(elem => {
+                    const text = elem.getAttribute(`data-${newLang}`);
+                    if (!text) return;
+                    if (elem.tagName === "INPUT" || elem.tagName === "TEXTAREA") {
+                        elem.placeholder = text;
+                    } else if (elem.tagName === "OPTION") {
+                        elem.textContent = text;
+                    } else {
+                        elem.innerHTML = text;
+                    }
+                });
+
+                // Update displayed departments/subjects if visible
+                if (departmentsDisplay.style.display === "block") {
+                    showDepartments(currentMode);
+                }
+                if (subjectsDisplay.style.display === "block") {
+                    const dept = subjectsDisplay.getAttribute("data-current-dept");
+                    if (dept) showSubjects(dept);
+                }
+            });
+
+            // Departments Data for Islamic
+            const islamicDepartmentsData = [
+                { dept: "quranic", title: { en: "Quranic Studies", ar: "الدراسات القرآنية" } },
+                { dept: "islamic", title: { en: "Islamic Studies", ar: "الدراسات الإسلامية" } },
+                { dept: "arabic", title: { en: "Arabic Studies", ar: "الدراسات العربية" } }
+            ];
+
+            // Departments Data for Formal (Western Education)
+            const formalDepartmentsData = [
+                { dept: "nursery", title: { en: "Pre-Nursery/Nursery Level", ar: "مستوى ما قبل الحضانة / الحضانة" } },
+                { dept: "primary", title: { en: "Primary Level", ar: "مستوى الابتدائي" } },
+                { dept: "junior_secondary", title: { en: "Junior Secondary Level", ar: "مستوى الثانوي المتوسط" } },
+                { dept: "senior_secondary", title: { en: "Senior Secondary Level", ar: "مستوى الثانوي العالي" } }
+            ];
+
+            // Subjects Data
+            const subjectsData = {
+                quranic: {
+                    title: { en: "Quranic Studies Subjects", ar: "مواضيع الدراسات القرآنية" },
+                    subjects: [
+                        { en: "Tahfiz", ar: "التحفيظ" },
+                        { en: "Tajweed", ar: "التجويد" },
+                        { en: "Qiraat", ar: "القراءات" },
+                        { en: "Tafseer", ar: "التفسير" }
+                    ]
+                },
+                islamic: {
+                    title: { en: "Islamic Studies Subjects", ar: "مواضيع الدراسات الإسلامية" },
+                    subjects: [
+                        { en: "At-Tauheed", ar: "التوحيد" },
+                        { en: "Al-Fiqh", ar: "الفقه" },
+                        { en: "Al-Hadith", ar: "الحديث" },
+                        { en: "As-Sirah", ar: "السيرة" },
+                        { en: "At-Tarikh", ar: "التاريخ" },
+                        { en: "At-Tahzeeb", ar: "التهذيب" }
+                    ]
+                },
+                arabic: {
+                    title: { en: "Arabic Studies Subjects", ar: "مواضيع الدراسات العربية" },
+                    subjects: [
+                        { en: "An-Nahwu", ar: "النحو" },
+                        { en: "Al-Mudalaat", ar: "المداولات" },
+                        { en: "Al-Imlai", ar: "الإملاء" },
+                        { en: "Al-Inshai", ar: "الإنشاء" },
+                        { en: "Al-Adab", ar: "الأدب" },
+                        { en: "Al-Balaga", ar: "البلاغة" }
+                    ]
+                },
+                nursery: {
+                    title: { en: "Pre-Nursery/Nursery Subjects", ar: "مواضيع ما قبل الحضانة / الحضانة" },
+                    subjects: [
+                        { en: "Literacy", ar: "محو الأمية" },
+                        { en: "Numeracy", ar: "الحساب" },
+                        { en: "Rhymes", ar: "القافية" },
+                        { en: "Phonics", ar: "الصوتيات" },
+                        { en: "Elementary Science", ar: "العلوم الابتدائية" },
+                        { en: "Social Habits", ar: "العادات الاجتماعية" },
+                        { en: "Health Habits", ar: "عادات الصحة" },
+                        { en: "Creative Arts", ar: "الفنون الإبداعية" },
+                        { en: "Physical Development", ar: "التطور البدني" },
+                        { en: "Religious Studies", ar: "الدراسات الدينية" }
+                    ]
+                },
+                primary: {
+                    title: { en: "Primary Subjects", ar: "مواضيع الابتدائي" },
+                    subjects: [
+                        { en: "English", ar: "الإنجليزية" },
+                        { en: "Mathematics", ar: "الرياضيات" },
+                        { en: "Basic Science", ar: "العلوم الأساسية" },
+                        { en: "Social Studies", ar: "الدراسات الاجتماعية" },
+                        { en: "Civic Education", ar: "التربية المدنية" },
+                        { en: "Religious Studies", ar: "الدراسات الدينية" },
+                        { en: "Nigerian Language", ar: "اللغة النيجيرية" },
+                        { en: "Physical & Health Education", ar: "التربية البدنية والصحية" },
+                        { en: "Cultural & Creative Arts", ar: "الفنون الثقافية والإبداعية" },
+                        { en: "Computer Studies", ar: "دراسات الحاسوب" }
+                    ]
+                },
+                junior_secondary: {
+                    title: { en: "Junior Secondary Subjects", ar: "مواضيع الثانوي المتوسط" },
+                    subjects: [
+                        { en: "English", ar: "الإنجليزية" },
+                        { en: "Mathematics", ar: "الرياضيات" },
+                        { en: "Basic Science", ar: "العلوم الأساسية" },
+                        { en: "Basic Technology", ar: "التكنولوجيا الأساسية" },
+                        { en: "Social Studies", ar: "الدراسات الاجتماعية" },
+                        { en: "Civic Education", ar: "التربية المدنية" },
+                        { en: "Religious Studies", ar: "الدراسات الدينية" },
+                        { en: "Nigerian Language", ar: "اللغة النيجيرية" },
+                        { en: "French", ar: "الفرنسية" },
+                        { en: "Business Studies", ar: "دراسات الأعمال" },
+                        { en: "Home Economics", ar: "اقتصاد المنزل" },
+                        { en: "Agricultural Science", ar: "علوم الزراعة" },
+                        { en: "Physical & Health Education", ar: "التربية البدنية والصحية" },
+                        { en: "Cultural & Creative Arts", ar: "الفنون الثقافية والإبداعية" },
+                        { en: "Computer Studies", ar: "دراسات الحاسوب" }
+                    ]
+                },
+                senior_secondary: {
+                    title: { en: "Senior Secondary Subjects", ar: "مواضيع الثانوي العالي" },
+                    subjects: [
+                        { en: "English", ar: "الإنجليزية" },
+                        { en: "Mathematics", ar: "الرياضيات" },
+                        { en: "Civic Education", ar: "التربية المدنية" },
+                        { en: "Trade Subject", ar: "مادة التجارة" },
+                        { en: "Nigerian Language", ar: "اللغة النيجيرية" },
+                        { en: "Physics", ar: "الفيزياء" },
+                        { en: "Chemistry", ar: "الكيمياء" },
+                        { en: "Biology", ar: "البيولوجيا" },
+                        { en: "Government", ar: "الحكومة" },
+                        { en: "Literature in English", ar: "الأدب بالإنجليزية" },
+                        { en: "Economics", ar: "الاقتصاد" },
+                        { en: "Accounting", ar: "المحاسبة" },
+                        { en: "Commerce", ar: "التجارة" },
+                        { en: "Food & Nutrition", ar: "الغذاء والتغذية" },
+                        { en: "Fine Arts", ar: "الفنون الجميلة" }
+                    ]
+                }
+            };
+
+            // Education Section Interaction
+            const departmentsDisplay = document.getElementById("departments-display");
+            const departmentsTitle = document.getElementById("departments-title");
+            const departmentsList = document.getElementById("departments-list");
+            const subjectsDisplay = document.getElementById("subjects-display");
+            const subjectsTitle = document.getElementById("subjects-title");
+            const subjectsList = document.getElementById("subjects-list");
+            let currentMode = '';
+
+            function showDepartments(mode) {
+                currentMode = mode;
+                const lang = document.body.getAttribute("lang") || "en";
+                const data = mode === 'islamic' ? islamicDepartmentsData : formalDepartmentsData;
+                departmentsTitle.textContent = mode === 'islamic' ? (lang === 'en' ? "Islamic Education Departments" : "أقسام التعليم الإسلامي") : (lang === 'en' ? "Formal Education Levels" : "مستويات التعليم الرسمي");
+                departmentsList.innerHTML = data.map(deptData => `
+                    <div class="col-6 col-md-4">
+                        <div class="card shadow-sm p-3 text-center dept-card" data-dept="${deptData.dept}">
+                            <p class="mb-0 department-title">${deptData.title[lang]}</p>
+                        </div>
+                    </div>
+                `).join("");
+                departmentsDisplay.style.display = "block";
+                subjectsDisplay.style.display = "none";
+                departmentsDisplay.scrollIntoView({ behavior: "smooth" });
+            }
+
+            function showSubjects(dept) {
+                const data = subjectsData[dept];
+                const lang = document.body.getAttribute("lang") || "en";
+                subjectsTitle.textContent = data.title[lang];
+                subjectsList.innerHTML = data.subjects.map(subject => `
+                    <div class="col-6 col-md-4">
+                        <div class="card shadow-sm p-3 text-center subjects-list">
+                            <p class="mb-0">${subject[lang]}</p>
+                        </div>
+                    </div>
+                `).join("");
+                subjectsDisplay.style.display = "block";
+                subjectsDisplay.setAttribute("data-current-dept", dept);
+                subjectsDisplay.scrollIntoView({ behavior: "smooth" });
+            }
+
+            document.getElementById("islamicEducation").addEventListener("click", (e) => {
+                e.preventDefault();
+                showDepartments('islamic');
+                closeNavbar();
+            });
+
+            document.getElementById("formalEducation").addEventListener("click", (e) => {
+                e.preventDefault();
+                showDepartments('formal');
+                closeNavbar();
+            });
+
+            document.addEventListener("click", (e) => {
+                if (e.target.closest(".dept-card")) {
+                    const dept = e.target.closest(".dept-card").getAttribute("data-dept");
+                    showSubjects(dept);
+                    closeNavbar();
+                }
+            });
+
+            document.querySelectorAll(".section-card").forEach(card => {
+                card.addEventListener("click", () => {
+                    const id = card.getAttribute("id");
+                    if (id === "islamic-card") {
+                        showDepartments('islamic');
+                    } else if (id === "formal-card") {
+                        showDepartments('formal');
+                    }
+                    closeNavbar();
+                });
+            });
+
+            // Back to Departments Button
+            document.getElementById("back-to-depts").addEventListener("click", () => {
+                subjectsDisplay.style.display = "none";
+                showDepartments(currentMode);
+                closeNavbar();
+            });
+
+            // Form Submission
+            document.querySelector("form").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                try {
+                    const response = await fetch("/api/bookings", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    alert(result.message || "Form submitted!");
+                    if (result.success) e.target.reset();
+                } catch (error) {
+                    alert("Error submitting form. Please try again.");
+                    console.error(error);
+                }
+            });
+
+            // Prevent Video Right-Click
+            document.querySelectorAll("video").forEach(video => {
+                video.addEventListener("contextmenu", e => e.preventDefault());
+            });
+
+            // Handle Language Toggle Button Click
+            const langBtn = document.getElementById("languageToggle");
+            if (langBtn) langBtn.addEventListener("click", closeNavbar);
+        });
+    </script>
+</body>
+</html>

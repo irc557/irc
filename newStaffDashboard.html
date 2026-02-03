@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style type="text/css">@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/greek/400/normal.woff2);unicode-range:U+0370-03FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/greek-ext/400/normal.woff2);unicode-range:U+1F00-1FFF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic-ext/400/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic/400/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/latin/400/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/vietnamese/400/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/latin-ext/400/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic-ext/500/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic/500/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/latin/500/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/latin-ext/500/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/vietnamese/500/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/greek-ext/500/normal.woff2);unicode-range:U+1F00-1FFF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/greek/500/normal.woff2);unicode-range:U+0370-03FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/greek/700/normal.woff2);unicode-range:U+0370-03FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/latin/700/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/latin-ext/700/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/vietnamese/700/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic/700/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic-ext/700/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/greek-ext/700/normal.woff2);unicode-range:U+1F00-1FFF;font-display:swap;}</style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #fbbc05;
+            --background-color: #f5f7fa;
+            --text-color: #202124;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: #202124;
+            color: #fff;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            padding-top: 1rem;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-260px);
+        }
+
+        .sidebar .nav-link {
+            color: #bdc1c6;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 1.5rem;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .dashboard-card {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-gradient-1 {
+            background-image: linear-gradient(135deg, #4285f4, #669df6);
+        }
+
+        .card-gradient-2 {
+            background-image: linear-gradient(135deg, #34a853, #57b76f);
+        }
+
+        .card-gradient-3 {
+            background-image: linear-gradient(135deg, #fbbc05, #fbdc59);
+        }
+
+        .card-gradient-4 {
+            background-image: linear-gradient(135deg, #ea4335, #f28b82);
+        }
+
+        .modal-content {
+            border-radius: 0.75rem;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #3267d6;
+            border-color: #3267d6;
+        }
+
+        #sidebarToggleMobile {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1101;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            display: none;
+        }
+
+        #sidebarToggleMobile:hover {
+            background-color: #3267d6;
+        }
+
+        /* Profile Picture Styles */
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+        }
+
+        .profile-picture-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        /* Responsive Tables */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table {
+            min-width: 600px;
+        }
+
+        /* Modal Scrollable Forms */
+        .modal-body {
+            max-height: 60vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Responsive Media Queries */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+            }
+            .profile-picture {
+                width: 35px;
+                height: 35px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-260px);
+                width: 260px;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            #sidebarToggleMobile {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .dashboard-card {
+                padding: 1rem;
+            }
+            .dashboard-card p {
+                font-size: 1.5rem;
+            }
+            .grid-cols-4, .grid-cols-2 {
+                grid-template-columns: 1fr !important;
+            }
+            .modal-dialog {
+                margin: 0.5rem;
+                max-width: 95%;
+            }
+            .profile-picture {
+                width: 30px;
+                height: 30px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            h2 {
+                font-size: 1.5rem;
+            }
+            .btn {
+                padding: 0.5rem;
+                font-size: 0.875rem;
+            }
+            .form-control, .form-select {
+                font-size: 0.875rem;
+            }
+            .modal-body {
+                padding: 1rem;
+            }
+            .modal-content {
+                border-radius: 0.5rem;
+            }
+            .profile-picture {
+                width: 25px;
+                height: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="p-4 border-b border-gray-700">
+            <h3 class="text-xl font-bold text-white" data-translate="adminPanel">Admin Panel</h3>
+            <p class="text-sm text-gray-400 mt-2">Role: <span id="userRoleDisplay">N/A</span></p>
+            <p class="text-sm text-gray-400 mt-1">Username: <span id="usernameDisplay">N/A</span></p>
+        </div>
+        <ul class="nav flex-column mt-4" id="sidebarNav">
+            <li class="nav-item">
+                <a href="#" class="nav-link active" data-view="dashboard"><i class="fas fa-tachometer-alt"></i> <span data-translate="dashboard">Dashboard</span></a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-view="staff-management"><i class="fas fa-users"></i> <span data-translate="staff">Staff</span></a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-view="student-management"><i class="fas fa-user-graduate"></i> <span data-translate="students">Students</span></a>
+            </li>
+            <li class="nav-item" id="feesNavItem">
+                <a href="#" class="nav-link" data-view="fees-management"><i class="fas fa-money-bill-wave"></i> <span data-translate="fees">Fees</span></a>
+            </li>
+            <li class="nav-item" id="bookingsNavItem">
+                <a href="#" class="nav-link" data-view="bookings-management"><i class="fas fa-book"></i> <span data-translate="bookings">Bookings</span></a>
+            </li>
+            <li class="nav-item" id="adminManagementNavItem">
+                <a href="#" class="nav-link" data-view="admin-management"><i class="fas fa-user-shield"></i> <span data-translate="admins">Admins</span></a>
+            </li>
+            <li class="nav-item" id="academicManagementNavItem">
+                <a href="#" class="nav-link" data-view="academic-management"><i class="fas fa-calendar-alt"></i> <span data-translate="academic">Academic</span></a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-view="generate"><i class="fas fa-id-card"></i> <span data-translate="generate">ID/Report Generator</span></a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-view="demographics"><i class="fas fa-chart-pie"></i> <span data-translate="demographics">Demographics</span></a>
+            </li>
+        </ul>
+        <div class="mt-auto p-4">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user-circle me-2"></i>
+                <strong id="adminNameDisplay" data-translate="admin">Admin</strong>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark text-small shadow mt-2">
+                <li><a class="dropdown-item" href="/logout" id="logoutBtn" data-translate="signOut">Sign out</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="main-content-header mb-4 flex items-center justify-between">
+            <h2 class="text-2xl font-semibold" data-translate="dashboardOverview">Dashboard Overview</h2>
+        </div>
+
+        <!-- Sidebar Toggle Button -->
+        <button id="sidebarToggleMobile">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Dashboard View -->
+        <div id="dashboard-view">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="dashboard-card card-gradient-1 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h5 class="text-sm font-medium opacity-90" data-translate="totalStaff">Total Staff</h5>
+                            <p id="totalStaffCount" class="text-4xl font-bold mt-1">0</p>
+                        </div>
+                        <div class="p-3 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fas fa-chalkboard-teacher text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-card card-gradient-2 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h5 class="text-sm font-medium opacity-90" data-translate="totalStudents">Total Students</h5>
+                            <p id="totalStudentsCount" class="text-4xl font-bold mt-1">0</p>
+                        </div>
+                        <div class="p-3 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fas fa-user-graduate text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-card card-gradient-3 text-white" id="pendingFeesCard">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h5 class="text-sm font-medium opacity-90" data-translate="pendingFees">Pending Fees</h5>
+                            <p id="pendingFeesCount" class="text-4xl font-bold mt-1">0</p>
+                        </div>
+                        <div class="p-3 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fas fa-money-bill-wave text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-card card-gradient-4 text-white" id="totalBookingsCard">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h5 class="text-sm font-medium opacity-90" data-translate="totalBookings">Total Bookings</h5>
+                            <p id="totalBookingsCount" class="text-4xl font-bold mt-1">0</p>
+                        </div>
+                        <div class="p-3 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
+                            <i class="fas fa-book text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff Management View -->
+        <div id="staff-management-view" style="display: none;">
+            <h2 class="text-2xl font-semibold mb-4" data-translate="staffManagement">Staff Management</h2>
+
+            <button class="btn btn-primary mb-4" id="addStaffBtn">
+                <i class="fas fa-plus-circle"></i> 
+                <span data-translate="addStaff">Add New Staff</span>
+            </button>
+
+            <div class="mb-3 flex flex-wrap gap-2">
+                <input type="text" class="form-control w-full sm:w-auto" id="staffSearch" placeholder="Search by ID, Name, Email or Phone" data-translate="searchPlaceholder">
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-end mb-4 gap-2">
+                <button class="btn btn-primary" id="exportStaffPdfBtn" data-translate="exportPdf">Export as PDF</button>
+                <button class="btn btn-primary" id="exportStaffExcelBtn" data-translate="exportExcel">Export as Excel</button>
+            </div>
+
+            <div class="bg-white p-4 rounded-lg shadow table-responsive">
+                <table class="table w-full">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAllStaff"></th>
+                            <th data-translate="staffId">Staff ID</th>
+                            <th data-translate="profilePicture">Profile Picture</th>
+                            <th data-translate="name">Name</th>
+                            <th data-translate="email">Email</th>
+                            <th data-translate="phone">Phone</th>
+                            <th data-translate="role">Role</th>
+                            <th data-translate="classesTaught">Classes Taught</th>
+                            <th data-translate="subjectTaught">Subjects Taught</th>
+                            <th data-translate="formMasterInfo">Form Master Info</th>
+                            <th data-translate="actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staffTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Student Management View -->
+        <div id="student-management-view" style="display: none;">
+            <h2 class="text-2xl font-semibold mb-4" data-translate="studentManagement">Student Management</h2>
+
+            <button class="btn btn-primary mb-4" id="addStudentBtn">
+                <i class="fas fa-plus-circle"></i> 
+                <span data-translate="addStudent">Add New Student</span>
+            </button>
+
+            <div class="mb-3 flex flex-wrap gap-2">
+                <input type="text" class="form-control w-full sm:w-auto" id="studentSearch" placeholder="Search by name or ID" data-translate="searchPlaceholder">
+                <select class="form-select w-full sm:w-auto" id="studentClassFilter">
+                    <option value="">All Classes</option>
+                </select>
+            </div>
+            <div class="flex flex-col sm:flex-row justify-end mb-4 gap-2">
+                <button class="btn btn-primary" id="exportStudentsPdfBtn" data-translate="exportPdf">Export as PDF</button>
+                <button class="btn btn-primary" id="exportStudentsExcelBtn" data-translate="exportExcel">Export as Excel</button>
+            </div>
+
+            <div class="bg-white p-4 rounded-lg shadow table-responsive">
+                <table class="table w-full">
+                    <thead>
+                        <tr>
+                            <th data-translate="studentId">Student ID</th>
+                            <th data-translate="profilePicture">Profile Picture</th>
+                            <th data-translate="name">Full Name</th>
+                            <th data-translate="gender">Gender</th>
+                            <th data-translate="dateOfBirth">Date of Birth</th>
+                            <th data-translate="subjects">Subjects</th>
+                            <th data-translate="classes">Class(es)</th>
+                            <th data-translate="guardianPhone">Guardian Phone</th>
+                            <th data-translate="address">Address</th>
+                            <th data-translate="actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+<!-- ================= FEES MANAGEMENT ================= -->
+<div id="fees-management-view" style="display: none;">
+    <h2 class="text-2xl font-semibold mb-4" data-translate="feesManagement">Fees Management</h2>
+
+    <!-- Tabs + Add Payment Button -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <ul class="nav nav-tabs" id="feesTab">
+            <li class="nav-item">
+                <a class="nav-link active" id="setFeesTab" data-bs-toggle="tab" href="#setFeesSection"
+                   data-translate="setFees">Set Fees per Class</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="trackFeesTab" data-bs-toggle="tab" href="#trackFeesSection"
+                   data-translate="paymentTracking">Payment Tracking</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="feeStructureOverviewTab" data-bs-toggle="tab" href="#feeStructureOverviewSection"
+                   data-translate="feeStructureOverview">Fee Structure Overview</a>
+            </li>
+        </ul>
+
+        <!-- Add Payment button (visible on Payment Tracking tab) -->
+        <button class="btn btn-primary d-none" id="topAddPaymentBtn"
+                data-bs-toggle="modal" data-bs-target="#addPaymentModal"
+                data-translate="addPayment">Add Payment</button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+
+        <!-- ==== SET FEES ==== -->
+        <div id="setFeesSection" class="tab-pane fade show active">
+            <div class="bg-white p-4 rounded shadow">
+                <h5 class="mb-3" data-translate="setFees">Set Fees per Class</h5>
+                <form id="setFeesForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" data-translate="selectClass">Select Class</label>
+                            <select id="classSelect" class="form-select" required></select>
+                            <div class="invalid-feedback" data-translate="classRequired">Class is required.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" data-translate="session">Session</label>
+                            <select id="sessionSelect" class="form-select" required></select>
+                            <div class="invalid-feedback" data-translate="sessionRequired">Session is required.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" data-translate="term">Term</label>
+                            <select id="termSelect" class="form-select" required>
+                                <option value="1" data-translate="firstTerm">1st Term</option>
+                                <option value="2" data-translate="secondTerm">2nd Term</option>
+                                <option value="3" data-translate="thirdTerm">3rd Term</option>
+                            </select>
+                            <div class="invalid-feedback" data-translate="termRequired">Term is required.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" data-translate="totalFee">Amount (₦)</label>
+                            <input type="number" class="form-control" id="feeAmount" min="0" step="0.01" required>
+                            <div class="invalid-feedback" data-translate="amountRequired">Amount required.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" data-translate="notes">Description (Optional)</label>
+                            <textarea class="form-control" id="feeDescription" rows="2"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success w-100" data-translate="saveFees">Save Fee</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==== PAYMENT TRACKING ==== -->
+        <div id="trackFeesSection" class="tab-pane fade">
+            <div class="bg-white p-4 rounded shadow">
+                <h5 class="mb-3" data-translate="paymentTracking">Payment Tracking</h5>
+
+                <!-- Filters -->
+                <div class="row g-2 mb-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="paymentSearch"
+                               placeholder="Name / ID" data-translate="searchPlaceholder">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="trackClassSelect">
+                            <option value="" data-translate="allClasses">All Classes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="feesSessionFilter"></select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="feesTermFilter">
+                            <option value="" data-translate="allTerms">All Terms</option>
+                            <option value="1" data-translate="firstTerm">1st Term</option>
+                            <option value="2" data-translate="secondTerm">2nd Term</option>
+                            <option value="3" data-translate="thirdTerm">3rd Term</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Export -->
+                <div class="d-flex justify-content-end gap-2 mb-3">
+                    <button class="btn btn-outline-primary" id="exportPaymentsPdfBtn"
+                            data-translate="exportPdf">PDF</button>
+                    <button class="btn btn-outline-success" id="exportPaymentsExcelBtn"
+                            data-translate="exportExcel">Excel</button>
+                </div>
+
+                <!-- Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th data-translate="studentId">Student ID</th>
+                                <th data-translate="studentName">Student Name</th>
+                                <th data-translate="class">Class</th>
+                                <th data-translate="session">Session</th>
+                                <th data-translate="term">Term</th>
+                                <th data-translate="guardianPhone">Guardian Phone</th>
+                                <th data-translate="totalFee">Total Fee</th>
+                                <th data-translate="amountPaid">Paid</th>
+                                <th data-translate="remaining">Remaining</th>
+                                <th data-translate="status">Status</th>
+                                <th data-translate="action">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentTableBody"><!-- filled by JS --></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==== FEE STRUCTURE OVERVIEW ==== -->
+        <div id="feeStructureOverviewSection" class="tab-pane fade">
+            <div class="bg-white p-4 rounded shadow">
+                <h5 class="mb-3" data-translate="feeStructureOverview">Fee Structure Overview</h5>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <select class="form-select" id="feeOverviewSessionFilter"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select" id="feeOverviewTermFilter">
+                            <option value="" data-translate="allTerms">All Terms</option>
+                            <option value="1" data-translate="firstTerm">1st Term</option>
+                            <option value="2" data-translate="secondTerm">2nd Term</option>
+                            <option value="3" data-translate="thirdTerm">3rd Term</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mb-3">
+                    <button class="btn btn-outline-primary" id="exportFeeStructurePdfBtn"
+                            data-translate="exportPdf">PDF</button>
+                    <button class="btn btn-outline-success" id="exportFeeStructureExcelBtn"
+                             data-translate="exportExcel">Excel</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th data-translate="class">Class</th>
+                                <th data-translate="section">Section</th>
+                                <th data-translate="term">Term</th>
+                                <th data-translate="totalFee">Total Fee (₦)</th>
+                                <th data-translate="description">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feeStructureTableBody"><!-- filled by JS --></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================== ADD PAYMENT MODAL ===================== -->
+    <div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPaymentModalLabel" data-translate="addPayment">Add Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addPaymentForm">
+                        <input type="hidden" id="paymentStudentFeeId">
+                        <input type="hidden" id="paymentClassSection">
+                        <input type="hidden" id="paymentClassRef">
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" data-translate="studentId">Student ID</label>
+                                <input type="text" class="form-control" id="paymentStudentId" placeholder="Enter admission number" required>
+                                <div id="studentInfo" class="mt-2 small"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-translate="studentName">Student Name</label>
+                                <input type="text" class="form-control" id="paymentStudentName" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-translate="class">Class</label>
+                                <input type="text" class="form-control" id="paymentClass" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" data-translate="session">Session</label>
+                                <input type="text" class="form-control" id="paymentSessionDisplay" readonly>
+                                <select class="form-select d-none" id="paymentSession"></select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" data-translate="term">Term</label>
+                                <input type="text" class="form-control" id="paymentTermDisplay" readonly>
+                                <select class="form-select d-none" id="paymentTerm"></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-translate="totalFee">Total Fee (₦)</label>
+                                <input type="text" class="form-control" id="paymentTotalFee" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-translate="remaining">Remaining (₦)</label>
+                                <input type="text" class="form-control" id="paymentRemaining" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-translate="amountToPay">Amount to Pay Now (₦) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="paymentAmount" min="0.01" step="0.01" required placeholder="Enter amount">
+                                <div class="invalid-feedback">Please enter a valid amount.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-translate="paymentMethod">Payment Method</label>
+                                <select class="form-select" id="paymentMethod">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="POS">POS</option>
+                                    <option value="Cheque">Cheque</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" data-translate="notes">Notes</label>
+                                <textarea class="form-control" id="paymentNotes" rows="2" placeholder="e.g., Partial payment for Term 1"></textarea>
+                            </div>
+
+                            <!-- SUBMIT BUTTON MOVED INSIDE FORM -->
+                            <div class="modal-footer mt-3">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="close">Close</button>
+                                <button type="submit" class="btn btn-primary" data-translate="submitPayment">Submit Payment</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        <!-- Bookings Management View -->
+        <div id="bookings-management-view" style="display: none;">
+            <h2 class="text-2xl font-semibold mb-4" data-translate="bookingsManagement">Bookings Management</h2>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="mb-3 flex flex-wrap gap-2">
+                    <input type="text" class="form-control w-full sm:w-auto" id="bookingsSearch" placeholder="" data-translate="searchPlaceholder">
+                    <label for="bookingsDateFrom" class="form-label">From:</label>
+                    <input type="date" class="form-control w-full sm:w-auto" id="bookingsDateFrom">
+                    <label for="bookingsDateTo" class="form-label">To:</label>
+                    <input type="date" class="form-control w-full sm:w-auto" id="bookingsDateTo">
+                </div>
+                <div class="flex flex-col sm:flex-row justify-end mb-4 gap-2">
+                    <button class="btn btn-primary" id="exportBookingsPdfBtn" data-translate="exportPdf">Export as PDF</button>
+                    <button class="btn btn-primary" id="exportBookingsExcelBtn" data-translate="exportExcel">Export as Excel</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table w-full" id="bookingsTable">
+                        <thead>
+                            <tr>
+                                <th data-translate="name">Name</th>
+                                <th data-translate="email">Email</th>
+                                <th data-translate="gender">Gender</th>
+                                <th data-translate="dateOfBirth">Date of Birth</th>
+                                <th data-translate="phone">Phone</th>
+                                <th data-translate="address">Address</th>
+                                <th data-translate="message">Message</th>
+                                <th data-translate="timeSent">Time Sent</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Management View -->
+        <div id="admin-management-view" style="display: none;">
+            <h2 class="text-2xl font-semibold mb-4" data-translate="adminManagement">Admin Management</h2>
+            <button class="btn btn-primary mb-4" id="addAdminBtn"><i class="fas fa-plus-circle"></i> <span data-translate="addAdmin">Add New Admin</span></button>
+            <div class="bg-white p-4 rounded-lg shadow table-responsive">
+                <table class="table w-full">
+                    <thead>
+                        <tr>
+                            <th data-translate="username">Username</th>
+                            <th data-translate="name">Name</th>
+                            <th data-translate="phone">Phone</th>
+                            <th data-translate="role">Role</th>
+                            <th data-translate="actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Academic Management View -->
+        <div id="academic-management-view" style="display: none;">
+            <h2 class="text-2xl font-semibold mb-4" data-translate="academicManagement">Academic Management</h2>
+            <div class="bg-white p-4 rounded-lg shadow mb-4">
+                <h3 class="text-xl font-semibold mb-3" data-translate="academicCalendar">Academic Calendar</h3>
+                <form id="academicCalendarForm">
+                    <div class="mb-3">
+                        <label for="termStartDate" class="form-label" data-translate="termStartDate">Term Start Date</label>
+                        <input type="date" class="form-control" id="termStartDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="termEndDate" class="form-label" data-translate="termEndDate">Term End Date</label>
+                        <input type="date" class="form-control" id="termEndDate" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" data-translate="saveDates">Save Dates</button>
+                </form>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="text-xl font-semibold mb-3" data-translate="reportsheets">Reportsheets</h3>
+                <button class="btn btn-secondary" id="generateReportSheetsBtn" data-translate="generateReportSheets">Generate Report Sheets</button>
+            </div>
+        </div>
+
+        <!-- ID/Report Generator View -->
+        <div id="generate-view" style="display: none;">
+            <h2 class="text-2xl font-semibold mb-4" data-translate="generate">ID/Report Generator</h2>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="text-xl font-semibold mb-3" data-translate="generateIdCard">Generate ID Card</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="id-card-entity-type" class="form-label" data-translate="selectType">Select Type</label>
+                        <select id="id-card-entity-type" class="form-select">
+                            <option value="student" data-translate="student">0">Student</option>
+                            <option value="staff" data-translate="staff">Staff</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="id-card-entity-id" class="form-label" data-translate="entityId">Entity ID</label>
+                        <input type="text" id="id-card-entity-id" placeholder="e.g., 101" class="form-control">
+                    </div>
+                </div>
+                <button id="generate-id-card-button" class="btn btn-primary" data-translate="generateIdCard">Generate ID Card</button>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow mt-4">
+                <h3 class="text-xl font-semibold mb-3" data-translate="generateReportSheet">Generate Report Sheet</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="report-student-id" class="form-label" data-translate="studentId">Student ID</label>
+                        <input type="text" id="report-student-id" placeholder="e.g., 205" class="form-control">
+                    </div>
+                    <div>
+                        <label for="report-type" class="form-label" data-translate="reportType">Report Type</label>
+                        <select id="report-type" class="form-select">
+                            <option value="terminal" data-translate="terminalReport">Terminal</option>
+                            <option value="sessional" data-translate="sessionalReport">Sessional</option>
+                        </select>
+                    </div>
+                    <div id="session-container">
+                        <label for="report-session" class="form-label" data-translate="session">Session</label>
+                        <select id="report-session" class="form-select">
+                            <option value="2024/2025" data-translate="session2024_2025">2024/2025 Session</option>
+                            <option value="2023/2024" data-translate="session2023_2024">2023/2024 Session</option>
+                        </select>
+                    </div>
+                    <div id="term-container" style="display: none;">
+                        <label for="report-term" class="form-label" data-translate="term">Term</label>
+                        <select id="report-term" class="form-select">
+                            <option value="1st Term" data-translate="firstTerm">1st Term</option>
+                            <option vibrator="2nd Term" data-translate="secondTerm">2nd Term</option>
+                            <option value="3rd Term" data-translate="thirdTerm">3rd Term</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="generate-report-sheet-button" class="btn btn-primary" data-translate="generateReportSheet">Generate Report Sheet</button>
+            </div>
+        </div>
+
+        <!-- Demographics View -->
+        <div id="demographics-view" style="display: none;">
+            <h2 class="text-2xl font-semibold mb-4" data-translate="demographics">Demographic Data</h2>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold mb-3" data-translate="staffGenderDistribution">Staff Gender Distribution</h3>
+                    <div id="staffGenderChart" class="w-full h-64"></div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold mb-3" data-translate="studentGenderDistribution">Student Gender Distribution</h3>
+                    <div id="studentGenderChart" class="w-full h-64"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- First Login Modal -->
+    <div class="modal fade" id="firstLoginModal" tabindex="-1" aria-labelledby="firstLoginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header border-b-0">
+                    <h5 class="modal-title text-xl font-semibold" id="firstLoginModalLabel" data-translate="updateCredentials">Update Credentials</h5>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-info text-center mb-4" role="alert" data-translate="firstLoginNotice">First login detected. Please update your credentials for security.</div>
+                    <form id="firstLoginForm" novalidate>
+                        <input type="hidden" id="currentUsername" name="username">
+                        <div class="mb-3">
+                            <label for="newName" class="form-label" data-translate="name">Name</label>
+                            <input type="text" class="form-control" id="newName" name="newName" required>
+                            <div class="invalid-feedback" data-translate="nameRequired">Name is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUsername" class="form-label" data-translate="newUsername">New Username</label>
+                            <input type="text" class="form-control" id="newUsername" name="newUsername" required>
+                            <div class="invalid-feedback" data-translate="usernameRequired">Username is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label" data-translate="newPasswordLabel">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" name="newPassword" required minlength="8">
+                            <div class="invalid-feedback" data-translate="passwordLength">Password must be at least 8 characters long.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label" data-translate="confirmPasswordLabel">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                            <div class="invalid-feedback" data-translate="passwordMatch">Passwords must match.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPhone" class="form-label" data-translate="phone">Phone Number</label>
+                            <input type="tel" class="form-control" id="newPhone" name="newPhone" required>
+                            <div class="invalid-feedback" data-translate="phoneRequired">Phone number is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="securityQuestion" class="form-label" data-translate="securityQuestion">Security Question</label>
+                            <select id="securityQuestion" name="securityQuestion" class="form-select" required>
+                                <option value="What is your pet's name?" data-translate="petNameQuestion">What is your pet's name?</option>
+                                <option value="What is your mother's maiden name?" data-translate="maidenNameQuestion">What is your mother's maiden name?</option>
+                                <option value="What was your first car's make?" data-translate="carMakeQuestion">What was your first car's make?</option>
+                            </select>
+                            <div class="invalid-feedback" data-translate="questionRequired">Security question is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="securityAnswer" class="form-label" data-translate="securityAnswer">Security Answer</label>
+                            <input type="text" class="form-control" id="securityAnswer" name="securityAnswer" required>
+                            <div class="invalid-feedback" data-translate="answerRequired">Security answer is required.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full" data-translate="updateCredentials">Update Credentials</button>
+                        <div id="first-login-error-message" class="text-danger text-center mt-3 d-none"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal fade message-modal" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-b-0">
+                    <h5 class="modal-title text-xl font-semibold" id="messageModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p id="messageText" class="text-lg"></p>
+                </div>
+                <div class="modal-footer border-t-0 justify-center">
+                    <button type="button" class="btn btn-secondary py-2 px-4" data-bs-dismiss="modal" data-translate="close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Staff Modal -->
+    <div class="modal fade" id="staffModal" tabindex="-1" aria-labelledby="staffModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staffModalLabel" data-translate="addStaff">Add Staff</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="staffForm" novalidate>
+                        <input type="hidden" id="staffId" name="id">
+                        <div class="mb-3">
+                            <label for="staffStaffId" class="form-label" data-translate="staffId">Staff ID</label>
+                            <input type="text" class="form-control" id="staffStaffId" required>
+                            <div class="invalid-feedback" data-translate="staffIdRequired">Staff ID is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="staffFullName" class="form-label" data-translate="name">Full Name</label>
+                            <input type="text" class="form-control" id="staffFullName" required>
+                            <div class="invalid-feedback" data-translate="nameRequired">Full name is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="staffEmail" class="form-label" data-translate="email">Email address</label>
+                            <input type="email" class="form-control" id="staffEmail">
+                            <div class="invalid-feedback" data-translate="emailInvalid">Enter a valid email address.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="staffPhone" class="form-label" data-translate="phone">Phone Number</label>
+                            <input type="tel" class="form-control" id="staffPhone" required>
+                            <div class="invalid-feedback" data-translate="phoneRequired">Phone number is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="staffRole" class="form-label" data-translate="role">Role</label>
+                            <select class="form-select" id="staffRole" required>
+                                <option value="Form Teacher" data-translate="formTeacher">Form Teacher</option>
+                                <option value="Regular Teacher" data-translate="regularTeacher">Regular Teacher</option>
+                            </select>
+                            <div class="invalid-feedback" data-translate="roleRequired">Role is required.</div>
+                        </div>
+                        <div class="mb-3" id="formMasterGroup">
+                            <label for="formMasterClass" class="form-label" data-translate="formMasterClass">Form Master Class (Optional)</label>
+                            <select class="form-select" id="formMasterClass">
+                                <option selected value="">Select Class</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="classesTaught" class="form-label" data-translate="classesTaught">Classes Taught</label>
+                            <select class="form-select" id="classesTaught" multiple></select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subjectsTaught" class="form-label" data-translate="subjectsTaught">Subjects Taught</label>
+                            <select class="form-select" id="subjectsTaught" multiple></select>
+                        </div>
+                        <div class="mb-3" id="staffPasswordGroup">
+                            <label for="staffPassword" class="form-label" data-translate="password">Password (Required for new staff)</label>
+                            <input type="password" class="form-control" id="staffPassword" minlength="8">
+                            <div class="invalid-feedback" data-translate="passwordLength">Password must be at least 8 characters long.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="staffProfilePicture" class="form-label" data-translate="profilePicture">Profile Picture (JPEG/PNG, ≤ 200KB)</label>
+                            <input type="file" class="form-control" id="staffProfilePicture" accept="image/jpeg,image/png">
+                            <div class="invalid-feedback" data-translate="profilePictureInvalid">Please upload a valid JPEG or PNG image (≤ 200KB).</div>
+                            <img id="staffProfilePicturePreview" class="profile-picture-preview" src="/uploads/staff/default.jpg" alt="Profile Picture Preview">
+                        </div>
+                        <button type="submit" class="btn btn-primary" data-translate="saveStaff">Save Staff</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Student Modal -->
+    <div class="modal fade" id="studentModal" tabindex="-1" aria-labelledby="studentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="studentModalLabel" data-translate="addStudent">Add Student</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="studentForm" novalidate enctype="multipart/form-data">
+                        <input type="hidden" id="studentId">
+                        <div class="mb-3">
+                            <label for="studentCustomId" class="form-label" data-translate="studentCustomId">Student ID</label>
+                            <input type="text" class="form-control" id="studentCustomId" required>
+                            <div class="invalid-feedback" data-translate="studentIdRequired">Student ID is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentFullName" class="form-label" data-translate="name">Full Name</label>
+                            <input type="text" class="form-control" id="studentFullName" required>
+                            <div class="invalid-feedback" data-translate="nameRequired">Full name is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentGuardianPhone" class="form-label" data-translate="guardianPhone">Guardian Phone</label>
+                            <input type="tel" class="form-control" id="studentGuardianPhone" required>
+                            <div class="invalid-feedback" data-translate="phoneRequired">Guardian phone is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentEmail" class="form-label" data-translate="email">Email Address (Optional)</label>
+                            <input type="email" class="form-control" id="studentEmail">
+                            <div class="invalid-feedback" data-translate="emailInvalid">Enter a valid email address.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentAddress" class="form-label" data-translate="address">Address</label>
+                            <textarea class="form-control" id="studentAddress" required></textarea>
+                            <div class="invalid-feedback" data-translate="addressRequired">Address is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentGender" class="form-label" data-translate="gender">Gender</label>
+                            <select class="form-select" id="studentGender" required>
+                                <option value="Male" data-translate="male">Male</option>
+                                <option value="Female" data-translate="female">Female</option>
+                                <option value="Other" data-translate="other">Other</option>
+                            </select>
+                            <div class="invalid-feedback" data-translate="genderRequired">Gender is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentDob" class="form-label" data-translate="dateOfBirth">Date of Birth</label>
+                            <input type="date" class="form-control" id="studentDob" required>
+                            <div class="invalid-feedback" data-translate="dobRequired">Date of birth is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentClasses" class="form-label" data-translate="classes">Classes</label>
+                            <select class="form-select" id="studentClasses" multiple required></select>
+                            <div class="invalid-feedback" data-translate="classesRequired">At least one class is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentSubjects" class="form-label" data-translate="subjects">Subjects</label>
+                            <select class="form-select" id="studentSubjects" multiple></select>
+                            <div class="invalid-feedback" data-translate="subjectsRequired">At least one subject is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentProfilePicture" class="form-label" data-translate="profilePicture">Profile Picture (JPEG/PNG, ≤ 200KB)</label>
+                            <input type="file" class="form-control" id="studentProfilePicture" accept="image/jpeg,image/png">
+                            <div class="invalid-feedback" data-translate="profilePictureInvalid">Please upload a valid JPEG or PNG image (≤ 200KB).</div>
+                            <img id="studentProfilePicturePreview" class="profile-picture-preview mt-2" src="/uploads/default.jpg" alt="Profile Picture Preview" style="display:none; max-width:100px; border-radius:50%;">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" data-translate="saveStudent">Save Student</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Admin Modal -->
+    <div class="modal fade" id="adminModal" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adminModalLabel" data-translate="addAdmin">Add New Admin</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="adminForm" novalidate>
+                        <input type="hidden" id="adminId">
+                        <div class="mb-3">
+                            <label for="adminUsername" class="form-label" data-translate="username">Username</label>
+                            <input type="text" class="form-control" id="adminUsername" required>
+                            <div class="invalid-feedback" data-translate="usernameRequired">Username is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminName" class="form-label" data-translate="name">Name</label>
+                            <input type="text" class="form-control" id="adminName" required>
+                            <div class="invalid-feedback" data-translate="nameRequired">Name is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminPhone" class="form-label" data-translate="phone">Phone</label>
+                            <input type="tel" class="form-control" id="adminPhone" required>
+                            <div class="invalid-feedback" data-translate="phoneRequired">Phone number is required.</div>
+                        </div>
+                        <div class="mb-3" id="adminPasswordGroup">
+                            <label for="adminPassword" class="form-label" data-translate="password">Password (Required for new admin)</label>
+                            <input type="password" class="form-control" id="adminPassword" minlength="8">
+                            <div class="invalid-feedback" data-translate="passwordLength">Password must be at least 8 characters long.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminRole" class="form-label" data-translate="role">Role</label>
+                            <select class="form-select" id="adminRole" required>
+                                <option value="SuperAdmin" data-translate="superAdmin">SuperAdmin</option>
+                                <option value="DeputyAdmin" data-translate="deputyAdmin">DeputyAdmin</option>
+                                <option value="Admin" data-translate="admin">Admin</option>
+                            </select>
+                            <div class="invalid-feedback" data-translate="roleRequired">Role is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminSecurityQuestion" class="form-label" data-translate="securityQuestion">Security Question</label>
+                            <select class="form-select" id="adminSecurityQuestion" required>
+                                <option value="What is your pet's name?" data-translate="petNameQuestion">What is your pet's name?</option>
+                                <option value="What is your mother's maiden name?" data-translate="maidenNameQuestion">What is your mother's maiden name?</option>
+                                <option value="What was your first car's make?" data-translate="carMakeQuestion">What was your first car's make?</option>
+                            </select>
+                            <div class="invalid-feedback" data-translate="questionRequired">Security question is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminSecurityAnswer" class="form-label" data-translate="securityAnswer">Security Answer</label>
+                            <input type="text" class="form-control" id="adminSecurityAnswer" required>
+                            <div class="invalid-feedback" data-translate="answerRequired">Security answer is required.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full" data-translate="saveAdmin">Save Admin</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Toggle -->
+    <div class="text-center mt-4">
+        <button id="langToggle" class="btn btn-secondary" data-translate="toggleLanguage">العربية</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="./js/admin_dashboard.js"></script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98d6b1df1810ef39',t:'MTc2MDI3MzEzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html> 

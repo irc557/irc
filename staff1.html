@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style type="text/css">@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/greek/400/normal.woff2);unicode-range:U+0370-03FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/greek-ext/400/normal.woff2);unicode-range:U+1F00-1FFF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic-ext/400/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic/400/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/latin/400/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/vietnamese/400/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:400;src:url(/cf-fonts/s/roboto/5.0.11/latin-ext/400/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic-ext/500/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic/500/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/latin/500/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/latin-ext/500/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/vietnamese/500/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/greek-ext/500/normal.woff2);unicode-range:U+1F00-1FFF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:500;src:url(/cf-fonts/s/roboto/5.0.11/greek/500/normal.woff2);unicode-range:U+0370-03FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/greek/700/normal.woff2);unicode-range:U+0370-03FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/latin/700/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/latin-ext/700/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/vietnamese/700/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic/700/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/cyrillic-ext/700/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Roboto;font-style:normal;font-weight:700;src:url(/cf-fonts/s/roboto/5.0.11/greek-ext/700/normal.woff2);unicode-range:U+1F00-1FFF;font-display:swap;}</style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #fbbc05;
+            --background-color: #f5f7fa;
+            --text-color: #202124;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: #202124;
+            color: #fff;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            padding-top: 1rem;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar.collapsed { transform: translateX(-260px); }
+
+        .sidebar .nav-link {
+            color: #bdc1c6;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 1.5rem;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .dashboard-card {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-gradient-1 { background-image: linear-gradient(135deg, #4285f4, #669df6); }
+        .card-gradient-2 { background-image: linear-gradient(135deg, #34a853, #57b76f); }
+        .card-gradient-3 { background-image: linear-gradient(135deg, #fbbc05, #fbdc59); }
+        .card-gradient-4 { background-image: linear-gradient(135deg, #ea4335, #f28b82); }
+
+        #sidebarToggleMobile {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1101;
+            border-radius: .5rem;
+            padding: .5rem .75rem;
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-260px); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 1rem; }
+            #sidebarToggleMobile { display: inline-flex; align-items:center; justify-content:center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="p-4 border-b border-gray-700">
+            <div class="flex items-center mb-3">
+                <img id="staffProfilePicture" src="/uploads/staff/default.jpg" alt="Profile"
+                     class="w-16 h-16 rounded-full object-cover border-2 border-gray-600">
+                <div class="ml-3">
+                    <h3 class="text-lg font-bold text-white" id="staffNameDisplay">Loading...</h3>
+                    <p class="text-xs text-gray-400">Staff ID: <span id="staffIdDisplay">N/A</span></p>
+                </div>
+            </div>
+            <p class="text-sm text-gray-400">Role: <span id="staffRoleDisplay">N/A</span></p>
+        </div>
+
+        <ul class="nav flex-column mt-4" id="sidebarNav">
+            <li class="nav-item"><a href="#" class="nav-link active" data-view="dashboard">Dashboard</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-view="attendance">Attendance</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-view="memorization">Tahfiz Assessment</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-view="subjects">Subject Scores</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-view="reports">Reports</a></li>
+          <li class="nav-item"><a href="#" class="nav-link" data-view="videos"><i class="fas fa-video"></i> Memorization Videos</a></li>
+</li></ul>
+
+        <div class="mt-auto p-4">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none" id="logoutBtn">
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="main-content-header mb-4 flex items-center justify-between">
+            <h2 class="text-2xl font-semibold" data-translate="dashboardOverview">Dashboard Overview</h2>
+        </div>
+        
+        <!-- Sidebar Toggle Button -->
+        <button id="sidebarToggleMobile">
+            <i class="fas fa-bars"></i>
+        </button>
+<!-- Dashboard View -->
+<div id="dashboard-view">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        <!-- Classes -->
+        <div class="dashboard-card card-gradient-1 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h5 class="text-sm font-medium opacity-90">My Classes</h5>
+                    <p id="totalClassesCount" class="text-4xl font-bold mt-1">0</p>
+                </div>
+                <div class="p-3 rounded-full bg-white bg-opacity-20"></div>
+            </div>
+        </div>
+
+        <!-- Students -->
+        <div class="dashboard-card card-gradient-2 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h5 class="text-sm font-medium opacity-90">My Students</h5>
+                    <p id="totalStudentsCount" class="text-4xl font-bold mt-1">0</p>
+                </div>
+                <div class="p-3 rounded-full bg-white bg-opacity-20"></div>
+            </div>
+        </div>
+
+        <!-- Subjects -->
+        <div class="dashboard-card card-gradient-3 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h5 class="text-sm font-medium opacity-90">My Subjects</h5>
+                    <p id="totalSubjectsCount" class="text-4xl font-bold mt-1">0</p>
+                </div>
+                <div class="p-3 rounded-full bg-white bg-opacity-20"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+        <!-- Attendance View -->
+        <div id="attendance-view" style="display:none;">
+            <h2 class="text-2xl font-semibold mb-4">Attendance Management</h2>
+            <div class="mb-4 flex gap-2">
+                <button class="btn btn-primary active" id="attendanceTakeBtn">Take Attendance</button>
+                <button class="btn btn-info" id="attendanceViewBtn">View Attendance</button>
+            </div>
+
+            <!-- Take Attendance -->
+            <div id="attendance-take-section">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="mb-3 flex flex-wrap gap-2">
+                        <select class="form-select w-full sm:w-auto" id="attendanceClassSelect" required><option value="">Select Class</option></select>
+                        <select class="form-select w-full sm:w-auto" id="attendanceSessionSelect" required><option value="">Select Session</option></select>
+                        <select class="form-select w-full sm:w-auto" id="attendanceTermSelect" required>
+                            <option value="">Select Term</option>
+                            <option value="1">1st Term</option><option value="2">2nd Term</option><option value="3">3rd Term</option>
+                        </select>
+                        <select class="form-select w-full sm:w-auto" id="attendanceWeekSelect" required>
+                            <option value="">Select Week</option>
+                            <option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option>
+                            <option value="4">Week 4</option><option value="5">Week 5</option><option value="6">Week 6</option>
+                            <option value="7">Week 7</option><option value="8">Week 8</option><option value="9">Week 9</option>
+                            <option value="10">Week 10</option><option value="11">Week 11</option><option value="12">Week 12</option>
+                            <option value="13">Week 13</option><option value="14">Week 14</option><option value="15">Week 15</option>
+                        </select>
+                        <select class="form-select w-full sm:w-auto" id="attendanceDay" required>
+                            <option value="">Select Day</option>
+                            <option value="Sunday">Sunday</option><option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option><option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option><option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                        </select>
+                        <button class="btn btn-primary" id="loadAttendanceBtn">Load Students</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table"><thead><tr><th>Student Name</th><th>Status</th></tr></thead>
+                            <tbody id="attendanceTableBody"></tbody>
+                        </table>
+                    </div>
+                    <button class="btn btn-success mt-3" id="saveAttendanceBtn">Save Attendance</button>
+                </div>
+            </div>
+
+            <!-- View Attendance -->
+            <div id="attendance-view-section" style="display:none;">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="mb-3 flex flex-wrap gap-2">
+                        <select class="form-select w-full sm:w-auto" id="viewAttendanceClassSelect"><option value="">Select Class</option></select>
+                        <select class="form-select w-full sm:w-auto" id="viewAttendanceSessionSelect"><option value="">Select Session</option></select>
+                        <select class="form-select w-full sm:w-auto" id="viewAttendanceTermSelect">
+                            <option value="">Select Term</option>
+                            <option value="1">1st Term</option><option value="2">2nd Term</option><option value="3">3rd Term</option>
+                        </select>
+                        <select class="form-select w-full sm:w-auto" id="viewAttendanceWeekSelect">
+                            <option value="">Select Week</option>
+                            <option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option>
+                            <option value="4">Week 4</option><option value="5">Week 5</option><option value="6">Week 6</option>
+                            <option value="7">Week 7</option><option value="8">Week 8</option><option value="9">Week 9</option>
+                            <option value="10">Week 10</option><option value="11">Week 11</option><option value="12">Week 12</option>
+                            <option value="13">Week 13</option><option value="14">Week 14</option><option value="15">Week 15</option>
+                        </select>
+                        <button class="btn btn-primary" id="loadViewAttendanceBtn">Load Weekly Attendance</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="viewAttendanceTable">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Student ID</th>
+                                    <th>Sat</th><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th>
+                                    <th>Total Present</th><th>%</th>
+                                </tr>
+                            </thead>
+                            <tbody id="viewAttendanceTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-success" id="exportAttendancePdfBtn">Export PDF</button>
+                        <button class="btn btn-info" id="exportAttendanceExcelBtn">Export Excel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tahfiz Assessment View -->
+        <div id="memorization-view" style="display:none;">
+            <h2 class="text-2xl font-semibold mb-4">Tahfiz Assessment</h2>
+            <div class="mb-4 flex gap-2">
+                <button class="btn btn-primary active" id="gradingBtn">Grading</button>
+                <button class="btn btn-warning" id="overallResultBtn">Overall Result</button>
+            </div>
+
+            <!-- Grading -->
+            <div id="grading-section">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="mb-3 flex flex-wrap gap-2">
+                        <select class="form-select w-full sm:w-auto" id="memorizationClassSelect"><option value="">Select Class</option></select>
+                        <select class="form-select w-full sm:w-auto" id="memorizationSessionSelect"><option value="">Select Session</option></select>
+                        <select class="form-select w-full sm:w-auto" id="memorizationTermSelect">
+                            <option value="1">1st Term</option><option value="2">2nd Term</option><option value="3">3rd Term</option>
+                        </select>
+                        <select class="form-select w-full sm:w-auto" id="memorizationWeekSelect">
+                            <option value="">Select Week</option>
+                            <option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option>
+                            <option value="4">Week 4</option><option value="5">Week 5</option><option value="6">Week 6</option>
+                            <option value="7">Week 7</option><option value="8">Week 8</option><option value="9">Week 9</option>
+                            <option value="10">Week 10</option><option value="11">Week 11</option><option value="12">Week 12</option>
+                            <option value="13">Week 13</option><option value="14">Week 14</option><option value="15">Week 15</option>
+                        </select>
+                        <select class="form-select w-full sm:w-auto" id="memorizationDaySelect" style="display:none;">
+                            <option value="">Select Day</option>
+                            <option value="السبت">السبت (Saturday)</option>
+                            <option value="الأحد">الأحد (Sunday)</option>
+                        </select>
+                    </div>
+                    <div id="ayatRangeSection" class="mb-4" style="display:none;">
+                        <h5 class="mb-2">Ayat range for the selected day:</h5>
+                        <div class="d-flex align-items-center gap-3">
+                            <span id="ayatRangeDisplay" class="fw-bold"></span>
+                            <button class="btn btn-sm btn-primary" id="selectAyatBtn">Select</button>
+                        </div>
+                    </div>
+                    <div id="selectedAyahInfo" class="alert alert-info mb-3" style="display:none;">
+                        <strong>Selected:</strong> <span id="selectedAyahDisplay"></span>
+                    </div>
+                    <div id="memorizationStudentsSection" style="display:none;">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Daily Grade (A-F)</th>
+                                        <th>Exam Grade (A-F) – Once per Term</th>
+                                        <th>Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="memorizationTableBody"></tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-success mt-3" id="saveMemorizationBtn">Save Assessment</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Result -->
+            <div id="dailyResult-section" style="display:none;">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="mb-3 flex flex-wrap gap-2">
+                        <select class="form-select w-full sm:w-auto" id="dailyClassSelect"><option value="">Select Class</option></select>
+                        <select class="form-select w-full sm:w-auto" id="dailySessionSelect"><option value="">Select Session</option></select>
+                        <select class="form-select w-full sm:w-auto" id="dailyTermSelect">
+                            <option value="">Select Term</option>
+                            <option value="1">1st Term</option><option value="2">2nd Term</option><option value="3">3rd Term</option>
+                        </select>
+                        <button class="btn btn-primary" id="loadDailyStudentsBtn">Load Students</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead><tr><th>Student Name</th><th>Student ID</th><th>Actions</th></tr></thead>
+                            <tbody id="dailyStudentsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall Result -->
+            <div id="overallResult-section" style="display:none;">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="mb-3 flex flex-wrap gap-2">
+                        <select class="form-select w-full sm:w-auto" id="overallClassSelect"><option value="">Select Class</option></select>
+                        <select class="form-select w-full sm:w-auto" id="overallSessionSelect"><option value="">Select Session</option></select>
+                        <select class="form-select w-full sm:w-auto" id="overallTermSelect">
+                            <option value="">Select Term</option>
+                            <option value="1">1st Term</option><option value="2">2nd Term</option><option value="3">3rd Term</option>
+                        </select>
+                        <button class="btn btn-primary" id="loadOverallStudentsBtn">Load Results</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead><tr><th>Student Name</th><th>Student ID</th><th>Avg Daily Mark</th><th>Daily Score (/80)</th><th>Exam Mark</th><th>Exam Score (/20)</th><th>Total (/100)</th><th>Final Grade</th></tr></thead>
+                            <tbody id="overallStudentsTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-success" id="exportOverallPdfBtn">Export PDF</button>
+                        <button class="btn btn-info" id="exportOverallExcelBtn">Export Excel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subjects View -->
+        <div id="subjects-view" style="display:none;">
+            <h2 class="text-2xl font-semibold mb-4">Subject Scores</h2>
+            <div class="mb-4 flex gap-2">
+                <button class="btn btn-primary active" id="subjectAddBtn">Add Scores</button>
+                <button class="btn btn-info" id="subjectViewBtn">View Scores</button>
+            </div>
+
+            <!-- Add Scores -->
+            <div id="subject-add-section">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="mb-3 flex flex-wrap gap-2">
+                        <select class="form-select w-full sm:w-auto" id="subjectClassSelect"><option value="">Select Class</option></select>
+                        <select class="form-select w-full sm:w-auto" id="subjectSessionSelect"><option value="">Select Session</option></select>
+                        <select class="form-select w-full sm:w-auto" id="subjectTermSelect">
+                            <option value="">Select Term</option>
+                            <option value="1">1st Term</option><option value="2">2nd Term</option><option value="3">3rd Term</option>
+                        </select>
+                        <select class="form-select w-full sm:w-auto" id="subjectSubjectSelect"><option value="">Select Subject</option></select>
+                        <button class="btn btn-primary" id="loadSubjectScoresBtn">Load Students</button>
+                    </div>
+                    <div id="subjectStudentsSection" style="display:none;">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>CA1 (15)</th>
+                                        <th>CA2 (15)</th>
+                                        <th>Exam (70)</th>
+                                        <th>Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subjectTableBody"></tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-success mt-3" id="saveSubjectScoresBtn">Save Scores</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Scores -->
+            <div id="subject-view-section" style="display:none;">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="mb-3 flex flex-wrap gap-2">
+                        <select class="form-select w-full sm:w-auto" id="viewSubjectClassSelect"><option value="">Select Class</option></select>
+                        <select class="form-select w-full sm:w-auto" id="viewSubjectSessionSelect"><option value="">Select Session</option></select>
+                        <select class="form-select w-full sm:w-auto" id="viewSubjectTermSelect">
+                            <option value="">Select Term</option>
+                            <option value="1">1st Term</option><option value="2">2nd Term</option><option value="3">3rd Term</option>
+                        </select>
+                        <select class="form-select w-full sm:w-auto" id="viewSubjectSubjectSelect"><option value="">Select Subject</option></select>
+                        <button class="btn btn-primary" id="loadSubjectResultsBtn">Load Results</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Student ID</th>
+                                    <th>CA1</th>
+                                    <th>CA2</th>
+                                    <th>Exam</th>
+                                    <th>Total</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subjectResultsTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-success" id="exportSubjectPdfBtn">Export PDF</button>
+                        <button class="btn btn-info" id="exportSubjectExcelBtn">Export Excel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports View -->
+        <div id="reports-view" style="display:none;">
+            <div class="container-fluid px-4 py-8">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl font-extrabold text-emerald-700 mb-3">
+                        Student Reports Portal
+                    </h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Generate professional, parent-ready PDF reports with grades, Tahfiz progress, attendance, position & comments
+                    </p>
+                </div>
+
+                <!-- Selection Panel -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-emerald-100">
+                    <h5 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                        <svg class="w-8 h-8 mr-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        Generate End-of-Term Reports
+                    </h5>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Class</label>
+                            <select class="form-select w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:ring-4 focus:ring-emerald-200 focus:border-emerald-500 transition" 
+                                    id="reportClassSelect">
+                                <option value="">Select Class</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Session</label>
+                            <select class="form-select w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:ring-4 focus:ring-emerald-200 focus:border-emerald-500 transition" 
+                                    id="reportSessionSelect">
+                                <option value="">Select Session</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Term</label>
+                            <select class="form-select w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:ring-4 focus:ring-emerald-200 focus:border-emerald-500 transition" 
+                                    id="reportTermSelect">
+                                <option value="">Select Term</option>
+                                <option value="1">1st Term</option>
+                                <option value="2">2nd Term</option>
+                                <option value="3">3rd Term</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-end">
+                            <button id="loadReportStudentsBtn" 
+                                    class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-4 px-8 rounded-xl shadow-lg transform hover:scale-105 transition duration-200 flex items-center justify-center">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                Load Students
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Success Alert -->
+                    <div id="reportSuccessAlert" class="hidden bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 text-green-800 px-6 py-4 rounded-xl mb-4 shadow-md">
+                        <div class="flex items-center">
+                            <svg class="w-8 h-8 text-green-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <strong class="font-bold">Success!</strong> 
+                                <span>Students loaded successfully. Click below to generate PDF reports instantly!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Table -->
+                <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+                    <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-8 py-6">
+                        <h3 class="text-2xl font-bold flex items-center">
+                            <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            Student List & Report Generator
+                        </h3>
+                        <p class="text-emerald-100 mt-1">Generate Tahfiz or Complete Academic Reports with one click</p>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="table w-full">
+                            <thead class="bg-gray-50 text-gray-700 uppercase text-xs font-bold">
+                                <tr>
+                                    <th class="px-6 py-5 text-left">#</th>
+                                    <th class="px-6 py-5 text-left">Student Name</th>
+                                    <th class="px-6 py-5 text-left">Student ID</th>
+                                    <th class="px-6 py-5 text-center">Report Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportStudentsTableBody" class="divide-y divide-gray-200 text-gray-700">
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div id="reportLoading" class="hidden p-16 text-center bg-gray-50">
+                        <div class="inline-flex flex-col items-center">
+                            <div class="spinner-border animate-spin inline-block w-16 h-16 border-8 border-emerald-600 border-t-transparent rounded-full mb-6"></div>
+                            <p class="text-xl font-semibold text-gray-700">Preparing professional reports...</p>
+                            <p class="text-gray-500 mt-2">This may take a few seconds</p>
+                        </div>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="reportEmpty" class="hidden p-20 text-center bg-gray-50">
+                        <svg class="mx-auto w-28 h-28 text-gray-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <p class="text-2xl font-bold text-gray-600 mb-2">No students loaded yet</p>
+                        <p class="text-gray-500">Select class, session, and term above, then click <strong>"Load Students"</strong></p>
+                    </div>
+                </div>
+
+                <!-- Export All -->
+                <div class="text-center mt-12" id="exportAllContainer" style="display:none;">
+                    <button id="exportAllReportsBtn" 
+                            class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-5 px-12 rounded-2xl shadow-2xl text-xl transform hover:scale-110 transition duration-300 flex items-center mx-auto">
+                        <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Download All Reports as ZIP (Form Master Only)
+                    </button>
+                    <p class="text-sm text-gray-600 mt-4 max-w-md mx-auto">
+                        Generate and download all Complete Reports in one secure ZIP file — perfect for printing or sharing with parents
+                    </p>
+                </div>
+
+                <!-- Footer -->
+                <div class="text-center mt-16 pb-8">
+                    <div class="inline-flex items-center bg-emerald-50 px-8 py-5 rounded-2xl shadow-lg">
+                        <svg class="w-10 h-10 text-emerald-600 mr-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707a1 1 0 000 1.414l.707.707V16a2 2 0 002 2h8a2 2 0 002-2v-1.586l.707-.707a1 1 0 000-1.414l-.707-.707V8a6 6 0 00-6-6z"/>
+                        </svg>
+                        <div class="text-left">
+                            <p class="text-lg font-bold text-emerald-700">Powered by <span class="text-emerald-800">Ibadurrahman College</span></p>
+                            <p class="text-sm text-gray-600">Professional • Instant • Parent-Ready Reports</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-6">
+                        Reports include: School logo • Full header • Academic grades • Tahfiz progress • Attendance • Position • Teacher comments • Signature spaces
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAHFIZ PREVIEW MODAL -->
+        <div class="modal fade" id="tahfizPreviewModal" tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content rounded-3xl shadow-2xl border-4 border-emerald-600">
+                    <div class="modal-header bg-emerald-700 text-white">
+                        <h5 class="modal-title font-bold text-2xl flex items-center gap-3">
+                            <i class="fas fa-book-quran"></i> TAHFIZ MEMORIZATION REPORT
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-10 bg-gradient-to-b from-emerald-50 to-white" id="tahfizPreviewContent">
+                        <div id="tahfizPreviewBody" class="max-w-5xl mx-auto"></div>
+                    </div>
+                    <div class="modal-footer bg-emerald-100 border-t-4 border-emerald-600">
+                        <button onclick="downloadCurrentTahfizPdf()" class="btn bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-10 py-4 rounded-xl shadow-2xl transform hover:scale-110 transition text-lg">
+                            <i class="fas fa-download"></i> DOWNLOAD PDF
+                        </button>
+                        <button data-bs-dismiss="modal" class="btn btn-outline-danger font-bold px-8 py-4 rounded-xl">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPLETE REPORT PREVIEW MODAL -->
+        <div class="modal fade" id="completeReportPreviewModal" tabindex="-1">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content border-8 border-emerald-700 rounded-3xl shadow-2xl">
+                    <div class="modal-header bg-gradient-to-r from-emerald-700 to-teal-700 text-white">
+                        <h5 class="modal-title font-bold text-3xl flex items-center gap-4">
+                            <i class="fas fa-graduation-cap"></i> END OF TERM REPORT SHEET
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-0 bg-gray-50" id="completeReportPreviewContent">
+                        <div id="completeReportPreviewBody" class="p-12"></div>
+                    </div>
+                    <div class="modal-footer bg-emerald-100 border-t-8 border-emerald-700 fixed bottom-0 w-full">
+                        <div class="container mx-auto flex justify-between items-center py-4">
+                            <div class="text-emerald-800 font-bold text-xl">
+                                Generated: <span id="reportGeneratedTime"></span>
+                            </div>
+                            <div class="space-x-4">
+                                <button onclick="downloadCurrentCompletePdf()" class="btn bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-12 py-5 rounded-2xl shadow-2xl transform hover:scale-110 transition text-xl">
+                                    <i class="fas fa-file-pdf"></i> DOWNLOAD PDF
+                                </button>
+                                <button data-bs-dismiss="modal" class="btn btn-danger font-bold px-10 py-5 rounded-2xl">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!-- Videos View – FINAL CLEAN GALLERY -->
+<div id="videos-view" style="display:none;">
+  <h2 class="text-2xl font-semibold mb-6 text-emerald-700">Memorization Videos</h2>
+
+  <!-- Upload Form -->
+  <div class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-emerald-100">
+    <h4 class="text-lg font-bold mb-4 text-emerald-600">Upload New Video</h4>
+
+    <form id="videoUploadForm" enctype="multipart/form-data">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+
+        <select class="form-select" id="videoClassSelect" required>
+          <option value="">Select Class</option>
+        </select>
+
+        <select class="form-select" id="videoSessionSelect" required>
+          <option value="">Select Session</option>
+        </select>
+
+        <select class="form-select" id="videoTermSelect" required>
+          <option value="">Select Term</option>
+          <option value="1">1st Term</option>
+          <option value="2">2nd Term</option>
+          <option value="3">3rd Term</option>
+        </select>
+
+        <select class="form-select" id="videoWeekSelect" required>
+          <option value="">Select Week</option>
+          <option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option>
+          <option value="4">Week 4</option><option value="5">Week 5</option><option value="6">Week 6</option>
+          <option value="7">Week 7</option><option value="8">Week 8</option><option value="9">Week 9</option>
+          <option value="10">Week 10</option><option value="11">Week 11</option><option value="12">Week 12</option>
+          <option value="13">Week 13</option><option value="14">Week 14</option><option value="15">Week 15</option>
+        </select>
+
+        <!-- Day: optional but required in your form -->
+        <select name="day" class="form-select" id="videoDaySelect" style="display:none;" required>
+          <option value="">Select Day</option>
+          <option value="السبت">السبت (Saturday)</option>
+          <option value="الأحد">الأحد (Sunday)</option>
+        </select>
+      </div>
+
+      <!-- Ayat Range Display -->
+      <div id="videoAyatRangeSection" class="mb-4 p-4 bg-emerald-50 rounded-lg hidden">
+        <strong>Ayat Range:</strong> 
+        <span id="videoAyatRangeDisplay" class="font-bold text-emerald-700"></span>
+      </div>
+
+      <!-- REQUIRED Hidden inputs for backend -->
+      <input type="hidden" id="from_ayah">
+      <input type="hidden" id="to_ayah">
+
+      <div class="mb-4">
+        <label class="form-label font-semibold">Video File</label>
+        <input type="file" class="form-control" id="videoFile" accept="video/*" required>
+      </div>
+
+      <button type="submit" class="btn btn-success px-6">Upload Video</button>
+    </form>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="bg-white p-5 rounded-xl shadow-lg mb-8 border border-gray-200">
+    <h4 class="text-lg font-bold mb-4 text-emerald-600">Filter Videos</h4>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <select id="filterSession" class="form-select"><option value="">All Sessions</option></select>
+
+      <select id="filterTerm" class="form-select">
+        <option value="">All Terms</option>
+        <option value="1">1st Term</option>
+        <option value="2">2nd Term</option>
+        <option value="3">3rd Term</option>
+      </select>
+
+      <select id="filterWeek" class="form-select">
+        <option value="">All Weeks</option>
+        <option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option>
+        <option value="4">Week 4</option><option value="5">Week 5</option><option value="6">Week 6</option>
+        <option value="7">Week 7</option><option value="8">Week 8</option><option value="9">Week 9</option>
+        <option value="10">Week 10</option><option value="11">Week 11</option><option value="12">Week 12</option>
+        <option value="13">Week 13</option><option value="14">Week 14</option><option value="15">Week 15</option>
+      </select>
+
+      <select id="filterClass" class="form-select"><option value="">All Classes</option></select>
+
+      <button id="applyFilterBtn" class="btn btn-primary">Apply Filter</button>
+    </div>
+  </div>
+
+  <!-- GALLERY GRID -->
+  <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+    <!-- Videos appear here -->
+  </div>
+
+  <!-- Load More / Show Less -->
+  <div class="text-center mb-10">
+    <button id="loadMoreBtn" class="btn btn-success px-10 py-3 text-lg">Load More</button>
+    <button id="showLessBtn" class="btn btn-outline-secondary px-10 py-3 text-lg hidden">Show Less</button>
+  </div>
+
+  <!-- Video Modal -->
+  <div class="modal fade" id="videoModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content rounded-xl overflow-hidden">
+
+        <div class="modal-header bg-emerald-700 text-white">
+          <h5 class="modal-title">Memorization Video</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body p-0 bg-black">
+          <video id="modalVideoPlayer" controls controlsList="nodownload" class="w-100" style="height:70vh;">
+            <source src="" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="modal-footer bg-emerald-50 flex-col items-start">
+          <div class="text-left">
+            <p class="mb-1"><strong>Session:</strong> <span id="videoSessionInfo"></span></p>
+            <p class="mb-1"><strong>Term:</strong> <span id="videoTermInfo"></span></p>
+            <p class="mb-1"><strong>Week:</strong> <span id="videoWeekInfo"></span></p>
+            <p class="mb-1"><strong>Class:</strong> <span id="videoClassInfo"></span></p>
+            <p class="mb-1 text-emerald-700 font-bold text-lg" id="videoAyatInfo"></p>
+          </div>
+
+          <div class="mt-4">
+            <button type="button" class="btn btn-danger btn-sm" id="deleteVideoBtn">Delete Video</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+        <!-- Daily Result Modal -->
+        <div class="modal fade" id="dailyResultModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Daily Result</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="dailyResultContent"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap + External JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="./js/staff_dashboard.js"></script>
+</body>
+</html>
