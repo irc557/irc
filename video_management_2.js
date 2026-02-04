@@ -464,13 +464,28 @@ function displayStudentGeneralList(students) {
 
 // ======================== WORLD-CLASS ID CARD GENERATION ========================
 
-const schoolInfo = {
-    name: "Ibadurrahman College",
-    subName: "(Halqatu Ibadurrahman)",
-    address: "No. 1968 A, Gwammaja Housing Estate, Audu Wawu Street, Dala L.G.A, Kano State, Nigeria.",
-    phone: "08033459721, 09062171496",
-    logoSrc: "/assets/images/logo.jpeg"
-};
+// SCHOOL INFO MODULE (Reusable & Updatable)
+const schoolInfo = (() => {
+    // Private variable
+    let info = {
+        name: "Ibadurrahman College",
+        subName: "(Halqatu Ibadurrahman)",
+        address: "No. 1968 A, Gwammaja Housing Estate, Audu Wawu Street, Dala L.G.A, Kano State, Nigeria.",
+        phone: "08033459721, 09062171496",
+        logoSrc: "/assets/images/logo.jpeg"
+    };
+
+    return {
+        // Get current school info
+        get: () => ({ ...info }),
+
+        // Update school info dynamically
+        update: (newInfo) => {
+            info = { ...info, ...newInfo };
+            console.log('[schoolInfo] updated:', info);
+        }
+    };
+})();
 
 let currentIDCardData = null;
 
@@ -631,20 +646,69 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMoreBtn.addEventListener('click', displayAdminVideos);
   }
 
+  // ✅ FIX: Attach Download ID Card button
+  const downloadBtn = document.getElementById('downloadIDCardBtn');
+  if (downloadBtn) {
+    downloadBtn.removeEventListener('click', downloadIDCard);
+    downloadBtn.addEventListener('click', downloadIDCard);
+  }
+
+  // ✅ Attach search input and status filter
+const searchInput = document.getElementById('studentGeneralSearch');
+const statusFilter = document.getElementById('studentGeneralStatusFilter');
+
+if (searchInput) {
+  searchInput.addEventListener('input', filterStudentGeneralList);
+}
+
+if (statusFilter) {
+  statusFilter.addEventListener('change', filterStudentGeneralList);
+}
+
+  // --- Wire Student General List Export (PDF) robustly ---
+  (function wireStudentGeneralExport() {
+    const pdfBtn = document.getElementById('exportStudentGeneralPdfBtn')    // actual id in admin_dashboard.html
+                 || document.getElementById('exportStudentGeneralPDFBtn')   // older variant
+                 || document.getElementById('exportStudentGeneralListPDFBtn'); // tolerant fallback
+
+    if (pdfBtn) {
+      pdfBtn.removeEventListener('click', exportStudentGeneralListPDF);
+      pdfBtn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        try {
+          if (typeof exportStudentGeneralListPDF === 'function') {
+            exportStudentGeneralListPDF();
+          } else {
+            console.warn('[students] exportStudentGeneralListPDF() not defined');
+            alert('Export function not available. Check console.');
+          }
+        } catch (err) {
+          console.error('[students] export PDF error', err);
+          alert('Export failed — see console for details.');
+        }
+      });
+      console.log('[students] Export PDF button wired');
+    } else {
+      console.warn('[students] Export PDF button not found in DOM');
+    }
+  })();
   // Attach ID card click delegation
   document.body.addEventListener('click', (e) => {
     const btn = e.target.closest('.view-id-card-btn');
     if (btn) {
       const id = btn.getAttribute('data-id');
       const name = btn.getAttribute('data-name');
-      const entityId = btn.getAttribute('data-studentid') || btn.getAttribute('data-staffid');
+      const entityId =
+        btn.getAttribute('data-studentid') || btn.getAttribute('data-staffid');
       const picture = btn.getAttribute('data-picture');
       const type = btn.getAttribute('data-type');
+
       if (type === 'student') viewStudentIDCard(id, name, entityId, picture);
       if (type === 'staff') viewStaffIDCard(id, name, entityId, picture);
     }
   });
 });
+
 
 /* ===========================================================
    Student General CRUD functions (add/edit/delete)
@@ -656,14 +720,35 @@ function addNewStudentGeneral() {
     document.getElementById('studentGeneralId').value = '';
     document.getElementById('studentIdInput').value = '';
     document.getElementById('studentNameInput').value = '';
-    document.getElementById('studentStatusInput').value = 'Active';
-    document.getElementById('graduationYearInput').value = '';
-    document.getElementById('graduationYearGroup').style.display = 'none';
+
+    const statusSelect = document.getElementById('studentStatusInput');
+    const gradYearGroup = document.getElementById('graduationYearGroup');
+    const gradYearInput = document.getElementById('graduationYearInput');
+    const gradYearLabel = document.getElementById('graduationYearLabel');
+
+    statusSelect.value = 'Active';
+    gradYearInput.value = '';
+    gradYearGroup.style.display = 'none';
+    gradYearLabel.textContent = 'Graduation Year';
+
+    // 🔑 make ADD behave like EDIT when status changes
+    statusSelect.onchange = function () {
+      if (this.value === 'Graduated' || this.value === 'Left') {
+        gradYearGroup.style.display = 'block';
+        gradYearLabel.textContent =
+          this.value === 'Graduated' ? 'Graduation Year' : 'Year Left';
+      } else {
+        gradYearGroup.style.display = 'none';
+        gradYearInput.value = '';
+      }
+    };
+
     new bootstrap.Modal(document.getElementById('studentGeneralModal')).show();
   } catch (err) {
     console.error('[students] addNewStudentGeneral error', err);
   }
 }
+
 async function editStudentGeneral(id) {
   try {
     const student = allStudentsGeneralData.find(s => s.id === id);
@@ -726,6 +811,7 @@ async function saveStudentGeneral() {
     alert('Error saving student');
   }
 }
+
 async function deleteStudentGeneral(id) {
   try {
     if (!confirm('Are you sure you want to delete this student?')) return;
@@ -743,14 +829,168 @@ async function deleteStudentGeneral(id) {
   }
 }
 
+  // ✅ FIX: Attach Add New Student button
+  const addStudentBtn = document.getElementById('addNewStudentBtn');
+  if (addStudentBtn) {
+    addStudentBtn.removeEventListener('click', addNewStudentGeneral);
+    addStudentBtn.addEventListener('click', addNewStudentGeneral);
+  }
+
+  // ✅ FIX: Attach Save Student button (modal)
+  const saveStudentBtn = document.getElementById('saveStudentBtn');
+  if (saveStudentBtn) {
+    saveStudentBtn.removeEventListener('click', saveStudentGeneral);
+    saveStudentBtn.addEventListener('click', saveStudentGeneral);
+  }
+
 /* ===========================================================
    Utility: safe HTML escape (used in a few places)
+   =========================================================== */
+/* ===========================================================
+   Utility: safe HTML escape
    =========================================================== */
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text == null ? '' : text;
   return div.innerHTML;
 }
+
+/* ===========================================================
+   Export Student General List to PDF
+   =========================================================== */
+const exportStudentGeneralListPDF = async () => {
+  try {
+    if (typeof jspdf === 'undefined' || !window.jspdf) {
+      alert('jspdf library not loaded');
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF("p", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let y = 15;
+
+    // --- Get dynamic school info ---
+    const school = window.schoolInfo?.get ? window.schoolInfo.get() : window.schoolInfo || {};
+
+    // --- Add school logo if available (centered) ---
+    if (school.logoSrc) {
+      try {
+        const img = await loadImageAsDataURL(school.logoSrc);
+        const imgWidth = 30;
+        const imgHeight = 30;
+        const imgX = (pageWidth - imgWidth) / 2; // center horizontally
+        doc.addImage(img, "JPEG", imgX, y, imgWidth, imgHeight);
+        y += imgHeight + 5; // move y below logo
+      } catch (e) {
+        console.warn("School logo failed to load", e);
+      }
+    }
+
+    // --- Add school info (centered) ---
+    doc.setFontSize(14);
+    if (school.name) {
+      doc.text(school.name, pageWidth / 2, y, { align: "center" });
+      y += 6;
+    }
+    doc.setFontSize(10);
+    if (school.subName) {
+      doc.text(school.subName, pageWidth / 2, y, { align: "center" });
+      y += 5;
+    }
+    doc.setFontSize(8);
+    if (school.address) {
+      doc.text(school.address, pageWidth / 2, y, { align: "center" });
+      y += 5;
+    }
+    if (school.phone || school.email) {
+      doc.text(`${school.phone || ''} | ${school.email || ''}`, pageWidth / 2, y, { align: "center" });
+      y += 8;
+    }
+
+    // --- Title ---
+    doc.setFontSize(12);
+    doc.text("STUDENT GENERAL LIST", pageWidth / 2, y, { align: "center" });
+    y += 10;
+
+    // --- Get filtered students ---
+    const search = document.getElementById('studentGeneralSearch')?.value?.toLowerCase() || '';
+    const statusFilter = document.getElementById('studentGeneralStatusFilter')?.value || '';
+
+    const filteredStudents = allStudentsGeneralData.filter(student => {
+      const matchesSearch = !search ||
+        (student.student_name && student.student_name.toLowerCase().includes(search)) ||
+        (student.student_id && student.student_id.toLowerCase().includes(search));
+      const matchesStatus = !statusFilter || student.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+
+    if (filteredStudents.length === 0) {
+      alert('No students to export.');
+      return;
+    }
+
+    // --- Prepare table data ---
+    const headers = ['Student ID', 'Name', 'Status', 'Year'];
+    const body = filteredStudents.map(student => [
+      student.student_id || 'N/A',
+      student.student_name || 'N/A',
+      student.status || 'N/A',
+      (student.status === 'Graduated' || student.status === 'Left') && student.graduation_year
+        ? String(student.graduation_year)
+        : '-'
+    ]);
+
+    // --- Generate table ---
+    doc.autoTable({
+      head: [headers],
+      body: body,
+      startY: y,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [66, 133, 244] },
+      bodyStyles: { textColor: [0, 0, 0] },
+      margin: { left: 10, right: 10 },
+    });
+
+    // --- Save PDF ---
+    doc.save(`student_general_list_${new Date().toISOString().slice(0,10)}.pdf`);
+
+  } catch (err) {
+    console.error('[Students] PDF export error:', err);
+    alert('Failed to export PDF. Check console.');
+  }
+};
+
+
+/* ===========================================================
+   Attach Export PDF button
+   =========================================================== */
+const exportPdfBtn = document.getElementById('exportStudentGeneralPDFBtn');
+if (exportPdfBtn) {
+  exportPdfBtn.removeEventListener('click', exportStudentGeneralListPDF);
+  exportPdfBtn.addEventListener('click', exportStudentGeneralListPDF);
+}
+
+/* ===========================================================
+   Helper: load image as data URL for PDF
+   =========================================================== */
+function loadImageAsDataURL(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/jpeg'));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
 
 /* ===========================================================
    Export functions to global window for compatibility
