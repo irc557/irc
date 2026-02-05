@@ -896,9 +896,7 @@ async function populateSessions(target = "all") {
   }
 }
 
-/* ================================================================
-   POPULATE CLASSES (global classMap)
-   ================================================================ */
+/* populateClasses: now also fills adminVideoClassSelect and other report/video selects */
 async function populateClasses(staff = null, student = null, target = "all") {
   console.log("Populating classes for target:", target);
   const data = await fetchData("/api/classes");
@@ -920,6 +918,16 @@ async function populateClasses(staff = null, student = null, target = "all") {
   const feesClassSelect = document.getElementById("classSelect");
   const trackClassSelect = document.getElementById("trackClassSelect");
 
+  // NEW: video + admin report selects
+  const adminVideoClassSelect = document.getElementById("adminVideoClassSelect");
+  const reportClassSelect = document.getElementById("reportClassSelect");
+  const overallClassSelect = document.getElementById("overallClassSelect");
+  const adminCompleteClassSelect = document.getElementById("adminCompleteClassSelect");
+  const adminTahfizClassSelect = document.getElementById("adminTahfizClassSelect");
+  const adminWeeklyClassSelect = document.getElementById("adminWeeklyClassSelect");
+  const cumulativeClassSelect = document.getElementById("cumulativeClassSelect");
+  const adminOverallClassSelect = document.getElementById("adminOverallClassSelect");
+
   if (target === "all" || target === "staff-student") {
     if (formMasterSelect)
       formMasterSelect.innerHTML = `<option value="" data-translate="selectClass">${translations[currentLang].selectClass}</option>`;
@@ -933,6 +941,18 @@ async function populateClasses(staff = null, student = null, target = "all") {
       feesClassSelect.innerHTML = `<option value="" data-translate="selectClass">${translations[currentLang].selectClass}</option>`;
     if (trackClassSelect)
       trackClassSelect.innerHTML = `<option value="" data-translate="allClasses">${translations[currentLang].allClasses}</option>`;
+  }
+
+  // Ensure video/report selects are cleared when target is all or video/report-specific
+  if (target === "all" || target === "staff-student" || target === "video" || target === "reports") {
+    if (adminVideoClassSelect) adminVideoClassSelect.innerHTML = `<option value="" data-translate="selectClass">${translations[currentLang].selectClass}</option>`;
+    if (reportClassSelect) reportClassSelect.innerHTML = `<option value="" data-translate="selectClass">${translations[currentLang].selectClass}</option>`;
+    if (overallClassSelect) overallClassSelect.innerHTML = `<option value="" data-translate="selectClass">${translations[currentLang].selectClass}</option>`;
+    if (adminCompleteClassSelect) adminCompleteClassSelect.innerHTML = `<option value="" data-translate="selectClass">${translations[currentLang].selectClass}</option>`;
+    if (adminTahfizClassSelect) adminTahfizClassSelect.innerHTML = `<option value="" data-translate="selectClass">${translations[currentLang].selectClass}</option>`;
+    if (adminWeeklyClassSelect) adminWeeklyClassSelect.innerHTML = `<option value="" data-translate="selectClass">${translations[currentLang].selectClass}</option>`;
+    if (cumulativeClassSelect) cumulativeClassSelect.innerHTML = `<option value="" data-translate="selectClass">${translations[currentLang].selectClass}</option>`;
+    if (adminOverallClassSelect) adminOverallClassSelect.innerHTML = `<option value="" data-translate="selectClass">${translations[currentLang].selectClass}</option>`;
   }
 
   const islamicGroup = document.createElement("optgroup");
@@ -956,6 +976,19 @@ async function populateClasses(staff = null, student = null, target = "all") {
         westernGroup.appendChild(option.cloneNode(true));
       }
     }
+
+    // Always add to report/video/admin selects when target=all so video management sees the classes
+    if (target === "all" || target === "staff-student" || target === "video" || target === "reports") {
+      if (adminVideoClassSelect) adminVideoClassSelect.appendChild(option.cloneNode(true));
+      if (reportClassSelect) reportClassSelect.appendChild(option.cloneNode(true));
+      if (overallClassSelect) overallClassSelect.appendChild(option.cloneNode(true));
+      if (adminCompleteClassSelect) adminCompleteClassSelect.appendChild(option.cloneNode(true));
+      if (adminTahfizClassSelect) adminTahfizClassSelect.appendChild(option.cloneNode(true));
+      if (adminWeeklyClassSelect) adminWeeklyClassSelect.appendChild(option.cloneNode(true));
+      if (cumulativeClassSelect) cumulativeClassSelect.appendChild(option.cloneNode(true));
+      if (adminOverallClassSelect) adminOverallClassSelect.appendChild(option.cloneNode(true));
+    }
+
     if (target === "all" || target === "fees") {
       if (feesClassSelect) feesClassSelect.appendChild(option.cloneNode(true));
       if (trackClassSelect) trackClassSelect.appendChild(option.cloneNode(true));
@@ -993,7 +1026,6 @@ async function populateClasses(staff = null, student = null, target = "all") {
 
   translatePage(currentLang);
 }
-
 /* ================================================================
    FETCH STUDENT BY ADMISSION NO
    ================================================================ */
@@ -4711,47 +4743,47 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById('loadReportStudentsBtn')?.addEventListener('click', loadAdminCompleteReportStudents);
 
   async function populateAllSessionDropdowns() {
-    try {
-      const res = await fetchData('/api/sessions');
-      if (!res.success || !Array.isArray(res.data)) {
-        console.error("Failed to load sessions:", res);
-        return;
-      }
-
-      const sessionSelectIds = [
-        'overallSessionSelect',
-        'reportSessionSelect',
-        'adminWeeklySessionSelect',
-        'cumulativeSessionSelect',
-        'sessionSelect',
-        'feesSessionFilter',
-        'feeOverviewSessionFilter',
-        'paymentSession',
-        'adminTahfizSessionSelect',
-        'adminCompleteSessionSelect'
-      ];
-
-      sessionSelectIds.forEach(id => {
-        const select = document.getElementById(id);
-        if (!select) return;
-
-        select.innerHTML = '<option value="">Select Session</option>';
-
-        res.data.forEach(s => {
-          const opt = document.createElement('option');
-          opt.value = s.session_year;
-          opt.textContent = s.session_year;
-          if (s.is_current) opt.selected = true;
-          select.appendChild(opt);
-        });
-      });
-
-      console.log("All session dropdowns populated successfully");
-    } catch (err) {
-      console.error("Error populating sessions:", err);
+   try {
+    const res = await fetchData('/api/sessions');
+    if (!res.success || !Array.isArray(res.data)) {
+      console.error("Failed to load sessions:", res);
+      return;
     }
-  }
 
+    const sessionSelectIds = [
+      'overallSessionSelect',
+      'reportSessionSelect',
+      'adminWeeklySessionSelect',
+      'cumulativeSessionSelect',
+      'sessionSelect',
+      'feesSessionFilter',
+      'feeOverviewSessionFilter',
+      'paymentSession',
+      'adminTahfizSessionSelect',
+      'adminCompleteSessionSelect',
+      'adminVideoSessionSelect' // added for video management
+    ];
+
+    sessionSelectIds.forEach(id => {
+      const select = document.getElementById(id);
+      if (!select) return;
+
+      select.innerHTML = '<option value="">Select Session</option>';
+
+      res.data.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.session_year;
+        opt.textContent = s.session_year;
+        if (s.is_current) opt.selected = true;
+        select.appendChild(opt);
+      });
+    });
+
+    console.log("All session dropdowns populated successfully");
+  } catch (err) {
+    console.error("Error populating sessions:", err);
+  }
+}
   await populateClasses();
   await populateAllSessionDropdowns();
   await populateTerms();
